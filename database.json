@@ -1,0 +1,23 @@
+{
+	"prod": {
+		"driver": "pg",
+		"host": "127.0.0.1",
+		"database": "afrive_book_store",
+		"user": "njoli",
+		"password": "6theog"
+	},
+	"dev": {
+		"driver": "pg",
+		"host": "127.0.0.1",
+		"database": "abs_dev",
+		"user": "njoli",
+		"password": "6theog"
+	},
+	"test": {
+		"driver": "pg",
+		"host": "127.0.0.1",
+		"database": "abs_test",
+		"user": "njoli",
+		"password": "6theog"
+	}
+}

@@ -2,9 +2,12 @@
 	"name": "afrive_book_store",
 	"version": "1.0.0",
 	"description": "Afrive is a digital solution which allows users shop for books from various African authors across different genres. It also allows users write book reviews and make book recommendations. Everything a book lover needs in one platform.",
-	"main": "index.js",
+	"main": "src/server.ts",
 	"scripts": {
 		"lint": "npx prettier --write . && npx eslint",
+		"start": "node src/server.ts",
+		"dev": "nodemon src/server.ts",
+		"build": "npx tsc",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"repository": {
@@ -17,7 +20,7 @@
 		"African",
 		"Afirca"
 	],
-	"author": "",
+	"author": "Njoli Patrick",
 	"license": "ISC",
 	"bugs": {
 		"url": "https://github.com/ogmaro/afrive_book_store/issues"
