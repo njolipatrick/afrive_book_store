@@ -1,6 +1,7 @@
 import express, { Request, Response, Application, NextFunction, urlencoded, json } from 'express';
 import routerV1 from './route/index.router';
 const app: Application = express();
+import errorHandler, { ResponseError } from './utile/errorHandler';
 import CustomError from './utile/error.utile';
 
 app.use(json());
@@ -27,22 +28,13 @@ app.use('/testH', (req: Request, res: Response, next: NextFunction) => {
 });
 
 
-interface ResponseError extends Error {
-	statusCode?: number;
-}
+
 app.all('*', (req: Request, res: Response, next: NextFunction) => {
 	const err: ResponseError = new Error(`Route http//:${req.hostname}${req.path} not found `);
 	err.statusCode = 400;
 	next(err);
 });
 
-app.use((err: ResponseError, req: Request, res: Response, next: NextFunction) => {
-	const statusCode = err.statusCode || 500;
-	res.status(statusCode).json({
-		success: false,
-		message: err.message,
-		stack: err.stack
-	});
-});
+app.use(errorHandler);
 
 export default app;

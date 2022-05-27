@@ -1,22 +1,25 @@
-import { NextFunction, Router, Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
+import AuthModel, { User } from '../model/auth.model';
 import CustomError from '../utile/error.utile';
-interface User {
-    name: string;
+// import catchAsync from '../utile/catchAsync';
+class AuthService {
+    async register(data: User): Promise<User | undefined> {
 
-}
+        const { fullname, role, password, email, username, phone, } = data;
 
-class AutheticationService {
-    public register = async (data: User, next: NextFunction): Promise<string> => {
 
-        if (data.name) {
-            console.log('kkk');
-
-            return 'False';
-        } else {
-            console.log('fff');
-            throw new CustomError('returned true', 400);
+        if (!fullname || !username || !email || !password || !phone) {
+            throw new CustomError(`one or more input data not provided. ${email} or ${username} or ${username} or ${password} or  ${role}`, 400);
         }
-    };
-}
+        const findUser = await AuthModel.findUser(email, username);
+        if (findUser) {
+            throw new CustomError(`User with ${email} or ${username} already exist, please login`, 400);
+        }
 
-export default new AutheticationService;
+        const user: User | undefined = await AuthModel.register(data);
+        return user;
+    }
+}
+export default new AuthService;
+
+
