@@ -1,9 +1,13 @@
 import express, { Request, Response, Application, NextFunction, urlencoded, json } from 'express';
+import routerV1 from './route/index.router';
 const app: Application = express();
 import CustomError from './utile/error.utile';
 
 app.use(json());
 app.use(urlencoded({ extended: true }));
+
+
+app.use('/api/v1', routerV1);
 
 app.use('/test', (req: Request, res: Response) => {
 	res.status(200).json({ status: 'ok', success: true });
