@@ -49,6 +49,23 @@ class AuthModel {
         }
 
     }
+    async login(username: User['username'], password: User['password']): Promise<User> {
+        const conn = await client.connect();
+        const sql = 'SELECT * FROM users WHERE username =$1';
+        const result = await conn.query(sql, [username]);
+        const user: User = result.rows[0];
+
+        const encrypt = await bcrypt.compare(password + String(pepper), user.password);
+        if (encrypt) {
+            const token = sign({ user: user }, String(TOKEN_SECRET), {
+                expiresIn: '7d'
+            });
+            user.token = token;
+            return user;
+        } else {
+            throw new CustomError('Username or password is invalid', 400);
+        }
+    }
     async findUser(email: User['email'], username: User['username']): Promise<boolean> {
         if (email || username) {
             const conn = await client.connect();

@@ -1,4 +1,4 @@
-import express, { NextFunction, Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import CustomError from './error.utile';
 import dotenv from 'dotenv';
 dotenv.config();
@@ -26,7 +26,8 @@ const sendErrorProd = (err: CustomError, res: Response,) => {
     } else {
         res.status(statusCode).json({
             success: false,
-            message: 'Something went wrong, please contact Admin',
+            message: err.message,
+            stack: err.stack,
         });
     }
 
