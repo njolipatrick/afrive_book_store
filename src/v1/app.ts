@@ -27,8 +27,6 @@ app.use('/testH', (req: Request, res: Response, next: NextFunction) => {
 	}
 });
 
-
-
 app.all('*', (req: Request, res: Response, next: NextFunction) => {
 	const err: ResponseError = new Error(`Route http//:${req.hostname}${req.path} not found `);
 	err.statusCode = 400;

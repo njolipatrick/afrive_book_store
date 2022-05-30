@@ -7,6 +7,7 @@ CREATE TABLE users (
     phone VARCHAR(20),
     isVerified boolean,
     role VARCHAR(10),
+    verification_token VARCHAR(255),
     password VARCHAR(100),
     created_at timestamp default current_timestamp,
     updated_at timestamp default current_timestamp
