@@ -1,9 +1,8 @@
 import client from '../../../config/database';
 import bcrypt from 'bcrypt';
 const { SALT_ROUNDS, pepper, TOKEN_SECRET } = process.env;
-import { sign, verify } from 'jsonwebtoken';
+import { sign } from 'jsonwebtoken';
 import CustomError from '../utile/error.utile';
-import { NextFunction } from 'express';
 import { codeGenerator } from '../utile/generator.util';
 export type User = {
     id?: number;
@@ -20,8 +19,7 @@ export type User = {
 
 class AuthModel {
     async register(user: User): Promise<User> {
-        if (user) {
-
+        try {
             const conn = await client.connect();
             const sql = 'INSERT INTO users (fullname, username, email, password, role, isVerified, phone, verification_token) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *;';
             const hashPassword = await bcrypt.hash(user.password + String(pepper), Number(SALT_ROUNDS));
@@ -50,7 +48,7 @@ class AuthModel {
             user.token = token;
             conn.release();
             return user;
-        } else {
+        } catch (error) {
             throw new CustomError('Internal Server Error', 500);
         }
 
@@ -77,22 +75,25 @@ class AuthModel {
         }
     }
     async verifyEmail(email: User['email'], token: User['verification_token']) {
-        const conn = await client.connect();
-        const sql = 'UPDATE users SET isVerified=$1 WHERE email=$2 AND verification_token=$3';
-        const values = [true, email, token];
-        const res = await conn.query(sql, values);
-        return res.rowCount >= 1 ? true : false;
+        try {
+            const conn = await client.connect();
+            const sql = 'UPDATE users SET isVerified=$1 WHERE email=$2 AND verification_token=';
+            const values = [true, email, token];
+            const res = await conn.query(sql, values);
+            return res.rowCount >= 1 ? true : false;
+        } catch (error) {
+            throw new CustomError(`${error}`, 400);
+        }
     }
     async findUser(email: User['email'], username?: User['username']): Promise<boolean> {
-        if (email || username) {
+        try {
             const conn = await client.connect();
             const sql = 'SELECT * FROM users WHERE email=$1 OR username=$2';
             const values = [email, username];
             const res = await conn.query(sql, values);
 
             return res.rowCount >= 1 ? true : false;
-        }
-        else {
+        } catch (error) {
             throw new CustomError('User not found', 404);
         }
     }

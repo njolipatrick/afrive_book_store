@@ -1,7 +1,6 @@
 
 import AuthModel, { User } from '../model/auth.model';
 import CustomError from '../utile/error.utile';
-import { codeGenerator } from '../utile/generator.util';
 import { sendConfirmationEmail } from '../utile/mailer.utile';
 
 class AuthService {
@@ -42,7 +41,7 @@ class AuthService {
         const { email, token } = data;
         if (!(email && token)) throw new CustomError('User _id or token not provided', 400);
         const findUser = await AuthModel.findUser(email);
-        
+
         if (findUser) {
             const user = await AuthModel.verifyEmail(email, token);
             console.log(findUser);
