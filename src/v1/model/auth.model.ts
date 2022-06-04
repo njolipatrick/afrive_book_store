@@ -1,32 +1,40 @@
 import client from '../../../config/database';
-import bcrypt from 'bcrypt';
-const { SALT_ROUNDS, pepper, TOKEN_SECRET } = process.env;
+const { TOKEN_SECRET } = process.env;
 import { sign } from 'jsonwebtoken';
 import CustomError from '../utile/error.utile';
 import { codeGenerator } from '../utile/generator.util';
+import { PasswordManager } from '../utile/password.manager.utile';
 export type User = {
     id?: number;
     fullname: string;
     username: string;
     email: string;
-    password: string;
+    password: string; //
     role: string;
     isVerified: boolean;
     phone: string;
     token?: string;
     verification_token?: string;
 };
+export type Data = {
+    name: string;
+    username: string;
+    email: string;
+    isVerified?: boolean;
+    token: string;
+}
 
 class AuthModel {
-    async register(user: User): Promise<User> {
+    async register(user: User): Promise<Data> {
         try {
             const conn = await client.connect();
             const sql = 'INSERT INTO users (fullname, username, email, password, role, isVerified, phone, verification_token) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *;';
-            const hashPassword = await bcrypt.hash(user.password + String(pepper), Number(SALT_ROUNDS));
+            const hashPassword = await PasswordManager.hash(user.password);
+
             user.verification_token = codeGenerator(36);
 
             user.password = hashPassword;
-
+            user.isVerified = false;
             const values = [
                 user.fullname,
                 user.username,
@@ -37,6 +45,7 @@ class AuthModel {
                 user.phone,
                 user.verification_token
             ];
+
             const res = await conn.query(sql, values);
             const newUser = res.rows[0];
             const token = sign({
@@ -45,22 +54,32 @@ class AuthModel {
             }, String(TOKEN_SECRET), {
                 expiresIn: '7d'
             });
-            user.token = token;
+
             conn.release();
-            return user;
+            const data = {
+                name: user.fullname,
+                username: user.username,
+                email: user.email,
+                isVerified: user.isVerified,
+                token: token
+            };
+            return data;
         } catch (error) {
-            throw new CustomError('Internal Server Error', 500);
+            throw new CustomError(`${error}`, 500);
         }
 
     }
-    async login(username: User['username'], password: User['password']): Promise<User> {
+    async login(email: User['email'], password: User['password']): Promise<Data> {
         const conn = await client.connect();
-        const sql = 'SELECT * FROM users WHERE username =$1';
-        const result = await conn.query(sql, [username]);
+        const sql = 'SELECT * FROM users WHERE email =$1';
+        const result = await conn.query(sql, [email]);
         const user: User = result.rows[0];
+        console.log(user);
 
-        const encrypt = await bcrypt.compare(password + String(pepper), user.password);
-
+        const encrypt = await PasswordManager.compare(
+            user.password,
+            password
+        );
         if (encrypt) {
             const token = sign({
                 username: user.id,
@@ -69,7 +88,13 @@ class AuthModel {
                 expiresIn: '7d'
             });
             user.token = token;
-            return user;
+            const data = {
+                name: user.fullname,
+                username: user.username,
+                email: user.email,
+                token: token
+            };
+            return data;
         } else {
             throw new CustomError('Username or password is invalid', 400);
         }
@@ -85,16 +110,16 @@ class AuthModel {
             throw new CustomError(`${error}`, 400);
         }
     }
-    async findUser(email: User['email'], username?: User['username']): Promise<boolean> {
+    async findModel(model: string, table: string, value: string): Promise<boolean> {
         try {
+
             const conn = await client.connect();
-            const sql = 'SELECT * FROM users WHERE email=$1 OR username=$2';
-            const values = [email, username];
-            const res = await conn.query(sql, values);
+            const sql = `SELECT * FROM ${model} WHERE ${table}='${value}'`;
+            const res = await conn.query(sql);
 
             return res.rowCount >= 1 ? true : false;
         } catch (error) {
-            throw new CustomError('User not found', 404);
+            throw new CustomError(`${error}`, 404);
         }
     }
 }

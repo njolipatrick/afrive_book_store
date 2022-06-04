@@ -1,11 +1,13 @@
 import express, { Request, Response, Application, NextFunction, urlencoded, json } from 'express';
 import routerV1 from './route/index.router';
 const app: Application = express();
+import respose_time from 'response-time';
 import errorHandler, { ResponseError } from './utile/errorHandler';
 import CustomError from './utile/error.utile';
 
 app.use(json());
 app.use(urlencoded({ extended: true }));
+app.use(respose_time());
 
 
 app.use('/api/v1', routerV1);

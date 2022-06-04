@@ -7,7 +7,7 @@
 
 import { User } from '../model/auth.model';
 
-function response(message: string, data?:any, success?: boolean) {
+function response(message: string, data?: any, success?: boolean) {
     return {
         success: success == null ? true : success,
         message: formatMesaage(message),
