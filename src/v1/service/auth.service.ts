@@ -1,4 +1,5 @@
 
+import Validator from 'validatorjs';
 import AuthModel, { User, Data } from '../model/auth.model';
 import CustomError from '../utile/error.utile';
 import { sendConfirmationEmail } from '../utile/mailer.utile';
@@ -7,11 +8,23 @@ class AuthService {
     async register(data: User): Promise<Data | undefined> {
 
         const { fullname, password, email, username, phone, } = data;
+        const rules = {
+            fullname: 'required',
+            password: 'required',
+            email: 'required|email',
+            username: 'required',
+            phone: 'required',
+        };
 
+        const validation = new Validator(data, rules);
+        if (validation.fails()) {
+            throw new CustomError('There was a problem with your input data', 400);
+        }
         if (!(fullname && username && email && password && phone)) {
             throw new CustomError(`one or more input data not provided. 
             ${email} or ${fullname} or ${username} or ${phone} `, 400);
         }
+
         const findUser = await AuthModel.findModel('users', 'email', email);
 
         if (findUser) {

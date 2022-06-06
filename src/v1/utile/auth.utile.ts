@@ -7,12 +7,12 @@ config();
 const { TOKEN_SECRET } = process.env;
 
 const verifyToken = (req: Request, res: Response, next: NextFunction) => {
-    const token: string =
-        req.body.token || req.query.token || req.headers['x-access-token'];
+    const Authorization = req.headers['authorization'];
+    const token = Authorization && Authorization.split(' ')[1];
+    
+    if (token === null) throw new CustomError('A token is required for authentication', 401);
+    if (!token) throw new CustomError('A token is required for authentication', 401);
 
-    if (!token) {
-        throw new CustomError('A token is required for authentication', 400);
-    }
     try {
         jwt.verify(token, String(TOKEN_SECRET));
 

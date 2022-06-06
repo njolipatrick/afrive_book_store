@@ -2,7 +2,6 @@ import authModel from '../model/auth.model';
 import bookModel, { Book } from '../model/book.model';
 import CustomError from '../utile/error.utile';
 import Validator from 'validatorjs';
-
 class BookService {
     public create = async (data: Book) => {
         const { title, isbn, author, publisher, genre, format, image_link, description, price, status, hasEbook, category, averageRating, eBook } = data;
