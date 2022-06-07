@@ -28,6 +28,24 @@ export const sendConfirmationEmail = async (name: string, email: string, confirm
         </div>`,
         });
     } catch (error) {
-        throw new CustomError(`Email not sent ${error}`, 400);
+        throw new CustomError('Verification email not sent.', 400);
+    }
+};
+export const ResetPasswordEmail = async (email: string, confirmationCode?: string) => {
+    try {
+        await transport.sendMail({
+            from: String(MAILER),
+            to: email,
+            subject: 'Request to change your Password',
+            html: `
+            <div> <h1>Reset your Password</h1>
+            <p>We are sending you this email because you requested to change your password.
+            click on the link to change your password</p>
+            <h3>Code: <strong>${confirmationCode}</strong></h3>
+            <p>Please Pass this as your request body.</p>
+            </div>`,
+        });
+    } catch (error) {
+        throw new CustomError('Reset Password email not sent, please try again.', 400);
     }
 };

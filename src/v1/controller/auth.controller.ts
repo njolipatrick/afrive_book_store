@@ -13,9 +13,12 @@ class AutheticationController {
         res.status(200).json(response('User Logged in Successfully', result));
     });
     public verifyEmail = catchAsync(async (req: Request, res: Response, next: NextFunction): Promise<void | User | undefined> => {
-        const data = { email: req.params.email, token: req.params.token };
-        const result = await authService.verifyEmail(data);
-        res.status(200).json(response('User Logged in Successfully', result));
+        const result = await authService.verifyEmail(req);
+        res.status(200).json(response('User email has be successfully verified', result));
+    });
+    public SendResetPasswordMail = catchAsync(async (req: Request, res: Response, next: NextFunction): Promise<void | User | undefined> => {
+        const result = await authService.SendResetPasswordMail(req);
+        res.status(200).json(response('Password Resent Email Sent Successfully', result));
     });
 }
 

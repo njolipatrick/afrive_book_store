@@ -23,7 +23,7 @@ export type Data = {
     email: string;
     isVerified?: boolean;
     avatar: string;
-    token: string;
+    token?: string;
 }
 
 class AuthModel {
@@ -91,6 +91,7 @@ class AuthModel {
                 expiresIn: '7d'
             });
             user.token = token;
+            conn.release();
             const data = {
                 name: user.fullname,
                 username: user.username,
@@ -103,20 +104,62 @@ class AuthModel {
             throw new CustomError('Username or password is invalid', 400);
         }
     }
-    async verifyEmail(email: User['email'], token: User['verification_token']) {
+    async verifyEmail(email: User['email'], token: User['verification_token']): Promise<boolean> {
         try {
             const conn = await client.connect();
-            const sql = 'UPDATE users SET isVerified=$1 WHERE email=$2 AND verification_token=';
+            const sql = 'UPDATE users SET isVerified=$1 WHERE email=$2 AND verification_token=$3';
             const values = [true, email, token];
             const res = await conn.query(sql, values);
+            conn.release();
             return res.rowCount >= 1 ? true : false;
         } catch (error) {
             throw new CustomError(`${error}`, 400);
         }
     }
+    async SendResetPasswordMail(email: User['email'], token: User['verification_token']): Promise<Data> {
+        try {
+            const conn = await client.connect();
+            const sql = 'UPDATE users SET verification_token=$1 WHERE email=$2 RETURNING *;';
+
+            const values = [token, email];
+            const res = await conn.query(sql, values);
+
+            conn.release();
+
+            const user: User = res.rows[0];
+            const data: Data = {
+                name: user.fullname,
+                username: user.username,
+                email: user.email,
+                avatar: user.avatar
+            };
+            return data;
+        } catch (error) {
+            throw new CustomError(`${error}`, 500);
+        }
+    }
+    async ResetPassword(email: User['email'], token: User['verification_token'], password: User['password']): Promise<Data> {
+        try {
+            const conn = await client.connect();
+            const sql = 'UPDATE users SET password=$1 WHERE email=$2 AND verification_token=$3 RETURNING *;';
+            const hashPassword = await PasswordManager.hash(password);
+            const values = [hashPassword, email, token];
+            const res = await conn.query(sql, values);
+            conn.release();
+            const user: User = res.rows[0];
+            const data: Data = {
+                name: user.fullname,
+                username: user.username,
+                email: user.email,
+                avatar: user.avatar,
+            };
+            return data;
+        } catch (error) {
+            throw new CustomError(`${error}`, 500);
+        }
+    }
     async findModel(model: string, table: string, value: string): Promise<boolean> {
         try {
-
             const conn = await client.connect();
             const sql = `SELECT * FROM ${model} WHERE ${table}='${value}'`;
             const res = await conn.query(sql);
