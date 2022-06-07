@@ -1,22 +1,30 @@
-
+import { Request } from 'express';
 import Validator from 'validatorjs';
 import AuthModel, { User, Data } from '../model/auth.model';
 import CustomError from '../utile/error.utile';
 import { sendConfirmationEmail } from '../utile/mailer.utile';
+import { upload } from '../utile/cloudinary.utile';
 
 class AuthService {
-    async register(data: User): Promise<Data | undefined> {
+    async register(req: Request): Promise<Data | undefined> {
+        const data: User = req.body;
 
-        const { fullname, password, email, username, phone, } = data;
+        const avatar = String(req.file?.path);
+
+        data.avatar = await upload(avatar, 'abs_live_user');
+        console.log(data.avatar);
+
+        const { fullname, password, email, username, phone } = data;
         const rules = {
-            fullname: 'required',
-            password: 'required',
-            email: 'required|email',
-            username: 'required',
-            phone: 'required',
+            fullname: 'required|string',
+            password: 'required|string',
+            email: 'required|email|string',
+            username: 'required|string|min:4',
+            phone: 'required|string',
+            avatar: 'required|string'
         };
-
         const validation = new Validator(data, rules);
+        if (password !== req.body.password_confirmation) throw new CustomError('Password do not match', 409);
         if (validation.fails()) {
             throw new CustomError('There was a problem with your input data', 400);
         }

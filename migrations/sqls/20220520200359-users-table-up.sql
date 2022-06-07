@@ -5,6 +5,7 @@ CREATE TABLE users (
     username VARCHAR(100) UNIQUE,
     email VARCHAR(50) UNIQUE,
     phone VARCHAR(20),
+    avatar VARCHAR(255),
     isVerified boolean,
     role VARCHAR(10),
     verification_token VARCHAR(255),

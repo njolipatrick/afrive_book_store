@@ -9,6 +9,7 @@ export type User = {
     fullname: string;
     username: string;
     email: string;
+    avatar: string;
     password: string; //
     role: string;
     isVerified: boolean;
@@ -21,6 +22,7 @@ export type Data = {
     username: string;
     email: string;
     isVerified?: boolean;
+    avatar: string;
     token: string;
 }
 
@@ -28,7 +30,7 @@ class AuthModel {
     async register(user: User): Promise<Data> {
         try {
             const conn = await client.connect();
-            const sql = 'INSERT INTO users (fullname, username, email, password, role, isVerified, phone, verification_token) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *;';
+            const sql = 'INSERT INTO users (fullname, username, email, avatar, password, role, isVerified, phone, verification_token) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *;';
             const hashPassword = await PasswordManager.hash(user.password);
 
             user.verification_token = codeGenerator(36);
@@ -39,6 +41,7 @@ class AuthModel {
                 user.fullname,
                 user.username,
                 user.email,
+                user.avatar,
                 user.password,
                 user.role,
                 user.isVerified,
@@ -61,6 +64,7 @@ class AuthModel {
                 username: user.username,
                 email: user.email,
                 isVerified: user.isVerified,
+                avatar: user.avatar,
                 token: token
             };
             return data;
@@ -74,7 +78,6 @@ class AuthModel {
         const sql = 'SELECT * FROM users WHERE email =$1';
         const result = await conn.query(sql, [email]);
         const user: User = result.rows[0];
-        console.log(user);
 
         const encrypt = await PasswordManager.compare(
             user.password,
@@ -92,6 +95,7 @@ class AuthModel {
                 name: user.fullname,
                 username: user.username,
                 email: user.email,
+                avatar: user.avatar,
                 token: token
             };
             return data;

@@ -5,7 +5,8 @@ import bookService from '../service/book.service';
 
 class BookController {
     public create = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-        const result = await bookService.create(req.body);
+        const result = await bookService.create(req);
+
         res.status(201).json(response('Book Created, Please verify your email your account', result));
     });
     public index = catchAsync(async (req: Request, res: Response, next: NextFunction) => {

@@ -5,7 +5,7 @@ import { User } from '../model/auth.model';
 import response from '../utile/response.util';
 class AutheticationController {
     public register = catchAsync(async (req: Request, res: Response, next: NextFunction): Promise<void | User | undefined> => {
-        const result = await authService.register(req.body);
+        const result = await authService.register(req);
         res.status(201).json(response('User Created, Please verify your email your account', result));
     });
     public login = catchAsync(async (req: Request, res: Response, next: NextFunction): Promise<void | User | undefined> => {

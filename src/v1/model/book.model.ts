@@ -9,7 +9,7 @@ export type Book = {
     author: string;
     publisher: string;
     genre: string;
-    image_link: string;
+    image_link?: string;
     description: string;
     price: number;
     status: string;
@@ -104,8 +104,8 @@ class BookModel {
             const { title, isbn, author, publisher,
                 genre, image_link, description,
                 status, price, format, hasEbook } = data;
-            
-            const conn = await client.connect(); 
+
+            const conn = await client.connect();
             const sql = 'UPDATE books SET title = $1, isbn = $2, author=$3, publisher=$4, genre=$5, image_link=$6, description=$7, price=$8, format=$9, status=$10 hasEbook=$11  WHERE id = $12';
             const values = [title, isbn, author, publisher, genre, image_link, description, String(price), String(format), status, String(hasEbook)];
             const result = await conn.query(sql, values);
