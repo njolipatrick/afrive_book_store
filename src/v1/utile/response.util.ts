@@ -5,20 +5,16 @@
  * @param {boolean} success Status of the request
  */
 
-import { User } from '../model/auth.model';
-
-function response(message: string, data?: any, success?: boolean) {
+export const response = (message: string, data?: any, success?: boolean) => {
     return {
         success: success == null ? true : success,
-        message: formatMesaage(message),
+        message: formatMessage(message),
         data: data || null
     };
-}
+};
 
-function formatMesaage(str: string): string {
+export const formatMessage = (str: string): string => {
     if (!str) return '';
     // Make first letter capitial
     return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
-export default response;
+};

@@ -16,13 +16,14 @@ export type User = {
     phone: string;
     token?: string;
     verification_token?: string;
+    password_confirmation?: string;
 };
 export type Data = {
-    name: string;
-    username: string;
-    email: string;
+    name?: string;
+    username?: string;
+    email?: string;
     isVerified?: boolean;
-    avatar: string;
+    avatar?: string;
     token?: string;
 }
 
@@ -128,10 +129,7 @@ class AuthModel {
 
             const user: User = res.rows[0];
             const data: Data = {
-                name: user.fullname,
-                username: user.username,
                 email: user.email,
-                avatar: user.avatar
             };
             return data;
         } catch (error) {
@@ -141,19 +139,27 @@ class AuthModel {
     async ResetPassword(email: User['email'], token: User['verification_token'], password: User['password']): Promise<Data> {
         try {
             const conn = await client.connect();
-            const sql = 'UPDATE users SET password=$1 WHERE email=$2 AND verification_token=$3 RETURNING *;';
-            const hashPassword = await PasswordManager.hash(password);
-            const values = [hashPassword, email, token];
-            const res = await conn.query(sql, values);
-            conn.release();
-            const user: User = res.rows[0];
-            const data: Data = {
-                name: user.fullname,
-                username: user.username,
-                email: user.email,
-                avatar: user.avatar,
-            };
-            return data;
+            let sql = 'SELECT * FROM users WHERE email =$1';
+            let values = [email];
+            const result = await conn.query(sql, values);
+            const checkToken = result.rows[0].verification_token;
+            if (checkToken === token) {
+                sql = 'UPDATE users SET password=$1 WHERE email=$2 AND verification_token=$3 RETURNING *;';
+                const hashPassword = await PasswordManager.hash(password);
+                values = [hashPassword, email, String(token)];
+                const res = await conn.query(sql, values);
+                conn.release();
+                const user: User = res.rows[0];
+                const data: Data = {
+                    name: user.fullname,
+                    username: user.username,
+                    email: user.email,
+                    avatar: user.avatar,
+                };
+                return data;
+            } else {
+                throw Error('Token provided was invalid');
+            }
         } catch (error) {
             throw new CustomError(`${error}`, 500);
         }

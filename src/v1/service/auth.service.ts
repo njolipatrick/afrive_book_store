@@ -2,10 +2,10 @@ import { Request } from 'express';
 import Validator from 'validatorjs';
 import AuthModel, { User, Data } from '../model/auth.model';
 import CustomError from '../utile/error.utile';
-import { sendConfirmationEmail, ResetPasswordEmail } from '../utile/mailer.utile';
+import { sendConfirmationEmail, ResetPasswordEmail, SuccessPasswordChange } from '../utile/mailer.utile';
 import { upload } from '../utile/cloudinary.utile';
 import authModel from '../model/auth.model';
-import { codeGenerator } from '../utile/generator.util';
+import { codeGenerator } from '../utile/generator.util'; 
 
 class AuthService {
     async register(req: Request): Promise<Data | undefined> {
@@ -15,24 +15,20 @@ class AuthService {
 
         data.avatar = await upload(avatar, 'abs_live_user');
 
-        const { fullname, password, email, username, phone } = data;
+        const { fullname, password, email, username, phone, password_confirmation } = data;
         const rules = {
             fullname: 'required|string',
-            password: 'required|string',
-            password_confirmation: 'required|string',
+            password: 'required|string|min:8',
+            password_confirmation: 'required|string|min:8',
             email: 'required|email|string',
             username: 'required|string|min:4',
             phone: 'required|string',
             avatar: 'required|string',
         };
         const validation = new Validator(data, rules);
-        if (password !== req.body.password_confirmation) throw new CustomError('Password do not match', 409);
+        if (password !== password_confirmation) throw new CustomError('Password do not match with confirm password.', 409);
         if (validation.fails()) {
             throw new CustomError('There was a problem with your input data', 400);
-        }
-        if (!(fullname && username && email && password && phone)) {
-            throw new CustomError(`one or more input data not provided. 
-            ${email} or ${fullname} or ${username} or ${phone} `, 400);
         }
 
         const findUser = await AuthModel.findModel('users', 'email', email);
@@ -94,6 +90,24 @@ class AuthService {
 
         const user: Data = await authModel.SendResetPasswordMail(email, token);
 
+        return user;
+    }
+    async ResetPassword(req: Request): Promise<Data> {
+        const data = req.body;
+        const { email, token, password, password_confirmation } = data;
+        const rules = {
+            email: 'required|email|string',
+            token: 'required|string|min:8',
+            password: 'required|string|min:8',
+            password_confirmation: 'required|string:min:8',
+        };
+
+        const validation = new Validator(data, rules);
+        if (validation.fails()) throw new CustomError('There was a problem with your input data', 400);
+        if (password !== password_confirmation) throw new CustomError('Password do not match with confirm password.', 409);
+
+        const user: Data = await AuthModel.ResetPassword(email, token, password);
+        await SuccessPasswordChange(email, user.name);
         return user;
     }
 }
