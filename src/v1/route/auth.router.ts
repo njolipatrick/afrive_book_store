@@ -4,6 +4,9 @@ import authController from '../controller/auth.controller';
 import upload from '../utile/multer.utile';
 const auth = Router();
 
+
+auth.get('/google-login-url', authController.googleAuthURL);
+auth.post('/google-login', authController.googleAuthUser);
 auth.post('/register', upload.single('avatar'), authController.register);
 auth.post('/login', authController.login);
 auth.get('/verify/:email/:token', authController.verifyEmail);

@@ -5,9 +5,38 @@ import CustomError from '../utile/error.utile';
 import { sendConfirmationEmail, ResetPasswordEmail, SuccessPasswordChange } from '../utile/mailer.utile';
 import { upload } from '../utile/cloudinary.utile';
 import authModel from '../model/auth.model';
-import { codeGenerator } from '../utile/generator.util'; 
+import { codeGenerator } from '../utile/generator.util';
+import globalModel from '../model/global.model';
+import { getGoogleAuthURL, getTokens } from '../utile/google.auth';
+import axios from 'axios';
+
+//export to a seperate file
+import { OAuth2Client } from 'google-auth-library';
+import dotenv from 'dotenv';
+dotenv.config();
+const client = new OAuth2Client(String(process.env.GOOGLE_CLIENT_ID));
 
 class AuthService {
+    async googleAuthURL(req: Request) {
+        return getGoogleAuthURL();
+
+    }
+    async googleAuthUser(req: Request) {
+
+        const { id_token, access_token } = await getTokens(req);
+
+        // Fetch the user's profile with the access token and bearer
+        const googleUser = await axios.get(
+            `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${access_token}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${id_token}`,
+                },
+            }
+        );
+
+        return googleUser;
+    }
     async register(req: Request): Promise<Data | undefined> {
         const data: User = req.body;
 
@@ -31,7 +60,7 @@ class AuthService {
             throw new CustomError('There was a problem with your input data', 400);
         }
 
-        const findUser = await AuthModel.findModel('users', 'email', email);
+        const findUser = await globalModel.CHECKMODEL('users', 'email', email);
         if (findUser) throw new CustomError(`User with ${email} or ${username} already exist, please login`, 400);
 
         const user: Data = await AuthModel.register(data);
@@ -43,7 +72,7 @@ class AuthService {
         if (!email) throw new CustomError('Input field email is required', 400);
         if (!password) throw new CustomError('Input field password is required', 400);
 
-        const findUser = await AuthModel.findModel('users', 'email', email);
+        const findUser = await globalModel.CHECKMODEL('users', 'email', email);
         if (findUser) {
 
             const user: Data | undefined = await AuthModel.login(email, password);
@@ -57,7 +86,7 @@ class AuthService {
     async verifyEmail(req: Request) {
         const { email, token } = req.params;
         if (!(email && token)) throw new CustomError('User _id or token not provided', 400);
-        const findUser = await AuthModel.findModel('users', 'email', email);
+        const findUser = await globalModel.CHECKMODEL('users', 'email', email);
 
         if (findUser) {
             const user = await AuthModel.verifyEmail(email, token);
@@ -81,7 +110,7 @@ class AuthService {
         const validation = new Validator(data, rules);
         if (validation.fails()) throw new CustomError(validation.errors.first('email'), 400);
 
-        const findUser = await AuthModel.findModel('users', 'email', email);
+        const findUser = await globalModel.CHECKMODEL('users', 'email', email);
         if (!findUser) throw new CustomError(`User with ${email} not found.`, 400);
 
         const token = codeGenerator(36);
@@ -110,6 +139,7 @@ class AuthService {
         await SuccessPasswordChange(email, user.name);
         return user;
     }
+
 }
 export default new AuthService;
 

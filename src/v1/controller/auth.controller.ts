@@ -2,8 +2,16 @@ import { NextFunction, Request, Response } from 'express';
 import authService from '../service/auth.service';
 import catchAsync from '../utile/catchAsync';
 import { User } from '../model/auth.model';
-import {response} from '../utile/response.util';
+import { response } from '../utile/response.util';
 class AutheticationController {
+    public googleAuthURL = catchAsync(async (req: Request, res: Response, next: NextFunction): Promise<void | User | undefined> => {
+        const result = await authService.googleAuthURL(req);
+        res.status(201).json(response('Google Authentication URL sent', result));
+    });
+    public googleAuthUser = catchAsync(async (req: Request, res: Response, next: NextFunction): Promise<void | User | undefined> => {
+        const result = await authService.googleAuthUser(req);
+        res.status(201).json(response('Google User', result));
+    });
     public register = catchAsync(async (req: Request, res: Response, next: NextFunction): Promise<void | User | undefined> => {
         const result = await authService.register(req);
         res.status(201).json(response('User Created, Please verify your email your account', result));
