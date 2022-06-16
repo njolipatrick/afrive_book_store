@@ -164,16 +164,5 @@ class AuthModel {
             throw new CustomError(`${error}`, 500);
         }
     }
-    async findModel(model: string, table: string, value: string): Promise<boolean> {
-        try {
-            const conn = await client.connect();
-            const sql = `SELECT * FROM ${model} WHERE ${table}='${value}'`;
-            const res = await conn.query(sql);
-
-            return res.rowCount >= 1 ? true : false;
-        } catch (error) {
-            throw new CustomError(`${error}`, 404);
-        }
-    }
 }
 export default new AuthModel;

@@ -12,5 +12,5 @@ cloudinary.config({
 });
 export const upload = async (path: string, preset: string): Promise<string> => {
     const uploader = await cloudinary.uploader.upload(path, { upload_preset: preset });
-    return uploader.asset_id;
+    return uploader.secure_url;
 };

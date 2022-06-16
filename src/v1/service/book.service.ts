@@ -1,9 +1,9 @@
-import authModel, { User } from '../model/auth.model';
 import bookModel, { Book } from '../model/book.model';
 import CustomError from '../utile/error.utile';
 import Validator from 'validatorjs';
 import { Request } from 'express';
 import { upload } from '../utile/cloudinary.utile';
+import globalModel from '../model/global.model';
 class BookService {
     public create = async (req: Request) => {
         const data: Book = req.body;
@@ -28,10 +28,10 @@ class BookService {
         }
 
         const { isbn, author } = data;
-        const findBook = await authModel.findModel('BOOKS', 'isbn', isbn);
+        const findBook = await globalModel.CHECKMODEL('BOOKS', 'isbn', isbn);
         if (findBook) throw new CustomError(`Book with ${isbn} already exist`, 400);
 
-        const findAuthor = await authModel.findModel('BOOKS', 'author', author);
+        const findAuthor = await globalModel.CHECKMODEL('BOOKS', 'author', author);
         if (findAuthor) throw new CustomError(`Book with ${author} already exist`, 400);
 
         const book = await bookModel.create(data);
@@ -43,7 +43,7 @@ class BookService {
         return book;
     };
     public show = async (id: string) => {
-        const findBook = await authModel.findModel('BOOKS', 'id', id);
+        const findBook = await globalModel.CHECKMODEL('BOOKS', 'id', id);
         if (!findBook) {
             throw new CustomError(`Book with ${id} does not exist`, 404);
         }
@@ -51,7 +51,7 @@ class BookService {
         return book;
     };
     public update = async (id: string, data: Book) => {
-        const findBook = await authModel.findModel('BOOKS', 'id', id);
+        const findBook = await globalModel.CHECKMODEL('BOOKS', 'id', id);
         if (!findBook) {
             throw new CustomError(`Book with ${id} does not exist`, 404);
         }
@@ -59,7 +59,7 @@ class BookService {
         return book;
     };
     public destroy = async (id: string) => {
-        const findBook = await authModel.findModel('BOOKS', 'id', id);
+        const findBook = await globalModel.CHECKMODEL('BOOKS', 'id', id);
         if (!findBook) {
             throw new CustomError(`Book with ${id} does not exist`, 404);
         }

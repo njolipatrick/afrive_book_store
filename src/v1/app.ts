@@ -5,17 +5,16 @@ import respose_time from 'response-time';
 import errorHandler, { ResponseError } from './utile/errorHandler';
 import CustomError from './utile/error.utile';
 
+
 app.use(json());
 app.use(urlencoded({ extended: true }));
-app.use(respose_time());
-
-
-app.use('/api/v1', routerV1);
+// app.use(respose_time());
 
 app.use('/test', (req: Request, res: Response) => {
 	res.status(200).json({ status: 'ok', success: true });
 });
 
+app.use('/api/v1', routerV1);
 //test error handler
 app.use('/testH', (req: Request, res: Response, next: NextFunction) => {
 	try {

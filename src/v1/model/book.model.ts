@@ -1,6 +1,6 @@
 import client from '../../../config/database';
-import book from '../route/book.router';
 import CustomError from '../utile/error.utile';
+import globalModel from './global.model';
 
 export type Book = {
     id: number;
@@ -21,7 +21,6 @@ export type Book = {
         status: string;
         format?: string[];
     },
-
 }
 class BookModel {
 
@@ -63,10 +62,8 @@ class BookModel {
             const conn = await client.connect();
             const sql = 'SELECT * FROM books ORDER BY id DESC;';
             const res = await conn.query(sql);
-            console.log(res.rowCount);
 
             const books = res.rows;
-            console.log('kk');
 
             return books;
         } catch (error) {
@@ -114,14 +111,10 @@ class BookModel {
             throw new CustomError(`${error}`, 500);
         }
     };
-    public destroy = async (id: number) => {
+    public destroy = async (book_id: number) => {
         try {
-            const conn = await client.connect();
-            const sql = 'DELETE FROM books WHERE id=$1;';
-            const values = [id];
-            const res = await conn.query(sql, values);
-
-            return res.rowCount >= 1 ? true : false;
+            const destroy = await globalModel.Destroy(book_id);
+            return destroy ? destroy : false;
         } catch (error) {
             throw new CustomError('Internal Server Error', 500);
         }

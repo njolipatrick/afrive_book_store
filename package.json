@@ -1,5 +1,6 @@
 {
 	"name": "afrive_book_store",
+	"proxy": "http://127.0.0.1:5000/",
 	"version": "1.0.0",
 	"description": "Afrive is a digital solution which allows users shop for books from various African authors across different genres. It also allows users write book reviews and make book recommendations. Everything a book lover needs in one platform.",
 	"main": "src/server.ts",
@@ -29,12 +30,15 @@
 	"dependencies": {
 		"@types/multer": "^1.4.7",
 		"@types/validatorjs": "^3.15.0",
+		"axios": "^0.27.2",
 		"cloudinary": "^1.30.0",
 		"cors": "^2.8.5",
 		"db-migrate": "^0.11.13",
 		"db-migrate-pg": "^1.2.2",
 		"dotenv": "^16.0.1",
 		"express": "^4.18.1",
+		"google-auth-library": "^8.0.2",
+		"googleapis": "^103.0.0",
 		"http-errors": "^2.0.0",
 		"jsonwebtoken": "^8.5.1",
 		"multer": "^1.4.5-lts.1",

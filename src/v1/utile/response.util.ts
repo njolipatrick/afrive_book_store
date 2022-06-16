@@ -9,6 +9,7 @@ export const response = (message: string, data?: any, success?: boolean) => {
     return {
         success: success == null ? true : success,
         message: formatMessage(message),
+        count: typeof (data) === 'object' ? data.length : undefined,
         data: data || null
     };
 };
