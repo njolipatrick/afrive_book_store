@@ -2,13 +2,14 @@ import { Request } from 'express';
 import Validator from 'validatorjs';
 import AuthModel, { User, Data } from '../model/auth.model';
 import CustomError from '../utile/error.utile';
-import { sendConfirmationEmail, ResetPasswordEmail, SuccessPasswordChange } from '../utile/mailer.utile';
+import { sendConfirmationEmail, ResetPasswordEmail, SuccessPasswordChange, sendWelcomeEmail } from '../utile/mailer.utile';
 import { upload } from '../utile/cloudinary.utile';
 import authModel from '../model/auth.model';
-import { codeGenerator } from '../utile/generator.util';
+import { codeGenerator, slugify } from '../utile/generator.util';
 import globalModel from '../model/global.model';
 import { getGoogleAuthURL, getTokens } from '../utile/google.auth';
-import axios from 'axios';
+const { TOKEN_SECRET } = process.env;
+import { sign } from 'jsonwebtoken';
 
 //export to a seperate file
 import { OAuth2Client } from 'google-auth-library';
@@ -19,23 +20,48 @@ const client = new OAuth2Client(String(process.env.GOOGLE_CLIENT_ID));
 class AuthService {
     async googleAuthURL(req: Request) {
         return getGoogleAuthURL();
-
     }
-    async googleAuthUser(req: Request) {
+    async googleAuthUserSignUp(req: Request) {
 
-        const { id_token, access_token } = await getTokens(req);
+        const { name, email, picture } = await getTokens(req);
 
-        // Fetch the user's profile with the access token and bearer
-        const googleUser = await axios.get(
-            `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${access_token}`,
-            {
-                headers: {
-                    Authorization: `Bearer ${id_token}`,
-                },
-            }
-        );
+        const checkUser = await globalModel.CHECKMODEL('USERS', 'email', email);
+        if (checkUser) {
+            const user: User = await globalModel.FINDONE('USERS', 'email', email);
 
-        return googleUser;
+            const token = sign({
+                username: user.id,
+                password: user.username,
+                role: user.role
+            }, String(TOKEN_SECRET), {
+                expiresIn: '7d'
+            });
+
+            const data = {
+                name: user.fullname,
+                username: user.username,
+                email: user.email,
+                isVerified: user.isVerified,
+                avatar: user.avatar,
+                token: token
+            };
+            return data;
+        } else {
+            const randomUserCode = codeGenerator(36);
+            const data: User = {
+                fullname: name,
+                email: email + randomUserCode,
+                username: slugify(name) + randomUserCode,
+                avatar: await upload(picture, 'abs_live_user'),
+                password: '',
+                role: 'user',
+                isVerified: true,
+                phone: ''
+            };
+            const user: Data = await AuthModel.googleAuthUserSignUp(data);
+            await sendWelcomeEmail(data.fullname, email);
+            return user;
+        }
     }
     async register(req: Request): Promise<Data | undefined> {
         const data: User = req.body;
@@ -61,7 +87,7 @@ class AuthService {
         }
 
         const findUser = await globalModel.CHECKMODEL('users', 'email', email);
-        if (findUser) throw new CustomError(`User with ${email} or ${username} already exist, please login`, 400);
+        if (findUser) throw new CustomError(`User with ${email} already exist, please login`, 400);
 
         const user: Data = await AuthModel.register(data);
         await sendConfirmationEmail(fullname, email, user.token);

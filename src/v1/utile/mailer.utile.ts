@@ -32,6 +32,20 @@ export const sendConfirmationEmail = async (name: string, email: string, confirm
         throw new CustomError('Verification email not sent.', 400);
     }
 };
+export const sendWelcomeEmail = async (name: string, email: string) => {
+    try {
+        await transport.sendMail({
+            from: String(MAILER),
+            to: email,
+            subject: 'Please confirm your account',
+            html: `<h1>Email Confirmation</h1>
+        <h2>Hello ${formatMessage(String(name))}</h2>
+        <p>Welcome to Afrive Book Store</p>`
+        });
+    } catch (error) {
+        throw new CustomError('Verification email not sent.', 400);
+    }
+};
 export const ResetPasswordEmail = async (email: string, confirmationCode?: string) => {
     try {
         await transport.sendMail({

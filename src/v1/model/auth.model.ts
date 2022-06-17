@@ -10,10 +10,10 @@ export type User = {
     username: string;
     email: string;
     avatar: string;
-    password: string; //
-    role: string;
-    isVerified: boolean;
-    phone: string;
+    password?: string; //
+    role?: string;
+    isVerified?: boolean;
+    phone?: string;
     token?: string;
     verification_token?: string;
     password_confirmation?: string;
@@ -28,11 +28,53 @@ export type Data = {
 }
 
 class AuthModel {
+    async googleAuthUserSignUp(user: User): Promise<Data> {
+        try {
+            const conn = await client.connect();
+            const sql = 'INSERT INTO users (fullname, username, email, avatar, role, isVerified, phone, verification_token) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *;';
+            console.log(user);
+            
+            const values = [
+                user.fullname,
+                user.username,
+                user.email,
+                user.avatar,
+                user.role,
+                user.isVerified,
+                user.phone,
+                user.verification_token
+            ];
+
+            const res = await conn.query(sql, values);
+            const newUser = res.rows[0];
+            const token = sign({
+                username: newUser.id,
+                password: newUser.username,
+                role: newUser.role
+            }, String(TOKEN_SECRET), {
+                expiresIn: '7d'
+            });
+
+            conn.release();
+            const data = {
+                name: user.fullname,
+                username: user.username,
+                email: user.email,
+                isVerified: user.isVerified,
+                avatar: user.avatar,
+                token: token
+            };
+            return data;
+        } catch (error) {
+            throw new CustomError(`${error}`, 500);
+        }
+
+    }
     async register(user: User): Promise<Data> {
         try {
             const conn = await client.connect();
             const sql = 'INSERT INTO users (fullname, username, email, avatar, password, role, isVerified, phone, verification_token) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *;';
-            const hashPassword = await PasswordManager.hash(user.password);
+            const hashPassword = await PasswordManager.hash(String(user.password));
 
             user.verification_token = codeGenerator(36);
 
@@ -54,7 +96,8 @@ class AuthModel {
             const newUser = res.rows[0];
             const token = sign({
                 username: newUser.id,
-                password: newUser.username
+                password: newUser.username,
+                role: newUser.role
             }, String(TOKEN_SECRET), {
                 expiresIn: '7d'
             });
@@ -81,13 +124,14 @@ class AuthModel {
         const user: User = result.rows[0];
 
         const encrypt = await PasswordManager.compare(
-            user.password,
-            password
+            String(user.password),
+            String(password)
         );
         if (encrypt) {
             const token = sign({
                 username: user.id,
-                password: user.username
+                password: user.username,
+                role: user.role
             }, String(TOKEN_SECRET), {
                 expiresIn: '7d'
             });
@@ -145,7 +189,7 @@ class AuthModel {
             const checkToken = result.rows[0].verification_token;
             if (checkToken === token) {
                 sql = 'UPDATE users SET password=$1 WHERE email=$2 AND verification_token=$3 RETURNING *;';
-                const hashPassword = await PasswordManager.hash(password);
+                const hashPassword = await PasswordManager.hash(String(password));
                 values = [hashPassword, email, String(token)];
                 const res = await conn.query(sql, values);
                 conn.release();

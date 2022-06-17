@@ -36,7 +36,7 @@ export function getGoogleAuthURL() {
 }
 
 
-export async function getTokens(req: Request): Promise<Result> {
+export async function getTokens(req: Request) {
     try {
         /*
         * Uses the code to get tokens
@@ -52,11 +52,22 @@ export async function getTokens(req: Request): Promise<Result> {
             redirect_uri: SERVER_ROOT_URI,
         };
         const client = new OAuth2Client(String(process.env.GOOGLE_CLIENT_ID), String(process.env.GOOGLE_CLIENT_SECRET), SERVER_ROOT_URI);
-        const r = await client.getToken(code);
-        console.log(r);
-        const { data } = await axios({ url: urld, data: values, method: 'POST' });
+        const { res } = await client.getToken(code);
 
-        return data;
+        const data = {
+            id_token: res?.data.id_token as string,
+            access_token: res?.data.access_token as string
+        };
+        const googleUser = await axios.get(
+            `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${data.access_token}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${data.id_token}`,
+                },
+            }
+        );
+
+        return googleUser.data;
     } catch (error) {
         throw new CustomError(`${error}`, 500);
     }

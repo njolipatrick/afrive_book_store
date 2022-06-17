@@ -9,7 +9,7 @@ class AutheticationController {
         res.status(201).json(response('Google Authentication URL sent', result));
     });
     public googleAuthUser = catchAsync(async (req: Request, res: Response, next: NextFunction): Promise<void | User | undefined> => {
-        const result = await authService.googleAuthUser(req);
+        const result = await authService.googleAuthUserSignUp(req);
         res.status(201).json(response('Google User', result));
     });
     public register = catchAsync(async (req: Request, res: Response, next: NextFunction): Promise<void | User | undefined> => {
