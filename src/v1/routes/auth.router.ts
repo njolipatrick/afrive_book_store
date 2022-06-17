@@ -12,7 +12,7 @@ auth.post('/login', authController.login);
 auth.get('/verify/:email/:token', authController.verifyEmail);
 auth.post('/send-reset-password-link', authController.SendResetPasswordMail);
 auth.post('/reset-password', authController.ResetPassword);
-auth.post('/test', verifyToken, (req, res, next) => {
+auth.post('/test', verifyToken, (req, res) => {
     res.status(200).json({ message: 'Ok' });
 });
 
