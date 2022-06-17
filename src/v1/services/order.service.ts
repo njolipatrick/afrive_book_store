@@ -1,6 +1,6 @@
-import globalModel from '../model/global.model';
-import orderModel, { Order, OrderDetails } from '../model/order.model';
-import CustomError from '../utile/error.utile';
+import globalModel from '../models/global.model';
+import orderModel, { Order, OrderDetails } from '../models/order.model';
+import CustomError from '../utiles/error.utile';
 import Validator from 'validatorjs';
 import { Request } from 'express';
 

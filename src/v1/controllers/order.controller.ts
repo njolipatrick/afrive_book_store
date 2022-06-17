@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
-import { response } from '../utile/response.util';
-import catchAsync from '../utile/catchAsync';
-import orderService from '../service/order.service';
+import { response } from '../utiles/response.util';
+import catchAsync from '../utiles/catchAsync';
+import orderService from '../services/order.service';
 
 class OrderController {
     public create = catchAsync(async (req: Request, res: Response, next: NextFunction) => {

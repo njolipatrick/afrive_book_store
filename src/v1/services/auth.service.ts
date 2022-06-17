@@ -1,21 +1,15 @@
 import { Request } from 'express';
 import Validator from 'validatorjs';
-import AuthModel, { User, Data } from '../model/auth.model';
-import CustomError from '../utile/error.utile';
-import { sendConfirmationEmail, ResetPasswordEmail, SuccessPasswordChange, sendWelcomeEmail } from '../utile/mailer.utile';
-import { upload } from '../utile/cloudinary.utile';
-import authModel from '../model/auth.model';
-import { codeGenerator, slugify } from '../utile/generator.util';
-import globalModel from '../model/global.model';
-import { getGoogleAuthURL, getTokens } from '../utile/google.auth';
+import AuthModel, { User, Data } from '../models/auth.model';
+import CustomError from '../utiles/error.utile';
+import { sendConfirmationEmail, ResetPasswordEmail, SuccessPasswordChange, sendWelcomeEmail } from '../utiles/mailer.utile';
+import { upload } from '../utiles/cloudinary.utile';
+import authModel from '../models/auth.model';
+import { codeGenerator, slugify } from '../utiles/generator.util';
+import globalModel from '../models/global.model';
+import { getGoogleAuthURL, getTokens } from '../utiles/google.auth';
 const { TOKEN_SECRET } = process.env;
 import { sign } from 'jsonwebtoken';
-
-//export to a seperate file
-import { OAuth2Client } from 'google-auth-library';
-import dotenv from 'dotenv';
-dotenv.config();
-const client = new OAuth2Client(String(process.env.GOOGLE_CLIENT_ID));
 
 class AuthService {
     async googleAuthURL(req: Request) {

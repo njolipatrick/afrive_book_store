@@ -1,5 +1,5 @@
 import client from '../../../config/database';
-import CustomError from '../utile/error.utile';
+import CustomError from '../utiles/error.utile';
 
 class GlobalQuery {
     async CHECKMODEL(model: string, table: string, value: string): Promise<boolean> {

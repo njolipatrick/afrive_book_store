@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import verifyToken from '../utile/auth.utile';
-import authController from '../controller/auth.controller';
-import upload from '../utile/multer.utile';
+import verifyToken from '../utiles/auth.utile';
+import authController from '../controllers/auth.controller';
+import upload from '../utiles/multer.utile';
 const auth = Router();
 
 

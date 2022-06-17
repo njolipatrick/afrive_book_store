@@ -1,14 +1,16 @@
 import express, { Request, Response, Application, NextFunction, urlencoded, json } from 'express';
-import routerV1 from './route/index.router';
+import routerV1 from './routes/index.router';
 const app: Application = express();
-import respose_time from 'response-time';
-import errorHandler, { ResponseError } from './utile/errorHandler';
-import CustomError from './utile/error.utile';
+import errorHandler, { ResponseError } from './utiles/errorHandler';
+import CustomError from './utiles/error.utile';
+import apicache from 'apicache';
 
+const cache = apicache.middleware;
+
+app.use(cache('1 minutes'));
 
 app.use(json());
 app.use(urlencoded({ extended: true }));
-// app.use(respose_time());
 
 app.use('/test', (req: Request, res: Response) => {
 	res.status(200).json({ status: 'ok', success: true });

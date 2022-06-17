@@ -1,5 +1,5 @@
 import client from '../../../config/database';
-import CustomError from '../utile/error.utile';
+import CustomError from '../utiles/error.utile';
 import globalModel from './global.model';
 
 export type Book = {

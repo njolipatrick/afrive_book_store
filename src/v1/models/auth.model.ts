@@ -1,9 +1,9 @@
 import client from '../../../config/database';
 const { TOKEN_SECRET } = process.env;
 import { sign } from 'jsonwebtoken';
-import CustomError from '../utile/error.utile';
-import { codeGenerator } from '../utile/generator.util';
-import { PasswordManager } from '../utile/password.manager.utile';
+import CustomError from '../utiles/error.utile';
+import { codeGenerator } from '../utiles/generator.util';
+import { PasswordManager } from '../utiles/password.manager.utile';
 export type User = {
     id?: number;
     fullname: string;

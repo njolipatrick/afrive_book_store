@@ -1,5 +1,5 @@
-import bookController from '../controller/book.controller';
-import upload from '../utile/multer.utile';
+import bookController from '../controllers/book.controller';
+import upload from '../utiles/multer.utile';
 import { Router } from 'express';
 
 const book = Router();

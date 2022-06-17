@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
-import authService from '../service/auth.service';
-import catchAsync from '../utile/catchAsync';
-import { User } from '../model/auth.model';
-import { response } from '../utile/response.util';
+import authService from '../services/auth.service';
+import catchAsync from '../utiles/catchAsync';
+import { User } from '../models/auth.model';
+import { response } from '../utiles/response.util';
 class AutheticationController {
     public googleAuthURL = catchAsync(async (req: Request, res: Response, next: NextFunction): Promise<void | User | undefined> => {
         const result = await authService.googleAuthURL(req);

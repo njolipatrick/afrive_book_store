@@ -1,9 +1,9 @@
-import bookModel, { Book } from '../model/book.model';
-import CustomError from '../utile/error.utile';
+import bookModel, { Book } from '../models/book.model';
+import CustomError from '../utiles/error.utile';
 import Validator from 'validatorjs';
 import { Request } from 'express';
-import { upload } from '../utile/cloudinary.utile';
-import globalModel from '../model/global.model';
+import { upload } from '../utiles/cloudinary.utile';
+import globalModel from '../models/global.model';
 class BookService {
     public create = async (req: Request) => {
         const data: Book = req.body;

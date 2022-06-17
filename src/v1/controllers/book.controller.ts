@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
-import { response } from '../utile/response.util';
-import catchAsync from '../utile/catchAsync';
-import bookService from '../service/book.service';
+import { response } from '../utiles/response.util';
+import catchAsync from '../utiles/catchAsync';
+import bookService from '../services/book.service';
 
 class BookController {
     public create = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
