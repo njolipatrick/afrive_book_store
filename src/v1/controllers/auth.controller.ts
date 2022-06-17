@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from 'express';
+import { Request, Response } from 'express';
 import authService from '../services/auth.service';
 import catchAsync from '../utiles/catchAsync';
 import { User } from '../models/auth.model';
@@ -6,11 +6,11 @@ import { response } from '../utiles/response.util';
 class AutheticationController {
     public googleAuthURL = catchAsync(async (req: Request, res: Response): Promise<void | User | undefined> => {
         const result = await authService.googleAuthURL(req);
-        res.status(201).json(response('Google Authentication URL sent', result));
+        res.status(201).json(response('Google Authentication URL Sent', result));
     });
     public googleAuthUser = catchAsync(async (req: Request, res: Response): Promise<void | User | undefined> => {
         const result = await authService.googleAuthUserSignUp(req);
-        res.status(201).json(response('Google User', result));
+        res.status(201).json(response('User Logged in Successfully', result));
     });
     public register = catchAsync(async (req: Request, res: Response): Promise<void | User | undefined> => {
         const result = await authService.register(req);
