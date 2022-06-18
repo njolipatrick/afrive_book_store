@@ -1,27 +1,30 @@
 import dotenv from 'dotenv';
-import { Pool } from 'pg';
+import { Pool, PoolConfig } from 'pg';
 
 dotenv.config();
 
 const {
   POSTGRES_HOST,
-  POSTGRES_DB,
+  POSTGRES_HOST_PROD,
   POSTGRES_DEV_DB,
+  POSTGRES_DB_PROD,
+  POSTGRES_USER_PROD,
   POSTGRES_TEST_DB,
+  POSTGRES_PASSWORD_PROD,
   POSTGRES_USER,
   POSTGRES_PASSWORD,
-  NODE_ENV,
+  NODE_ENV
 } = process.env;
 
 let client: Pool;
 
+
+
 if (NODE_ENV === 'production') {
   console.log('::server in production mode');
+  const connectionString = String(process.env.DATABASE_URL);
   client = new Pool({
-    host: POSTGRES_HOST,
-    database: POSTGRES_DB,
-    user: POSTGRES_USER,
-    password: POSTGRES_PASSWORD,
+    connectionString
   });
 } else if (NODE_ENV === 'test') {
   console.log('::server in test mode');
