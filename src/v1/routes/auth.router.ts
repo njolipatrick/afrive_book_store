@@ -11,7 +11,7 @@ auth.post('/login', authController.login);
 auth.get('/verify/:email/:token', authController.verifyEmail);
 auth.post('/send-reset-password-link', authController.SendResetPasswordMail);
 auth.post('/reset-password', authController.ResetPassword);
-auth.post('/test', (req, res) => {
+auth.get('/test', (req, res) => {
     res.status(200).json({ message: 'Ok' });
 });
 
