@@ -31,40 +31,44 @@ class AuthService {
             });
 
             const data = {
-                name: user.fullname,
+                firstname: user.firstname,
+                lastname: user.lastname,
                 username: user.username,
                 email: user.email,
-                isVerified: user.isVerified,
+                isverified: user.isverified,
                 token: token
             };
             return data;
         } else {
             const randomUserCode = codeGenerator(36);
+            const name = 'Njoli Patrick';
+            const newName = name.split(' ');
+
             const data: User = {
-                fullname: name,
+                firstname: newName[0],
+                lastname: newName[1],
                 email: email + randomUserCode,
                 username: slugify(name) + randomUserCode,
                 password: '',
                 role: 'user',
-                isVerified: true,
-                phone: ''
+                isverified: true,
             };
             const user: Data = await AuthModel.googleAuthUserSignUp(data);
-            await sendWelcomeEmail(data.fullname, email);
+            await sendWelcomeEmail(data.firstname, email);
             return user;
         }
     }
     async register(req: Request): Promise<Data | undefined> {
         const data: User = req.body;
 
-        const { fullname, password, email, username, phone, password_confirmation } = data;
+        const { firstname, lastname, password, email, username, password_confirmation } = data;
         const rules = {
-            fullname: 'required|string',
+            firstname: 'required|string',
+            lastname: 'required|string',
             password: 'required|string|min:8',
             password_confirmation: 'required|string|min:8',
             email: 'required|email|string',
             username: 'required|string|min:4',
-            phone: 'required|string',
         };
         const validation = new Validator(data, rules);
         if (password !== password_confirmation) throw new CustomError('Password do not match with confirm password.', 409);
@@ -76,7 +80,7 @@ class AuthService {
         if (findUser) throw new CustomError(`User with ${email} already exist, please login`, 400);
 
         const user: Data = await AuthModel.register(data);
-        await sendConfirmationEmail(fullname, email, user.verification_token);
+        await sendConfirmationEmail(firstname, email, user.verification_token);
         return user;
     }
     async login(data: User): Promise<Data> {
@@ -87,8 +91,8 @@ class AuthService {
         const findUser = await globalModel.CHECKMODEL('users', 'email', email);
         if (findUser) {
 
-            const user: Data | undefined = await AuthModel.login(email, password);
-
+            const user: Data | undefined = await AuthModel.login(email, password); 
+            
             return user;
         } else {
             throw new CustomError(`User with ${email} not found`, 404);
@@ -105,7 +109,7 @@ class AuthService {
 
             if (user) {
                 const user: User = await globalModel.FINDONE('users', 'email', email);
-                return `${user.fullname} has been successfully verified`;
+                return `${user.firstname} ${user.lastname} has been successfully verified`;
             } else {
                 throw new CustomError(`Provided token was invalid for user ${email}`);
             }
@@ -131,7 +135,7 @@ class AuthService {
         await ResetPasswordEmail(email, token);
 
         const user: Data = await authModel.SendResetPasswordMail(email, token);
-        
+
         return user;
     }
     async ResetPassword(req: Request): Promise<Data> {
@@ -149,7 +153,7 @@ class AuthService {
         if (password !== password_confirmation) throw new CustomError('Password do not match with confirm password.', 409);
 
         const user: Data = await AuthModel.ResetPassword(email, token, password);
-        await SuccessPasswordChange(email, user.name);
+        await SuccessPasswordChange(email, user.firstname);
         return user;
     }
 

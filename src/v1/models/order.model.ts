@@ -43,7 +43,7 @@ class OrderModel {
             const details: OrderDetails = {
                 order_id: order.id,
                 book_name: book.title,
-                order_by: user.fullname,
+                order_by: user.firstname + ' ' + user.lastname,
                 quantity: order.quantity,
                 created_at: order.created_at
             };
@@ -63,7 +63,7 @@ class OrderModel {
                 const details: OrderDetails = {
                     order_id: order.id,
                     book_name: book.title,
-                    order_by: user.fullname,
+                    order_by: user.firstname + ' ' + user.lastname,
                     quantity: order.quantity,
                     created_at: order.created_at
                 };
@@ -86,7 +86,7 @@ class OrderModel {
                 const details: OrderDetails = {
                     order_id: order.id,
                     book_name: book.title,
-                    order_by: user.fullname,
+                    order_by: user.firstname + ' ' + user.lastname,
                     quantity: order.quantity,
                     created_at: order.created_at
                 };
@@ -108,7 +108,7 @@ class OrderModel {
                 const details: OrderDetails = {
                     order_id: order.id,
                     book_name: book.title,
-                    order_by: user.fullname,
+                    order_by: user.firstname + ' ' + user.lastname,
                     quantity: order.quantity,
                     created_at: order.created_at
                 };
@@ -130,7 +130,7 @@ class OrderModel {
                 const details: OrderDetails = {
                     order_id: order.id,
                     book_name: book.title,
-                    order_by: user.fullname,
+                    order_by: user.firstname + ' ' + user.lastname,
                     quantity: order.quantity,
                     created_at: order.created_at
                 };
@@ -158,7 +158,7 @@ class OrderModel {
             const details: OrderDetails = {
                 order_id: order.id,
                 book_name: book.title,
-                order_by: user.fullname,
+                order_by: user.firstname + ' ' + user.lastname,
                 quantity: order.quantity,
                 created_at: order.created_at
             };

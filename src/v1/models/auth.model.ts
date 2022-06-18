@@ -6,39 +6,44 @@ import { codeGenerator } from '../utiles/generator.util';
 import { PasswordManager } from '../utiles/password.manager.utile';
 export type User = {
     id?: number;
-    fullname: string;
+    firstname: string;
+    lastname: string;
     username: string;
     email: string;
     password?: string;
     role?: string;
-    isVerified?: boolean;
-    phone?: string;
+    isverified?: boolean;
     token?: string;
     verification_token?: string;
     password_confirmation?: string;
+    created_at?: string;
+    updated_at?: string;
 };
 export type Data = {
-    name?: string;
+    firstname?: string;
+    lastname?: string;
     username?: string;
     email?: string;
-    isVerified?: boolean;
+    isverified?: boolean;
     verification_token?: string;
     token?: string;
+    created_at?: string;
+    updated_at?: string;
 }
 
 class AuthModel {
     async googleAuthUserSignUp(user: User): Promise<Data> {
         try {
             const conn = await client.connect();
-            const sql = 'INSERT INTO users (fullname, username, email, role, isVerified, phone, verification_token) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *;';
+            const sql = 'INSERT INTO users (firstname, lastname, username, email, role, isverified, verification_token) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *;';
 
             const values = [
-                user.fullname,
+                user.firstname,
+                user.lastname,
                 user.username,
                 user.email,
                 user.role,
-                user.isVerified,
-                user.phone,
+                user.isverified,
                 user.verification_token
             ];
 
@@ -54,11 +59,14 @@ class AuthModel {
 
             conn.release();
             const data = {
-                name: user.fullname,
+                firstname: user.firstname,
+                lastname: user.lastname,
                 username: user.username,
                 email: user.email,
-                isVerified: user.isVerified,
-                token: token
+                isverified: user.isverified,
+                token: token,
+                created_at: user.created_at,
+                updated_at: user.updated_at
             };
             return data;
         } catch (error) {
@@ -69,26 +77,28 @@ class AuthModel {
     async register(user: User): Promise<Data> {
         try {
             const conn = await client.connect();
-            const sql = 'INSERT INTO users (fullname, username, email, password, role, isVerified, phone, verification_token) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *;';
+            const sql = 'INSERT INTO users (firstname, lastname, username, email, password, role, isverified, verification_token) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *;';
             const hashPassword = await PasswordManager.hash(String(user.password));
 
             user.verification_token = codeGenerator(36);
 
             user.password = hashPassword;
-            user.isVerified = false;
+            const isverified = false;
+            const role = 'user';
             const values = [
-                user.fullname,
+                user.firstname,
+                user.lastname,
                 user.username,
                 user.email,
                 user.password,
-                user.role,
-                user.isVerified,
-                user.phone,
+                role,
+                isverified,
                 user.verification_token
-            ];
+            ];            
 
             const res = await conn.query(sql, values);
-            const newUser = res.rows[0];
+            const newUser: User = res.rows[0]; 
+            
             const token = sign({
                 username: newUser.id,
                 password: newUser.username,
@@ -99,12 +109,17 @@ class AuthModel {
 
             conn.release();
             const data = {
-                name: user.fullname,
-                username: user.username,
-                email: user.email,
-                isVerified: user.isVerified,
-                token: token
+                firstname: newUser.firstname,
+                lastname: newUser.lastname,
+                username: newUser.username,
+                email: newUser.email,
+                isverified: newUser.isverified,
+                verification_token: newUser.verification_token,
+                token: token,
+                created_at: newUser.created_at,
+                updated_at: newUser.updated_at
             };
+            
             return data;
         } catch (error) {
             throw new CustomError(`${error}`, 500);
@@ -132,10 +147,14 @@ class AuthModel {
             user.token = token;
             conn.release();
             const data = {
-                name: user.fullname,
+                firstname: user.firstname,
+                lastname: user.lastname,
                 username: user.username,
                 email: user.email,
-                token: token
+                isverified: user.isverified,
+                token: token,
+                created_at: user.created_at,
+                updated_at: user.updated_at
             };
             return data;
         } else {
@@ -145,11 +164,10 @@ class AuthModel {
     async verifyEmail(email: User['email'], token: User['verification_token']): Promise<boolean> {
         try {
             const conn = await client.connect();
-            const sql = 'UPDATE users SET isVerified=$1 WHERE email=$2 AND verification_token=$3';
+            const sql = 'UPDATE users SET isverified=$1 WHERE email=$2 AND verification_token=$3';
             const values = [true, email, token];
             const res = await conn.query(sql, values);
-            conn.release();
-            console.log(res.rows[0]);
+            conn.release(); 
 
             return res.rowCount >= 1 ? true : false;
         } catch (error) {
@@ -168,8 +186,11 @@ class AuthModel {
 
             const user: User = res.rows[0];
             const data: Data = {
-                name: user.fullname,
+                firstname: user.firstname,
+                lastname: user.lastname,
                 email: user.email,
+                created_at: user.created_at,
+                updated_at: user.updated_at
             };
             return data;
         } catch (error) {
@@ -191,9 +212,12 @@ class AuthModel {
                 conn.release();
                 const user: User = res.rows[0];
                 const data: Data = {
-                    name: user.fullname,
+                    firstname: user.firstname,
+                    lastname: user.lastname,
                     username: user.username,
                     email: user.email,
+                    created_at: user.created_at,
+                    updated_at: user.updated_at
                 };
                 return data;
             } else {
