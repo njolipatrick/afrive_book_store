@@ -3,7 +3,6 @@ import Validator from 'validatorjs';
 import AuthModel, { User, Data } from '../models/auth.model';
 import CustomError from '../utiles/error.utile';
 import { sendConfirmationEmail, ResetPasswordEmail, SuccessPasswordChange, sendWelcomeEmail } from '../utiles/mailer.utile';
-import { upload } from '../utiles/cloudinary.utile';
 import authModel from '../models/auth.model';
 import { codeGenerator, slugify } from '../utiles/generator.util';
 import globalModel from '../models/global.model';
@@ -36,7 +35,6 @@ class AuthService {
                 username: user.username,
                 email: user.email,
                 isVerified: user.isVerified,
-                avatar: user.avatar,
                 token: token
             };
             return data;
@@ -46,7 +44,6 @@ class AuthService {
                 fullname: name,
                 email: email + randomUserCode,
                 username: slugify(name) + randomUserCode,
-                avatar: await upload(picture, 'abs_live_user'),
                 password: '',
                 role: 'user',
                 isVerified: true,
@@ -60,11 +57,6 @@ class AuthService {
     async register(req: Request): Promise<Data | undefined> {
         const data: User = req.body;
 
-        const avatar = String(req.file?.path);
-        if (avatar === undefined) throw new CustomError('please validate you uploaded file to be type jpeg/png');
-
-        data.avatar = await upload(avatar, 'abs_live_user');
-
         const { fullname, password, email, username, phone, password_confirmation } = data;
         const rules = {
             fullname: 'required|string',
@@ -73,7 +65,6 @@ class AuthService {
             email: 'required|email|string',
             username: 'required|string|min:4',
             phone: 'required|string',
-            avatar: 'required|string',
         };
         const validation = new Validator(data, rules);
         if (password !== password_confirmation) throw new CustomError('Password do not match with confirm password.', 409);

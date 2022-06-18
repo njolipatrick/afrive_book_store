@@ -9,7 +9,6 @@ export type Book = {
     author: string;
     publisher: string;
     genre: string;
-    image_link?: string;
     description: string;
     price: number;
     status: string;
@@ -26,10 +25,10 @@ class BookModel {
 
     public create = async (data: Book) => {
         try {
-            const { title, isbn, author, publisher, genre, format, category, image_link, hasEbook, description, price, status, averageRating, eBook } = data;
+            const { title, isbn, author, publisher, genre, format, category, hasEbook, description, price, status, averageRating, eBook } = data;
             const conn = await client.connect();
-            let sql = 'INSERT INTO books (title, ISBN, author, publisher, genre, image_link, hasEbook, description, price)VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *;';
-            let values = [title, isbn, author, publisher, genre, image_link, hasEbook, description, price];
+            let sql = 'INSERT INTO books (title, ISBN, author, publisher, genre, hasEbook, description, price)VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *;';
+            let values = [title, isbn, author, publisher, genre, hasEbook, description, price];
             const res = await conn.query(sql, values);
             const book: Book = res.rows[0];
             const book_id = res.rows[0].id;
@@ -99,12 +98,12 @@ class BookModel {
     public update = async (id: number, data: Book) => {
         try {
             const { title, isbn, author, publisher,
-                genre, image_link, description,
+                genre, description,
                 status, price, format, hasEbook } = data;
 
             const conn = await client.connect();
-            const sql = 'UPDATE books SET title = $1, isbn = $2, author=$3, publisher=$4, genre=$5, image_link=$6, description=$7, price=$8, format=$9, status=$10 hasEbook=$11  WHERE id = $12';
-            const values = [title, isbn, author, publisher, genre, image_link, description, String(price), String(format), status, String(hasEbook)];
+            const sql = 'UPDATE books SET title = $1, isbn = $2, author=$3, publisher=$4, genre=$5, description=$7, price=$8, format=$9, status=$10 hasEbook=$11  WHERE id = $12';
+            const values = [title, isbn, author, publisher, genre, description, String(price), String(format), status, String(hasEbook)];
             const result = await conn.query(sql, values);
             return result.rows[0];
         } catch (error) {

@@ -2,14 +2,10 @@ import bookModel, { Book } from '../models/book.model';
 import CustomError from '../utiles/error.utile';
 import Validator from 'validatorjs';
 import { Request } from 'express';
-import { upload } from '../utiles/cloudinary.utile';
 import globalModel from '../models/global.model';
 class BookService {
     public create = async (req: Request) => {
-        const data: Book = req.body;
-        const image_link = String(req.file?.path);
-
-        data.image_link = await upload(image_link, 'abs_books_image');
+        const data: Book = req.body; 
 
         const rules = {
             title: 'required|string',
@@ -19,7 +15,6 @@ class BookService {
             description: 'required|string',
             publisher: 'required|string',
             hasEbook: 'required|boolean',
-            image_link: 'required|string'
         };
 
         const validation = new Validator(data, rules);

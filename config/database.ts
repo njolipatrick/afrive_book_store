@@ -1,16 +1,12 @@
 import dotenv from 'dotenv';
-import { Pool, PoolConfig } from 'pg';
+import { Pool } from 'pg';
 
 dotenv.config();
 
 const {
   POSTGRES_HOST,
-  POSTGRES_HOST_PROD,
   POSTGRES_DEV_DB,
-  POSTGRES_DB_PROD,
-  POSTGRES_USER_PROD,
   POSTGRES_TEST_DB,
-  POSTGRES_PASSWORD_PROD,
   POSTGRES_USER,
   POSTGRES_PASSWORD,
   NODE_ENV

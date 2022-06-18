@@ -1,12 +1,4 @@
 {
-	"production": {
-		"driver": "pg",
-		"host": "ec2-52-73-184-24.compute-1.amazonaws.com",
-		"database": "dfpcedps04iiuk",
-		"user": "xgykckdqlglteu",
-		"password": "b911bbf1accc254a3d1d808b1669cd81a974474179b195d18453584c49277656",
-		"ssl": { "rejectUnauthorized": false }
-	},
 	"dev": {
 		"driver": "pg",
 		"host": "127.0.0.1",
