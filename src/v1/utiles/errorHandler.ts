@@ -33,12 +33,16 @@ const sendErrorProd = (err: CustomError, res: Response,) => {
 
 };
 
-const errorController = (err: CustomError, req: Request, res: Response, next: NextFunction) => {
+export const errorController = (err: CustomError, req: Request, res: Response, next: NextFunction) => {
     if (process.env.NODE_ENV === 'dev') {
         sendErrorDev(err, res);
     } else {
         sendErrorProd(err, res);
     }
 };
-
-export default errorController;
+export const notFoundHandler = (req: Request, res: Response, next: NextFunction) => {
+    const err: ResponseError = new Error(`Route http//:${req.hostname}${req.path} not found `);
+    err.statusCode = 400;
+    next(err);
+};
+// export default errorController;

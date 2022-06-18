@@ -1,7 +1,7 @@
 export const codeGenerator = (number: number): string | undefined => {
     return Math.random().toString(number).slice(2);
 };
-export function slugify(text: string) {
+export function slugify(text: string):string {
     return text
         .toString()                           // Cast to string (optional)
         .normalize('NFKD')            // The normalize() using NFKD method returns the Unicode Normalization Form of a given string.
