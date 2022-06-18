@@ -61,6 +61,7 @@ class AuthService {
         const data: User = req.body;
 
         const avatar = String(req.file?.path);
+        if (avatar === undefined) throw new CustomError('please validate you uploaded file to be type jpeg/png');
 
         data.avatar = await upload(avatar, 'abs_live_user');
 
@@ -84,7 +85,7 @@ class AuthService {
         if (findUser) throw new CustomError(`User with ${email} already exist, please login`, 400);
 
         const user: Data = await AuthModel.register(data);
-        await sendConfirmationEmail(fullname, email, user.token);
+        await sendConfirmationEmail(fullname, email, user.verification_token);
         return user;
     }
     async login(data: User): Promise<Data> {
@@ -112,7 +113,8 @@ class AuthService {
             const user = await AuthModel.verifyEmail(email, token);
 
             if (user) {
-                return true;
+                const user: User = await globalModel.FINDONE('users', 'email', email);
+                return `${user.fullname} has been successfully verified`;
             } else {
                 throw new CustomError(`Provided token was invalid for user ${email}`);
             }
@@ -138,7 +140,7 @@ class AuthService {
         await ResetPasswordEmail(email, token);
 
         const user: Data = await authModel.SendResetPasswordMail(email, token);
-
+        
         return user;
     }
     async ResetPassword(req: Request): Promise<Data> {

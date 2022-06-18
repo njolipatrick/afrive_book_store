@@ -24,6 +24,7 @@ export type Data = {
     email?: string;
     isVerified?: boolean;
     avatar?: string;
+    verification_token?: string;
     token?: string;
 }
 
@@ -32,8 +33,7 @@ class AuthModel {
         try {
             const conn = await client.connect();
             const sql = 'INSERT INTO users (fullname, username, email, avatar, role, isVerified, phone, verification_token) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *;';
-            console.log(user);
-            
+
             const values = [
                 user.fullname,
                 user.username,
@@ -109,6 +109,7 @@ class AuthModel {
                 email: user.email,
                 isVerified: user.isVerified,
                 avatar: user.avatar,
+                verification_token: user.verification_token,
                 token: token
             };
             return data;
@@ -156,6 +157,8 @@ class AuthModel {
             const values = [true, email, token];
             const res = await conn.query(sql, values);
             conn.release();
+            console.log(res.rows[0]);
+
             return res.rowCount >= 1 ? true : false;
         } catch (error) {
             throw new CustomError(`${error}`, 400);
@@ -173,6 +176,7 @@ class AuthModel {
 
             const user: User = res.rows[0];
             const data: Data = {
+                name: user.fullname,
                 email: user.email,
             };
             return data;
@@ -202,9 +206,9 @@ class AuthModel {
                 };
                 return data;
             } else {
-                throw Error('Token provided was invalid');
+                throw new CustomError('Provided token is invalid', 400);
             }
-        } catch (error) {
+        } catch (error) { 
             throw new CustomError(`${error}`, 500);
         }
     }

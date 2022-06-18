@@ -3,17 +3,21 @@ import routerV1 from './routes/index.router';
 const app: Application = express();
 import errorHandler, { ResponseError } from './utiles/errorHandler';
 import CustomError from './utiles/error.utile';
-import apicache from 'apicache';
+// import apicache from 'apicache';
 
-const cache = apicache.middleware;
+// const cache = apicache.middleware;
 
-app.use(cache('1 minutes'));
+// app.use(cache('1 minutes'));
 
 app.use(json());
 app.use(urlencoded({ extended: true }));
 
 app.use('/test', (req: Request, res: Response) => {
 	res.status(200).json({ status: 'ok', success: true });
+});
+app.use((req, res, next) => {
+	console.log(req.path);
+	next();
 });
 
 app.use('/api/v1', routerV1);
