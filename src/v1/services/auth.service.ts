@@ -100,7 +100,7 @@ class AuthService {
 
             return user;
         } else {
-            throw new CustomError(`User with ${email} or ${findUser} not found`, 404);
+            throw new CustomError(`User with ${email} not found`, 404);
         }
 
     }

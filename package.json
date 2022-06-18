@@ -7,7 +7,7 @@
 	"scripts": {
 		"lint": "npx prettier --write . && npx eslint",
 		"start": "NODE_ENV=production node build/src/server.js",
-		"dev": "nodemon src/v1/server.ts",
+		"dev": "nodemon src/server.ts",
 		"build": "db-migrate --env production up",
 		"jasmine": "jasmine",
 		"test": "npx tsc && npm run jasmine",

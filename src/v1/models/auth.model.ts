@@ -108,8 +108,7 @@ class AuthModel {
                 username: user.username,
                 email: user.email,
                 isVerified: user.isVerified,
-                avatar: user.avatar,
-                verification_token: user.verification_token,
+                avatar: user.avatar, 
                 token: token
             };
             return data;
