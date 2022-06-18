@@ -12,8 +12,7 @@ cloudinary.config({
     secure: true
 });
 export const upload = async (path: string, preset: string): Promise<string> => {
-    try{
-        console.log(path);
+    try{ 
         const uploader = await cloudinary.uploader.upload(path, { upload_preset: preset });
         return uploader.secure_url;
     }catch(error){         

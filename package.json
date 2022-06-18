@@ -6,7 +6,7 @@
 	"main": "src/v1/server.ts",
 	"scripts": {
 		"lint": "npx prettier --write . && npx eslint",
-		"start": "node src/v1/server.ts",
+		"start": "node build/src/server.js",
 		"dev": "nodemon src/v1/server.ts",
 		"build": "npx tsc",
 		"jasmine": "jasmine",

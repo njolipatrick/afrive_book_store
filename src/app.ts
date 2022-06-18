@@ -1,7 +1,7 @@
 import express, { Request, Response, Application, urlencoded, json } from 'express';
-import routerV1 from './routes/index.router';
+import routerV1 from './v1/routes/index.router';
 const app: Application = express();
-import { notFoundHandler, errorController } from './utiles/errorHandler';
+import { notFoundHandler, errorController } from './v1/utiles/errorHandler';
 import apicache from 'apicache';
 
 const cache = apicache.middleware;
