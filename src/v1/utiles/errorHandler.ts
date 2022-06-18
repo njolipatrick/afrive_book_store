@@ -18,7 +18,7 @@ const sendErrorDev = (err: CustomError, res: Response) => {
 
 const sendErrorProd = (err: CustomError, res: Response,) => {
     const statusCode = err.statusCode || 500;
-    if (err.isOperational) {
+    if (!err.isOperational) {
         res.status(statusCode).json({
             success: false,
             message: err.stack,
