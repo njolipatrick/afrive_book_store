@@ -40,14 +40,13 @@ class AuthService {
             };
             return data;
         } else {
-            const randomUserCode = codeGenerator(36);
-            const name = 'Njoli Patrick';
+            const randomUserCode = codeGenerator(36); 
             const newName = name.split(' ');
 
             const data: User = {
                 firstname: newName[0],
                 lastname: newName[1],
-                email: email + randomUserCode,
+                email: email,
                 username: slugify(name) + randomUserCode,
                 password: '',
                 role: 'user',

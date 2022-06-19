@@ -3,7 +3,7 @@ import CustomError from './error.utile';
 import { config } from 'dotenv';
 import { formatMessage } from './response.util';
 config();
-const { MAIL_USER, MAIL_PASSWORD, MAILER, SERVER_HOST } = process.env;
+const { MAIL_USER, MAIL_PASSWORD, MAILER, ADDRESS , PORT_F} = process.env;
 
 
 const transport = nodemailer.createTransport(
@@ -14,6 +14,7 @@ const transport = nodemailer.createTransport(
             pass: MAIL_PASSWORD
         }
     });
+
 export const sendConfirmationEmail = async (name: string, email: string, confirmationCode?: string) => {
     try {
         await transport.verify();
@@ -24,7 +25,7 @@ export const sendConfirmationEmail = async (name: string, email: string, confirm
             html: `<h1>Email Confirmation</h1>
         <h2>Hello ${formatMessage(String(name))}</h2>
         <p>Thank you for subscribing. Please confirm your email by clicking on the following link</p>
-        <a href=http://${SERVER_HOST}/api/v1/auth/verify/${email}/${confirmationCode}> Click here</a>
+        <a href=http://${ADDRESS}:${PORT_F}/api/v1/auth/verify/${email}/${confirmationCode}> Click here</a>
         </div>`,
         });
     } catch (error) {
