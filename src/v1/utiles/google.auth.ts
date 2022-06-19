@@ -1,6 +1,6 @@
 const GOOGLE_CLIENT_ID = String(process.env.GOOGLE_CLIENT_ID);
 const GOOGLE_CLIENT_SECRET = String(process.env.GOOGLE_CLIENT_SECRET);
-const SERVER_ROOT_URI = 'http://localhost:5000/api/v1/auth/google-login';
+const SERVER_ROOT_URI = 'https://afrive-book-store.herokuapp.com/api/v1/auth/google-login';
 const rootUrl = 'https://accounts.google.com/o/oauth2/v2/auth';
 import axios from 'axios';
 import CustomError from './error.utile';
