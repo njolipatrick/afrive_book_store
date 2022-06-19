@@ -2,6 +2,8 @@ import express, { Request, Response, Application, urlencoded, json } from 'expre
 import routerV1 from './v1/routes/index.router';
 const app: Application = express();
 import { notFoundHandler, errorController } from './v1/utiles/errorHandler';
+import cors from 'cors';
+
 // import apicache from 'apicache';
 
 // // const cache = apicache.middleware;
@@ -9,6 +11,7 @@ import { notFoundHandler, errorController } from './v1/utiles/errorHandler';
 
 app.use(json());
 app.use(urlencoded({ extended: true }));
+app.use(cors());
 
 
 app.use('/api/v1', routerV1);
