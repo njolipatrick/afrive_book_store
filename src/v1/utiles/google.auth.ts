@@ -1,6 +1,6 @@
 const GOOGLE_CLIENT_ID = String(process.env.GOOGLE_CLIENT_ID);
 const GOOGLE_CLIENT_SECRET = String(process.env.GOOGLE_CLIENT_SECRET);
-const SERVER_ROOT_URI = 'https://afrive-books.vercel.app/api/v1/auth';
+const SERVER_ROOT_URI = String(process.env.SERVER_ROOT_URI);
 const rootUrl = 'https://accounts.google.com/o/oauth2/v2/auth';
 import axios from 'axios';
 import CustomError from './error.utile';
