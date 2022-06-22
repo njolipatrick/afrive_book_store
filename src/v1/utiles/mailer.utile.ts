@@ -3,11 +3,11 @@ import CustomError from './error.utile';
 import { config } from 'dotenv';
 import { formatMessage } from './response.util';
 config();
-const { MAIL_USER, MAIL_PASSWORD, MAILER, BASE_URL } = process.env;
+const { MAIL_USER, MAIL_PASSWORD, MAILER, BASE_URL, MAIL_HOST } = process.env;
 
 const transport = nodemailer.createTransport(
     {
-        service: 'gmail',
+        service: MAIL_HOST,
         auth: {
             user: MAIL_USER,
             pass: MAIL_PASSWORD
