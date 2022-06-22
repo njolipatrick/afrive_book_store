@@ -13,6 +13,4 @@ CREATE TABLE users (
     updated_at timestamp default current_timestamp
 );
 
-INSERT INTO users(firstname, lastname, username, email, isVerified, role, password)VALUES ('Njoli',' Patrick', 'ogmaro', 'ogmaro@gmail.com', true, 'admin', 'password');
-INSERT INTO users(firstname, lastname, username, email, isVerified, role, password)VALUES ('Timothy',' Patrick', 'mothy', 'imothy@gmail.com', false, 'admin', 'password');
 INSERT INTO users(firstname, lastname, username, email, isVerified, role, password)VALUES ('Josuah',' Patrick', 'suah', 'trick@gmail.com', false, 'user', 'password');

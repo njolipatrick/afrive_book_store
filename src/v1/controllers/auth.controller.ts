@@ -26,7 +26,7 @@ class AutheticationController {
     });
     public SendResetPasswordMail = catchAsync(async (req: Request, res: Response): Promise<void | User | undefined> => {
         const result = await authService.SendResetPasswordMail(req);
-        res.status(200).json(response('Password Resent Email Sent Successfully', result));
+        res.status(200).json(response('Password Reset Email Sent Successfully', result));
     });
     public ResetPassword = catchAsync(async (req: Request, res: Response): Promise<void | User | undefined> => {
         const result = await authService.ResetPassword(req);

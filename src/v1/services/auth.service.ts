@@ -40,7 +40,7 @@ class AuthService {
             };
             return data;
         } else {
-            const randomUserCode = codeGenerator(36); 
+            const randomUserCode = codeGenerator(36);
             const newName = name.split(' ');
 
             const data: User = {
@@ -90,8 +90,8 @@ class AuthService {
         const findUser = await globalModel.CHECKMODEL('users', 'email', email);
         if (findUser) {
 
-            const user: Data | undefined = await AuthModel.login(email, password); 
-            
+            const user: Data | undefined = await AuthModel.login(email, password);
+
             return user;
         } else {
             throw new CustomError(`User with ${email} not found`, 404);
@@ -139,7 +139,9 @@ class AuthService {
     }
     async ResetPassword(req: Request): Promise<Data> {
         const data = req.body;
-        const { email, token, password, password_confirmation } = data;
+        const userData = req.query as { email: string, code: string };
+        const { password, password_confirmation } = data;
+        const { email, code } = userData;
         const rules = {
             email: 'required|email|string',
             token: 'required|string|min:8',
@@ -151,7 +153,7 @@ class AuthService {
         if (validation.fails()) throw new CustomError('There was a problem with your input data', 400);
         if (password !== password_confirmation) throw new CustomError('Password do not match with confirm password.', 409);
 
-        const user: Data = await AuthModel.ResetPassword(email, token, password);
+        const user: Data = await AuthModel.ResetPassword(email, code, password);
         await SuccessPasswordChange(email, user.firstname);
         return user;
     }
