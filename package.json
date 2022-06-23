@@ -11,7 +11,8 @@
 		"build": "db-migrate --env production up",
 		"jasmine": "jasmine",
 		"test": "npx tsc && npm run jasmine",
-		"postinstall": "tsc"
+		"postinstall": "tsc",
+		"reset": "db-migrate reset && db-migrate up && npm run dev"
 	},
 	"repository": {
 		"type": "git",

@@ -54,7 +54,7 @@ class OrderModel {
     };
     public index = async (): Promise<OrderDetails[]> => {
         try {
-            const orders: Order[] = await globalModel.FINDALL('orders');
+            const orders: Order[] = await globalModel.FINDALL('orders', 20);
 
             const all_orders = await Promise.all(orders.map(async order => {
                 const book: Book = await globalModel.FINDONE('Books', 'id', order.book_id);
@@ -169,7 +169,7 @@ class OrderModel {
     };
     public destroy = async (order_id: number) => {
         try {
-            const destroy = await globalModel.Destroy(order_id);
+            const destroy = await globalModel.Destroy('ORDERS', order_id);
             return destroy ? destroy : false;
         } catch (error) {
             throw new CustomError('Internal Server Error', 500);
