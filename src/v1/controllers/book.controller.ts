@@ -9,7 +9,7 @@ class BookController {
         res.status(201).json(response('Book Created Succesfully', result));
     });
     public index = catchAsync(async (req: Request, res: Response) => {
-        const result = await bookService.index();
+        const result = await bookService.index(req);
         res.status(200).json(response('Books Found', result));
     });
     public show = catchAsync(async (req: Request, res: Response) => {

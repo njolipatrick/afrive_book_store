@@ -37,10 +37,10 @@ class GlobalQuery {
             throw new CustomError(`${error}`, 404);
         }
     }
-    async FINDALL(model: string) {
+    async FINDALL(model: string, limit: number) {
         try {
             const conn = await client.connect();
-            const sql = `SELECT * FROM ${model} ORDER BY id DESC LIMIT 10`;
+            const sql = `SELECT * FROM ${model} ORDER BY id DESC LIMIT ${limit}`;
             const res = await conn.query(sql);
             conn.release();
 
@@ -49,12 +49,11 @@ class GlobalQuery {
             throw new CustomError(`${error}`, 404);
         }
     }
-    async Destroy(id: number) {
+    async Destroy(model:string, id: number) {
         try {
             const conn = await client.connect();
-            const sql = 'DELETE FROM orders WHERE id=$1;';
-            const values = [id];
-            const res = await conn.query(sql, values);
+            const sql = `DELETE FROM ${model} WHERE id=${id};`;
+            const res = await conn.query(sql);
 
             return res.rowCount >= 1 ? true : false;
         } catch (error) {
