@@ -14,7 +14,7 @@ class OrderController {
     });
 
     public getCategorysByName = catchAsync(async (req: Request, res: Response) => {
-        const result = await categoryService.getCategorysByName(req.params.book_id);
+        const result = await categoryService.getCategorysByName(req);
         res.status(200).json(response('Category Found', result));
     });
     public destroy = catchAsync(async (req: Request, res: Response) => {

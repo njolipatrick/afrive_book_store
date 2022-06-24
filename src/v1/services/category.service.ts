@@ -32,12 +32,9 @@ class CategoryService {
 
         return category;
     };
-    public getCategorysByName = async (book_id: string) => {
-        const findOrder = await globalModel.CHECKMODEL('Orders', 'book_id', book_id);
-        if (!findOrder) {
-            throw new CustomError(`Order with UserID ${book_id} does not exist`, 404);
-        }
-        const category = await categoryModel.getCategorysByName(book_id);
+    public getCategorysByName = async (req:Request) => {
+        const {name} = req.body;
+        const category = await categoryModel.getCategorysByName(name);
         return category;
     };
 
