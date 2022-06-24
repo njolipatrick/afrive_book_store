@@ -14,8 +14,6 @@ const {
 
 let client: Pool;
 
-
-
 if (NODE_ENV === 'production') {
   console.log('::server in production mode');
   const connectionString = String(process.env.DATABASE_URL);

@@ -85,7 +85,7 @@ class ReviewModel {
             const reviews = await globalModel.FINDWHERE('REVIEWS', 'book_id', book_id);
             
 
-            const all_review = await Promise.all(reviews.map(async review => {
+            const all_reviews = await Promise.all(reviews.map(async review => {
                 const user: User = await globalModel.FINDONE('Users', 'id', review.user_id);
 
                 const details: Rate = {
@@ -95,7 +95,7 @@ class ReviewModel {
                 };
                 return details;
             }));
-            return all_review;
+            return all_reviews;
         } catch (error) {
             throw new CustomError('Internal Server Error', 500);
         }

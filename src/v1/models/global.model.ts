@@ -49,6 +49,18 @@ class GlobalQuery {
             throw new CustomError(`${error}`, 404);
         }
     }
+    async SEARCH(model: string, pattern:string, limit: number) {
+        try {
+            const conn = await client.connect();
+            const sql = `SELECT * FROM ${model} WHERE column_name LIKE ${pattern} ORDER BY id DESC LIMIT ${limit}`;
+            const res = await conn.query(sql);
+            conn.release();
+
+            return res.rows;
+        } catch (error) {
+            throw new CustomError(`${error}`, 404);
+        }
+    }
     async Destroy(model: string, id: number) {
         try {
             const conn = await client.connect();
