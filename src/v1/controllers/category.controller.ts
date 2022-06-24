@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { response } from '../utiles/response.util';
 import catchAsync from '../utiles/catchAsync';
-import categoryService from '../services/category.model';
+import categoryService from '../services/category.service';
 
 class OrderController {
     public create = catchAsync(async (req: Request, res: Response) => {
@@ -18,7 +18,7 @@ class OrderController {
         res.status(200).json(response('Category Found', result));
     });
     public destroy = catchAsync(async (req: Request, res: Response) => {
-        const result = await categoryService.destroy(req.params.order_id);
+        const result = await categoryService.destroy(req);
         res.status(200).json(response('Category deleted Successfully', result));
     });
 }
