@@ -33,10 +33,21 @@ class EbooksModel {
             throw new CustomError(`${error}`, 500);
         }
     };
-
-    public destroy = async (ebooks_id: number) => {
+    public getEBookByBookID = async (book_id: string): Promise<Ebook> => {
         try {
-            const destroy = await globalModel.Destroy('Ebooks', ebooks_id);
+            const ebook: Ebook = await globalModel.FINDONE('EBOOKS', 'book_id', book_id);
+            return ebook;
+        } catch (error) {
+            throw new CustomError(`${error}`, 500);
+        }
+    };
+
+    public destroy = async (book_id: number) => {
+        try {
+            const ebook: Ebook = await globalModel.FINDONE('EBOOKS', 'book_id', book_id);
+            console.log(ebook);
+            
+            const destroy = await globalModel.Destroy('EBOOKS', Number(ebook.id));
             return destroy ? destroy : false;
         } catch (error) {
             throw new CustomError('Internal Server Error', 500);

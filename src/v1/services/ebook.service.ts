@@ -6,13 +6,14 @@ import ebookModel, { Ebook } from '../models/ebook.model';
 
 class EbookService {
     public create = async (req: Request): Promise<Ebook> => {
-        const data = req.body;
+        const data: Ebook = req.body;
         const { status, format } = data;
         const { book_id } = req.params;
         data.book_id = book_id;
         const rules = {
             book_id: 'required|string',
-            name: 'required|string'
+            status: 'required|boolean',
+            format: 'required|string'
         };
 
         const validation = new Validator(data, rules);
@@ -28,18 +29,29 @@ class EbookService {
     };
 
     public index = async (): Promise<Ebook[]> => {
-        const ebook = await ebookModel.index();
-
+        const ebook: Ebook[] = await ebookModel.index();
         return ebook;
     };
-  
 
-    public destroy = async (id: string) => {
-        const findEBOOK = await globalModel.CHECKMODEL('EBOOKSS', 'id', id);
-        if (!findEBOOK) {
-            throw new CustomError(`EBOOKS with ${id} does not exist`, 404);
+    public getEBookByBookID = async (req: Request): Promise<Ebook> => {
+        const { book_id } = req.params;
+        const findReview = await globalModel.CHECKMODEL('EBOOKS', 'book_id', book_id);
+
+        if (!findReview) {
+            throw new CustomError(`Ebook with BookID ${book_id} does not exist`, 404);
         }
-        const ebook = ebookModel.destroy(Number(id));
+        const ebook: Ebook = await ebookModel.getEBookByBookID(book_id);
+        return ebook;
+    };
+    public destroy = async (req: Request) => {
+        const {book_id} = req.params;         
+        const findEBOOK = await globalModel.CHECKMODEL('EBOOKS', 'book_id', book_id);
+        if (!findEBOOK) {
+            throw new CustomError(`EBOOKS with bookID ${book_id} does not exist`, 404);
+        }
+        console.log(findEBOOK);
+        
+        const ebook = ebookModel.destroy(Number(book_id));
         if (!ebook) {
             throw new CustomError('Error ebook not deleted', 400);
         }

@@ -1,4 +1,4 @@
-import {  Request, Response } from 'express';
+import { Request, Response } from 'express';
 import { response } from '../utiles/response.util';
 import catchAsync from '../utiles/catchAsync';
 import reviewService from '../services/review.service';
@@ -8,13 +8,11 @@ class ReviewController {
         const result = await reviewService.create(req);
         res.status(201).json(response('Review Created Succesfully', result));
     });
-    public index = catchAsync(async (req: Request, res: Response) => {    
+    public index = catchAsync(async (req: Request, res: Response) => {
         const result = await reviewService.index();
         res.status(200).json(response('Reviews Found', result));
     });
     public getReviewsByUserID = catchAsync(async (req: Request, res: Response) => {
-   
-
         const result = await reviewService.getReviewsByUserID(req.params.user_id);
         res.status(200).json(response('Review Found', result));
     });
