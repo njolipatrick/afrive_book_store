@@ -5,7 +5,7 @@ import { Book } from './book.model';
 import globalModel from './global.model';
 
 export type Review = {
-    id: number;
+    id?: number;
     comment: string;
     user_id: number;
     book_id: number;
@@ -63,7 +63,7 @@ class ReviewModel {
     };
     public getReviewsByUserID = async (user_id: string) => {
         try {
-            const reviews = await globalModel.FINDWHERE('REVIEWS', 'user_id', user_id);
+            const reviews: Review[] = await globalModel.FINDWHERE('REVIEWS', 'user_id', user_id);
              
             const all_reviews = await Promise.all(reviews.map(async review => {
                 const user: User = await globalModel.FINDONE('Users', 'id', review.user_id);

@@ -39,8 +39,11 @@ class GlobalQuery {
     }
     async FINDALL(model: string, limit: number) {
         try {
+            if (isNaN(limit)) limit = 10;
+            console.log(limit);
+
             const conn = await client.connect();
-            const sql = `SELECT * FROM ${model} ORDER BY id DESC LIMIT ${limit}`;
+            const sql = `SELECT * FROM ${model} ORDER BY id ASC LIMIT ${limit}`;
             const res = await conn.query(sql);
             conn.release();
 
@@ -49,10 +52,11 @@ class GlobalQuery {
             throw new CustomError(`${error}`, 404);
         }
     }
-    async SEARCH(model: string, pattern: string, limit: number) {
+    async SEARCH(model: string, column_name: string, pattern: string, limit: number) {
         try {
             const conn = await client.connect();
-            const sql = `SELECT * FROM ${model} WHERE column_name LIKE ${pattern} ORDER BY id DESC LIMIT ${limit}`;
+            // const sql = `SELECT * FROM ${model} WHERE ${column_name} LIKE ${pattern} ORDER BY id DESC LIMIT ${limit}`;
+            const sql = `SELECT * FROM ${model} WHERE ${column_name} LIKE '%${pattern}%' ORDER BY id DESC LIMIT ${limit}`;
             const res = await conn.query(sql);
             conn.release();
 

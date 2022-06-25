@@ -32,6 +32,7 @@ class CategoryService {
 
         return category;
     };
+    
     public getCategorysByName = async (req:Request) => {
         const {name} = req.body;
         const category = await categoryModel.getCategorysByName(name);

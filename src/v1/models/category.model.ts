@@ -1,11 +1,13 @@
 import client from '../../../config/database';
-import CustomError from '../utiles/error.utile'; 
+import CustomError from '../utiles/error.utile';
+import bookModel, { Book, ReturnedBook } from './book.model';
+import { Ebook } from './ebook.model';
 import globalModel from './global.model';
 
 export type Category = {
     id?: number;
     book_id: string;
-    name: number;
+    name: string;
 }
 class CategoryModel {
     public create = async (data: Category) => {
@@ -33,13 +35,49 @@ class CategoryModel {
             throw new CustomError(`${error}`, 500);
         }
     };
-    public getCategorysByName = async (name: string): Promise<Category[]> => {
+    public getCategorysByName = async (name: string): Promise<Book[]> => {
         try {
-            const categorys: Category[] = await globalModel.SEARCH('CATEGORIES', name, 20);
-            return categorys;
+            
+            const categorys: Category[] = await globalModel.SEARCH('CATEGORIES', 'name', name, 20);
+            
 
+            const all_books = await Promise.all(categorys.map(async category => {
+                const ebook: Ebook = await globalModel.FINDONE('CATEGORIES', 'book_id', category.book_id);
+                console.log(category);
+                const book: Book = await globalModel.FINDONE('BOOKS', 'id', category.book_id);
+
+                let EBOOK: Ebook = { status: null, format: null };
+
+                if (ebook === undefined) {
+                    EBOOK = { status: null, format: null };
+                } else {
+                    EBOOK = { status: ebook.status, format: ebook.format };
+                }
+                const rating = await bookModel.rating(category.book_id);
+
+                const category_array = await bookModel.categories(category.book_id);
+                const details: ReturnedBook = {
+                    id: book.id,
+                    title: book.title,
+                    author: book.author,
+                    img: book.image,
+                    description: book.description,
+                    price: book.price,
+                    status: book.status,
+                    category: category_array,
+                    eBook: EBOOK,
+                    bookRating: {
+                        averageRating: bookModel.averageRating(rating),
+                        ratings: rating //Return an array of all rating to book
+                    }
+
+                };
+                return details;
+            }));
+
+            return all_books;
         } catch (error) {
-            throw new CustomError('Internal Server Error', 500);
+            throw new CustomError(`${error}`, 500);
         }
     };
     public destroy = async (category_id: number) => {

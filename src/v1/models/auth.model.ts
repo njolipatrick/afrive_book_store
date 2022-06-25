@@ -50,8 +50,7 @@ class AuthModel {
             const res = await conn.query(sql, values);
             const newUser = res.rows[0];
             const token = sign({
-                username: newUser.id,
-                password: newUser.username,
+                _id: newUser.id,
                 role: newUser.role
             }, String(TOKEN_SECRET), {
                 expiresIn: '7d'
@@ -94,14 +93,13 @@ class AuthModel {
                 role,
                 isverified,
                 user.verification_token
-            ];            
+            ];
 
             const res = await conn.query(sql, values);
-            const newUser: User = res.rows[0]; 
-            
+            const newUser: User = res.rows[0];
+
             const token = sign({
-                username: newUser.id,
-                password: newUser.username,
+                _id: newUser.id,
                 role: newUser.role
             }, String(TOKEN_SECRET), {
                 expiresIn: '7d'
@@ -119,7 +117,7 @@ class AuthModel {
                 created_at: newUser.created_at,
                 updated_at: newUser.updated_at
             };
-            
+
             return data;
         } catch (error) {
             throw new CustomError(`${error}`, 500);
@@ -167,7 +165,7 @@ class AuthModel {
             const sql = 'UPDATE users SET isverified=$1 WHERE email=$2 AND verification_token=$3';
             const values = [true, email, token];
             const res = await conn.query(sql, values);
-            conn.release(); 
+            conn.release();
 
             return res.rowCount >= 1 ? true : false;
         } catch (error) {

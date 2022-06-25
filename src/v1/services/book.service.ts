@@ -1,8 +1,9 @@
-import bookModel, { Book } from '../models/book.model';
+import bookModel, { Book, NEWBOOKOBJ } from '../models/book.model';
 import CustomError from '../utiles/error.utile';
 import Validator from 'validatorjs';
 import { Request } from 'express';
 import globalModel from '../models/global.model';
+import { decoder } from '../utiles/auth.utile';
 class BookService {
     public create = async (req: Request) => {
         const data: Book = req.body;
@@ -13,13 +14,16 @@ class BookService {
             author: 'required|string',
             price: 'required|string',
             description: 'required|string',
-            status: 'required|string',
+            status: 'required|boolean',
         };
+
 
         const validation = new Validator(data, rules);
         if (validation.fails()) {
             throw new CustomError('There was a problem with your input data', 400);
         }
+        data.user_id = decoder(req)._id;
+        data.img = data.image;
 
         const { author } = data;
         const findAuthor = await globalModel.CHECKMODEL('BOOKS', 'author', author);
@@ -73,6 +77,4 @@ class BookService {
 }
 export default new BookService;
 
-function data(data: any) {
-    throw new Error('Function not implemented.');
-}
+ 
