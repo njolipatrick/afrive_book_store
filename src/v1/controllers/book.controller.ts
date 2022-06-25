@@ -20,6 +20,10 @@ class BookController {
         const result = await bookService.update(req.params.id, req.body);
         res.status(200).json(response('Book updated Successfully', result));
     });
+    public SearcBooksCategoryByName = catchAsync(async (req: Request, res: Response) => {      
+        const result = await bookService.SearcBooksCategoryByName(req);
+        res.status(200).json(response('Books Found', result));
+    });
     public destroy = catchAsync(async (req: Request, res: Response) => {
         const result = await bookService.destroy(req.params.id);
         res.status(200).json(response('Book deleted Successfully', result));

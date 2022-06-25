@@ -47,6 +47,11 @@ class BookService {
         return book;
 
     };
+    public SearcBooksCategoryByName = async (req: Request) => {
+        const { name } = req.body;
+        const category = await bookModel.SearcBooksCategoryByName(name);
+        return category;
+    };
     public show = async (id: string) => {
         const findBook = await globalModel.CHECKMODEL('BOOKS', 'id', id);
         if (!findBook) {
