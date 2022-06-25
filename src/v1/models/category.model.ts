@@ -43,7 +43,7 @@ class CategoryModel {
 
             const all_books = await Promise.all(categorys.map(async category => {
                 const ebook: Ebook = await globalModel.FINDONE('CATEGORIES', 'book_id', category.book_id);
-                console.log(category);
+                 
                 const book: Book = await globalModel.FINDONE('BOOKS', 'id', category.book_id);
 
                 let EBOOK: Ebook = { status: null, format: null };

@@ -39,8 +39,7 @@ class GlobalQuery {
     }
     async FINDALL(model: string, limit: number) {
         try {
-            if (isNaN(limit)) limit = 10;
-            console.log(limit);
+            if (isNaN(limit)) limit = 10; 
 
             const conn = await client.connect();
             const sql = `SELECT * FROM ${model} ORDER BY id ASC LIMIT ${limit}`;

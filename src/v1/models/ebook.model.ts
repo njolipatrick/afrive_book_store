@@ -45,7 +45,7 @@ class EbooksModel {
     public destroy = async (book_id: number) => {
         try {
             const ebook: Ebook = await globalModel.FINDONE('EBOOKS', 'book_id', book_id);
-            console.log(ebook);
+             
             
             const destroy = await globalModel.Destroy('EBOOKS', Number(ebook.id));
             return destroy ? destroy : false;

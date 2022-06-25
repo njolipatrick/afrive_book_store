@@ -44,13 +44,12 @@ class EbookService {
         return ebook;
     };
     public destroy = async (req: Request) => {
-        const {book_id} = req.params;         
+        const { book_id } = req.params;
         const findEBOOK = await globalModel.CHECKMODEL('EBOOKS', 'book_id', book_id);
         if (!findEBOOK) {
             throw new CustomError(`EBOOKS with bookID ${book_id} does not exist`, 404);
         }
-        console.log(findEBOOK);
-        
+
         const ebook = ebookModel.destroy(Number(book_id));
         if (!ebook) {
             throw new CustomError('Error ebook not deleted', 400);
