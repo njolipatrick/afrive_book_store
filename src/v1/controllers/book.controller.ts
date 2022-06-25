@@ -24,6 +24,14 @@ class BookController {
         const result = await bookService.SearcBooksCategoryByName(req);
         res.status(200).json(response('Books Found', result));
     });
+    public SearcBooksByTitle = catchAsync(async (req: Request, res: Response) => {      
+        const result = await bookService.SearcBooksByTitle(req);
+        res.status(200).json(response('Books Found', result));
+    });
+    public SearcBooksByAuthor = catchAsync(async (req: Request, res: Response) => {      
+        const result = await bookService.SearcBooksByAuthor(req);
+        res.status(200).json(response('Books Found', result));
+    });
     public destroy = catchAsync(async (req: Request, res: Response) => {
         const result = await bookService.destroy(req.params.id);
         res.status(200).json(response('Book deleted Successfully', result));

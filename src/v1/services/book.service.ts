@@ -49,7 +49,17 @@ class BookService {
     };
     public SearcBooksCategoryByName = async (req: Request) => {
         const { name } = req.body;
-        const category = await bookModel.SearcBooksCategoryByName(name);
+        const category = await bookModel.SearcBooksCategoryByName(name as string);
+        return category;
+    };
+    public SearcBooksByTitle = async (req: Request) => {
+        const { title } = req.body;
+        const category = await bookModel.SearcBooksByTitle(title as string);
+        return category;
+    };
+    public SearcBooksByAuthor = async (req: Request) => {
+        const { author } = req.body;
+        const category = await bookModel.SearcBooksByAuthor(author as string);
         return category;
     };
     public show = async (id: string) => {
@@ -82,4 +92,3 @@ class BookService {
 }
 export default new BookService;
 
- 

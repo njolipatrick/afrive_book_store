@@ -56,7 +56,7 @@ class GlobalQuery {
         try {
             const conn = await client.connect();
             // const sql = `SELECT * FROM ${model} WHERE ${column_name} LIKE ${pattern} ORDER BY id DESC LIMIT ${limit}`;
-            const sql = `SELECT * FROM ${model} WHERE ${column_name} LIKE '%${pattern}%' ORDER BY id DESC LIMIT ${limit}`;
+            const sql = `SELECT * FROM ${model} WHERE ${column_name} LIKE '%${pattern}%' ORDER BY id ASC LIMIT ${limit}`;
             const res = await conn.query(sql);
             conn.release();
 

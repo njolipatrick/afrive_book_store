@@ -6,7 +6,9 @@ const book = Router();
 
 book.post('/', verifyToken, bookController.create);
 book.get('/', bookController.index);
-book.get('/search', bookController.SearcBooksCategoryByName);
+book.get('/search/category', bookController.SearcBooksCategoryByName);
+book.get('/search/title', bookController.SearcBooksByTitle);
+book.get('/search/author', bookController.SearcBooksByAuthor);
 book.get('/:id', bookController.show);
 book.put('/:id', bookController.update);
 book.delete('/:id', bookController.destroy);
