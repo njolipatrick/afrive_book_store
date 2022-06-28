@@ -2,6 +2,7 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import { NextFunction, Request, Response } from 'express';
 import CustomError from './error.utile';
 import { config } from 'dotenv';
+const { TOKEN_SECRET } = process.env;
 config();
 export type Payload = {
     _id: number;
@@ -9,7 +10,6 @@ export type Payload = {
     iat: number,
     exp: number
 }
-const { TOKEN_SECRET } = process.env;
 
 export const verifyToken = (req: Request, res: Response, next: NextFunction) => {
     const Authorization = req.headers['authorization'];
@@ -20,7 +20,6 @@ export const verifyToken = (req: Request, res: Response, next: NextFunction) => 
 
     try {
         jwt.verify(token, String(TOKEN_SECRET));
-
     } catch (err) {
         next(err);
     }

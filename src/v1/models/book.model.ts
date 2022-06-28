@@ -146,12 +146,12 @@ class BookModel {
 
             const all_books = await Promise.all(books.map(async book => {
                 const ebook: Ebook = await globalModel.FINDONE('ebooks', 'book_id', book.id);
-                let EBOOK: Ebook = { status: null, format: null };
+                let newEbook: Ebook = { status: null, format: null };
                 if (ebook === undefined) {
-                    EBOOK = { status: null, format: null };
+                    newEbook = { status: null, format: null };
 
                 } else {
-                    EBOOK = { status: ebook.status, format: ebook.format };
+                    newEbook = { status: ebook.status, format: ebook.format };
 
                 }
                 const rating = await this.rating(book.id);
@@ -166,12 +166,11 @@ class BookModel {
                     price: book.price,
                     status: book.status,
                     category: category_array,
-                    eBook: EBOOK,
+                    eBook: newEbook,
                     bookRating: {
                         averageRating: this.averageRating(rating),
                         ratings: rating //Return an array of all rating to book
                     }
-
                 };
                 return details;
             }));
@@ -190,12 +189,12 @@ class BookModel {
                 const ebook: Ebook = await globalModel.FINDONE('CATEGORIES', 'book_id', category.book_id);
                 const book: Book = await globalModel.FINDONE('BOOKS', 'id', category.book_id);
 
-                let EBOOK: Ebook = { status: null, format: null };
+                let newEbook: Ebook = { status: null, format: null };
 
                 if (ebook === undefined) {
-                    EBOOK = { status: null, format: null };
+                    newEbook = { status: null, format: null };
                 } else {
-                    EBOOK = { status: ebook.status, format: ebook.format };
+                    newEbook = { status: ebook.status, format: ebook.format };
                 }
                 const rating = await this.rating(category.book_id);
 
@@ -209,16 +208,14 @@ class BookModel {
                     price: book.price,
                     status: book.status,
                     category: category_array,
-                    eBook: EBOOK,
+                    eBook: newEbook,
                     bookRating: {
                         averageRating: this.averageRating(rating),
                         ratings: rating //Return an array of all rating to book
                     }
-
                 };
                 return details;
             }));
-
             return all_books;
         } catch (error) {
             throw new CustomError(`${error}`, 500);
@@ -231,12 +228,12 @@ class BookModel {
             const all_books = await Promise.all(books.map(async book => {
                 const ebook: Ebook = await globalModel.FINDONE('EBOOKS', 'book_id', book.id);
 
-                let EBOOK: Ebook = { status: null, format: null };
+                let newEbook: Ebook = { status: null, format: null };
 
                 if (ebook === undefined) {
-                    EBOOK = { status: null, format: null };
+                    newEbook = { status: null, format: null };
                 } else {
-                    EBOOK = { status: ebook.status, format: ebook.format };
+                    newEbook = { status: ebook.status, format: ebook.format };
                 }
 
                 const rating = await this.rating(book.id);
@@ -251,7 +248,7 @@ class BookModel {
                     price: book.price,
                     status: book.status,
                     category: category_array,
-                    eBook: EBOOK,
+                    eBook: newEbook,
                     bookRating: {
                         averageRating: this.averageRating(rating),
                         ratings: rating //Return an array of all rating to book
@@ -259,7 +256,6 @@ class BookModel {
                 };
                 return details;
             }));
-
             return all_books;
         } catch (error) {
             throw new CustomError(`${error}`, 500);
@@ -267,21 +263,22 @@ class BookModel {
     };
     public SearcBooksByTitle = async (title: string): Promise<ReturnedBook[]> => {
         try {
-            const books: Book[] = await globalModel.SEARCH('Books', 'title', title, 3);
+
+            const books: Book[] = await globalModel.SEARCH('Books', 'title', title, 10);
 
             const all_books = await Promise.all(books.map(async book => {
                 const ebook: Ebook = await globalModel.FINDONE('EBOOKS', 'book_id', book.id);
 
-                let EBOOK: Ebook = { status: null, format: null };
+                let newEbook: Ebook = { status: null, format: null };
 
                 if (ebook === undefined) {
-                    EBOOK = { status: null, format: null };
+                    newEbook = { status: null, format: null };
                 } else {
-                    EBOOK = { status: ebook.status, format: ebook.format };
+                    newEbook = { status: ebook.status, format: ebook.format };
                 }
 
                 const rating = await this.rating(book.id);
-
+                
                 const category_array = await this.categories(book.id);
 
                 const details: ReturnedBook = {
@@ -293,7 +290,7 @@ class BookModel {
                     price: book.price,
                     status: book.status,
                     category: category_array,
-                    eBook: EBOOK,
+                    eBook: newEbook,
                     bookRating: {
                         averageRating: this.averageRating(rating),
                         ratings: rating //Return an array of all rating to book
@@ -315,12 +312,13 @@ class BookModel {
 
             const category_array = await this.categories(book.id);
 
-            let EBOOK: Ebook = { status: null, format: null };
+            let newEbook: Ebook = { status: null, format: null };
+
             if (ebook === undefined) {
-                EBOOK = { status: null, format: null };
+                newEbook = { status: null, format: null };
 
             } else {
-                EBOOK = { status: ebook.status, format: ebook.format };
+                newEbook = { status: ebook.status, format: ebook.format };
 
             }
 
@@ -335,15 +333,13 @@ class BookModel {
                 price: book.price,
                 status: book.status,
                 category: category_array,
-                eBook: EBOOK,
+                eBook: newEbook,
                 bookRating: {
                     averageRating: this.averageRating(rating),
                     ratings: rating //Return an array of all rating to book
                 }
             };
-
             return newBook;
-
         } catch (error) {
             throw new CustomError('Internal Server Error', 500);
         }

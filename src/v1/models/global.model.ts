@@ -8,6 +8,7 @@ class GlobalQuery {
             const sql = `SELECT * FROM ${model} WHERE ${table}='${value}'`;
 
             const res = await conn.query(sql);
+            conn.release();
 
             return res.rowCount >= 1 ? true : false;
         } catch (error) {
@@ -20,6 +21,7 @@ class GlobalQuery {
             const sql = `SELECT * FROM ${model} WHERE ${table}='${value}' ORDER BY id DESC LIMIT 1`;
             const res = await conn.query(sql);
 
+            conn.release();
             return res.rows[0];
         } catch (error) {
             throw new CustomError(`${error}`, 404);
@@ -31,7 +33,7 @@ class GlobalQuery {
             const sql = `SELECT * FROM ${model} WHERE ${table}='${value}' ORDER BY id DESC LIMIT 10`;
 
             const res = await conn.query(sql);
-
+            conn.release();
             return res.rows;
         } catch (error) {
             throw new CustomError(`${error}`, 404);
@@ -39,10 +41,10 @@ class GlobalQuery {
     }
     async FINDALL(model: string, limit: number) {
         try {
-            if (isNaN(limit)) limit = 10; 
+            if (isNaN(limit)) limit = 10;
 
             const conn = await client.connect();
-            const sql = `SELECT * FROM ${model} ORDER BY id ASC LIMIT ${limit}`;
+            const sql = `SELECT * FROM ${model} ORDER BY id DESC LIMIT ${limit}`;
             const res = await conn.query(sql);
             conn.release();
 
@@ -69,7 +71,8 @@ class GlobalQuery {
             const conn = await client.connect();
             const sql = `DELETE FROM ${model} WHERE id=${id};`;
             const res = await conn.query(sql);
-
+            conn.release();
+            
             return res.rowCount >= 1 ? true : false;
         } catch (error) {
             throw new CustomError('Internal Server Error', 500);
