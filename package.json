@@ -1,6 +1,6 @@
 {
 	"name": "afrive_book_store",
-	"proxy": "http://127.0.0.1:5000/",
+	"proxy": "https://afrive-book-store.herokuapp.com/",
 	"version": "1.0.0",
 	"description": "Afrive is a digital solution which allows users shop for books from various African authors across different genres. It also allows users write book reviews and make book recommendations. Everything a book lover needs in one platform.",
 	"main": "src/v1/server.ts",
