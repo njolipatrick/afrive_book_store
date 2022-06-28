@@ -11,6 +11,7 @@ export type Payload = {
     exp: number
 }
 
+
 export const verifyToken = (req: Request, res: Response, next: NextFunction) => {
     const Authorization = req.headers['authorization'];
     const token = Authorization && Authorization.split(' ')[1];
@@ -31,8 +32,8 @@ export const decoder = (req: Request) => {
 
     if (token === null) throw new CustomError('A token is required for authentication', 401);
     if (!token) throw new CustomError('A token is required for authentication', 401);
-    
-    const payload = jwt.verify(token, String(TOKEN_SECRET)) as Payload; 
+
+    const payload = jwt.verify(token, String(TOKEN_SECRET)) as Payload;
 
     return payload;
 }; 
