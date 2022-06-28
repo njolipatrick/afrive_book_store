@@ -3,15 +3,15 @@ import routerV1 from './v1/routes/index.router';
 const app: Application = express();
 import { notFoundHandler, errorController } from './v1/utiles/errorHandler';
 import cors from 'cors';
-import morgan from 'morgan';
-import fs from 'fs';
-import path from 'path';
+// import morgan from 'morgan';
+// import fs from 'fs';
+// import path from 'path';
 
-// create a write stream (in append mode)
-const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' });
+// // create a write stream (in append mode)
+// const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' });
 
-// setup the logger
-app.use(morgan('combined', { stream: accessLogStream }));
+// // setup the logger
+// app.use(morgan('combined', { stream: accessLogStream }));
 
 app.use(json());
 app.use(urlencoded({ extended: true }));
