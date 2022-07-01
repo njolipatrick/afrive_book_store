@@ -66,7 +66,7 @@ class GlobalQuery {
             throw new CustomError(`${error}`, 404);
         }
     }
-    async Destroy(model: string, id: number | string) {
+    async Destroy(model: string, id: number | string|undefined) {
         try {
             const conn = await client.connect();
             const sql = `DELETE FROM ${model} WHERE id=${id};`;

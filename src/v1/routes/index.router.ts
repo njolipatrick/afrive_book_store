@@ -4,6 +4,7 @@ import bookRouter from './book.router';
 import reviewRouter from './review.router';
 import categoryRouter from './category.router';
 import ebookRouter from './ebook.router';
+import cartRouter from './cart.router';
 import orderRouter from './order.router';
 
 const router = Router();
@@ -14,5 +15,6 @@ router.use('/review', reviewRouter);
 router.use('/category', categoryRouter);
 router.use('/ebook', ebookRouter);
 router.use('/order', orderRouter);
+router.use('/cart', cartRouter);
 
 export default router;

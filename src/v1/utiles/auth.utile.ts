@@ -5,7 +5,7 @@ import { config } from 'dotenv';
 const { TOKEN_SECRET } = process.env;
 config();
 export type Payload = {
-    _id: number;
+    _id: string;
     role: string,
     iat: number,
     exp: number

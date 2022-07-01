@@ -27,7 +27,7 @@ export type Book = {
     name?: string;
     format?: string;
     comment?: string;
-    user_id?: number;
+    user_id?: string;
     rate?: string;
 }
 export type ReturnedBook = {

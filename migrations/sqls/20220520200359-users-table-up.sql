@@ -14,3 +14,4 @@ CREATE TABLE users (
 );
 
 INSERT INTO users(firstname, lastname, username, email, isVerified, role, password)VALUES ('Josuah',' Patrick', 'suah', 'trick@gmail.com', false, 'user', 'password');
+INSERT INTO users(firstname, lastname, username, email, isVerified, role, password)VALUES ('Josuah',' Patrick', 'suah1', 't1rick@gmail.com', false, 'user', 'password');
