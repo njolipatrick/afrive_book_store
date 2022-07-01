@@ -9,6 +9,6 @@ CREATE TABLE reviews(
     updated_at timestamp default current_timestamp
 );
 
-INSERT INTO reviews(comment, rate, user_id, book_id)VALUES ('Awecome book', 5, 1, 10);
+INSERT INTO reviews(comment, rate, user_id, book_id)VALUES ('COOL book', 5, 1, 6);
 INSERT INTO reviews(comment, rate, user_id, book_id)VALUES ('Awecome book', 3, 1, 7);
-INSERT INTO reviews(comment, rate, user_id, book_id)VALUES ('Awecome book', 4, 1, 15);
+INSERT INTO reviews(comment, rate, user_id, book_id)VALUES ('nICE book', 4, 1, 3);

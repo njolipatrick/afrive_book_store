@@ -1,8 +1,8 @@
 /* Replace with your SQL commands */
 CREATE TABLE books (
     id SERIAL PRIMARY KEY,
-    title VARCHAR(100), 
-    author VARCHAR(50) UNIQUE,
+    title VARCHAR(100) UNIQUE, 
+    author VARCHAR(50),
     image VARCHAR(255), 
     description VARCHAR(255),
     price float,
