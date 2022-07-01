@@ -41,7 +41,7 @@ export type ReturnedBook = {
 
     category?: string[],
 
-    eBook?: { status?: boolean | null; format?: string | null };
+    eBook?: { status?: boolean | null; format?: string[] | null };
     bookRating?: {
         averageRating?: number;
         ratings?: Rate[]
@@ -91,7 +91,7 @@ class BookModel {
                 price: book.price,
                 status: book.status,
                 category: category_array,
-                eBook: { status: ebook.status, format: ebook.format },
+                eBook: { status: ebook.status, format: [String(ebook.format)] },
                 bookRating: {
                     averageRating: this.averageRating(rating),
                     ratings: rating //Return an array of all rating to book
@@ -151,7 +151,7 @@ class BookModel {
                     newEbook = { status: null, format: null };
 
                 } else {
-                    newEbook = { status: ebook.status, format: ebook.format };
+                    newEbook = { status: ebook.status, format: [String(ebook.format)] };
 
                 }
                 const rating = await this.rating(book.id);
@@ -194,7 +194,7 @@ class BookModel {
                 if (ebook === undefined) {
                     newEbook = { status: null, format: null };
                 } else {
-                    newEbook = { status: ebook.status, format: ebook.format };
+                    newEbook = { status: ebook.status, format: [String(ebook.format)] };
                 }
                 const rating = await this.rating(category.book_id);
 
@@ -233,7 +233,7 @@ class BookModel {
                 if (ebook === undefined) {
                     newEbook = { status: null, format: null };
                 } else {
-                    newEbook = { status: ebook.status, format: ebook.format };
+                    newEbook = { status: ebook.status, format: [String(ebook.format)] };
                 }
 
                 const rating = await this.rating(book.id);
@@ -274,7 +274,7 @@ class BookModel {
                 if (ebook === undefined) {
                     newEbook = { status: null, format: null };
                 } else {
-                    newEbook = { status: ebook.status, format: ebook.format };
+                    newEbook = { status: ebook.status, format: [String(ebook.format)] };
                 }
 
                 const rating = await this.rating(book.id);
@@ -318,7 +318,7 @@ class BookModel {
                 newEbook = { status: null, format: null };
 
             } else {
-                newEbook = { status: ebook.status, format: ebook.format };
+                newEbook = { status: ebook.status, format: [String(ebook.format)] };
 
             }
 
