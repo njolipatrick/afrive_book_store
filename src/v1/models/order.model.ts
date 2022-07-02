@@ -12,7 +12,7 @@ export type Order = {
     created_at?: string;
 }
 export type OrderDetails = {
-    order_id: number;
+    order_id: string;
     book_name: string;
     order_by: string;
     quantity: number;
