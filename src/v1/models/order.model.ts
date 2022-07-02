@@ -5,7 +5,7 @@ import { Book } from './book.model';
 import globalModel from './global.model';
 
 export type Order = {
-    id: number;
+    id: string;
     book_id: string;
     user_id: number;
     quantity: number;
