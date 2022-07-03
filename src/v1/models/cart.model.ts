@@ -49,7 +49,7 @@ class CartModel {
             throw new CustomError(`${error}`, 500);
         }
     };
-    public index = async (user_id:string|number): Promise<CartDetails[]> => {
+    public index = async (user_id: string | number): Promise<CartDetails[]> => {
         try {
             const carts: Cart[] = await globalModel.FINDWHERE('CARTS', 'user_id', user_id);
 

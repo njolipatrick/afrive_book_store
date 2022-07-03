@@ -2,7 +2,7 @@ import client from '../../../config/database';
 import CustomError from '../utiles/error.utile';
 
 class GlobalQuery {
-    async CHECKMODEL(model: string, table: string, value: string): Promise<boolean> {
+    async CHECKMODEL(model: string , table: string , value: string | number): Promise<boolean> {
         try {
             const conn = await client.connect();
             const sql = `SELECT * FROM ${model} WHERE ${table}='${value}'`;
@@ -53,10 +53,9 @@ class GlobalQuery {
             throw new CustomError(`${error}`, 404);
         }
     }
-    async SEARCH(model: string, column_name: string, pattern: string, limit: number) {
+    async SEARCH(model: string, column_name: string, pattern: string | number, limit: number) {
         try {
             const conn = await client.connect();
-            // const sql = `SELECT * FROM ${model} WHERE ${column_name} LIKE ${pattern} ORDER BY id DESC LIMIT ${limit}`;
             const sql = `SELECT * FROM ${model} WHERE ${column_name} LIKE '%${pattern}%' ORDER BY id ASC LIMIT ${limit}`;
             const res = await conn.query(sql);
             conn.release();

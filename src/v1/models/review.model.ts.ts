@@ -7,8 +7,8 @@ import globalModel from './global.model';
 export type Review = {
     id?: number;
     comment: string;
-    user_id: number;
-    book_id: number;
+    user_id: string | number;
+    book_id: string | number;
     rate: number;
 }
 export type Rate = {
@@ -64,7 +64,7 @@ class ReviewModel {
     public getReviewsByUserID = async (user_id: string) => {
         try {
             const reviews: Review[] = await globalModel.FINDWHERE('REVIEWS', 'user_id', user_id);
-             
+
             const all_reviews = await Promise.all(reviews.map(async review => {
                 const user: User = await globalModel.FINDONE('Users', 'id', review.user_id);
 
@@ -83,7 +83,7 @@ class ReviewModel {
     public getReviewsByBookID = async (book_id: string) => {
         try {
             const reviews = await globalModel.FINDWHERE('REVIEWS', 'book_id', book_id);
-            
+
 
             const all_reviews = await Promise.all(reviews.map(async review => {
                 const user: User = await globalModel.FINDONE('Users', 'id', review.user_id);
@@ -123,7 +123,7 @@ class ReviewModel {
             throw new CustomError(`${error}`, 500);
         }
     };
-    public destroy = async (review_id: number) => {
+    public destroy = async (review_id: string | number) => {
         try {
             const destroy = await globalModel.Destroy('REVIEWS', review_id);
             return destroy ? destroy : false;

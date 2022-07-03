@@ -1,9 +1,10 @@
 import reviewController from '../controllers/review.controller';
 import { Router } from 'express';
+import { verifyToken } from '../utiles/auth.utile';
 
 const review = Router();
 
-review.post('/:user_id/:book_id', reviewController.create);//done
+review.post('/:book_id', verifyToken, reviewController.create);//done
 review.get('/', reviewController.index);//done
 review.get('/u/:user_id', reviewController.getReviewsByUserID);//done
 // review.get('/:user_id/review', reviewController.getReviewsByReviewID);
