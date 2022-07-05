@@ -12,7 +12,7 @@ class OrderService {
 
         data.user_id = String(decoder(req)._id);
         data.book = JSON.stringify(data.book);
-        // const {user_id, txn_ref, books, total_order_amount, status, estimated_delivery_date, currency, quantity}
+
         const rules = {
             user_id: 'required|string',
             txn_ref: 'required|string',
@@ -21,9 +21,7 @@ class OrderService {
             status: 'required|string',
             estimated_delivery_date: 'required|string',
             currency: 'required|string'
-        };
-        console.log(JSON.stringify(data.book));
-
+        }; 
 
         const validation = new Validator(data, rules);
         if (validation.fails()) {
