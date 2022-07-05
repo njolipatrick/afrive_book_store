@@ -61,21 +61,25 @@ class OrderModel {
         }
     };
 
-    public getOrdersByUserID = async (user_id: string) => {
+    public getOrdersByUserID = async (user_id: string): Promise<Order[]> => {
         try {
-            const order:Order = await globalModel.FINDONE('ORDERS', 'user_id', user_id);
-            const details: Order = {
-                order_id: order.id,
-                txn_ref: order.txn_ref,
-                quantity: order.quantity,
-                book: order.book,
-                date: order.created_at,
-                total_order_amount: order.total_order_amount,
-                status: order.status,
-                estimated_delivery_date: order.estimated_delivery_date,
-                currency: order.currency,
-            };
-            return details;
+            const orders: Order[] = await globalModel.FINDWHERE('ORDERS', 'user_id', user_id);
+            const all_orders = await Promise.all(orders.map(async order => {
+                const details: Order = {
+                    order_id: order.id,
+                    txn_ref: order.txn_ref,
+                    quantity: order.quantity,
+                    book: order.book,
+                    date: order.created_at,
+                    total_order_amount: order.total_order_amount,
+                    status: order.status,
+                    estimated_delivery_date: order.estimated_delivery_date,
+                    currency: order.currency,
+                };
+                return details;
+            }));
+
+            return all_orders;
 
         } catch (error) {
             throw new CustomError('Internal Server Error', 500);

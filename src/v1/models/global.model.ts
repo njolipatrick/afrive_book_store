@@ -2,7 +2,7 @@ import client from '../../../config/database';
 import CustomError from '../utiles/error.utile';
 
 class GlobalQuery {
-    async CHECKMODEL(model: string , table: string , value: string | number): Promise<boolean> {
+    async CHECKMODEL(model: string, table: string, value: string | number): Promise<boolean> {
         try {
             const conn = await client.connect();
             const sql = `SELECT * FROM ${model} WHERE ${table}='${value}'`;
@@ -39,9 +39,9 @@ class GlobalQuery {
             throw new CustomError(`${error}`, 404);
         }
     }
-    async FINDALL(model: string, limit: number) {
+    async FINDALL(model: string, limit: number | string) {
         try {
-            if (isNaN(limit)) limit = 10;
+            if (isNaN(Number(limit))) limit = 10;
 
             const conn = await client.connect();
             const sql = `SELECT * FROM ${model} ORDER BY id DESC LIMIT ${limit}`;
@@ -65,13 +65,13 @@ class GlobalQuery {
             throw new CustomError(`${error}`, 404);
         }
     }
-    async Destroy(model: string, id: number | string|undefined) {
+    async Destroy(model: string, id: number | string | undefined) {
         try {
             const conn = await client.connect();
             const sql = `DELETE FROM ${model} WHERE id=${id};`;
             const res = await conn.query(sql);
             conn.release();
-            
+
             return res.rowCount >= 1 ? true : false;
         } catch (error) {
             throw new CustomError('Internal Server Error', 500);
