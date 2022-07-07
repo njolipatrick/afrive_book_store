@@ -5,6 +5,7 @@ CREATE TABLE orders (
   txn_ref VARCHAR(255) NOT NULL,
   total_order_amount VARCHAR(255) NOT NULL,
   status VARCHAR(255) NOT NULL,
+  completed BOOLEAN DEFAULT FALSE,
   estimated_delivery_date VARCHAR(255) NOT NULL,
   currency VARCHAR(255) NOT NULL,
   book json,

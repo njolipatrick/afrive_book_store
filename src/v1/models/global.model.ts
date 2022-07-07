@@ -15,7 +15,7 @@ class GlobalQuery {
             throw new CustomError(`${error}`, 404);
         }
     }
-    async FINDONE(model: string, table: string, value: string | number) {
+    async FINDONE(model: string, table: string, value: string | number | undefined) {
         try {
             const conn = await client.connect();
             const sql = `SELECT * FROM ${model} WHERE ${table}='${value}' ORDER BY id DESC LIMIT 1`;

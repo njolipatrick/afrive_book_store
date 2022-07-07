@@ -6,6 +6,7 @@ import categoryRouter from './category.router';
 import ebookRouter from './ebook.router';
 import cartRouter from './cart.router';
 import favoriteRouter from './favorite.router';
+import paymentRouter from './payment.router';
 import orderRouter from './order.router';
 
 const router = Router();
@@ -18,5 +19,6 @@ router.use('/ebook', ebookRouter);
 router.use('/order', orderRouter);
 router.use('/cart', cartRouter);
 router.use('/favorite', favoriteRouter);
+router.use('/paystack', paymentRouter);
 
 export default router;

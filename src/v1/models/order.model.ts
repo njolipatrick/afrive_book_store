@@ -1,9 +1,14 @@
-import client from '../../../config/database';
-import CustomError from '../utiles/error.utile';
-import { User } from './auth.model';
-import { Book } from './book.model';
+import client from '../../../config/database'; 
+import CustomError from '../utiles/error.utile'; 
 import globalModel from './global.model';
 
+export type Pay = {
+    user_id?: string;
+    amount: number;
+    email: string;
+    reference?: string;
+    order_id: string;
+}
 export type ReturnBookOrder = {
     book_name: string;
     total_amount: number;
@@ -19,6 +24,7 @@ export type Order = {
     date?: string;
     total_order_amount: number;
     status: string;
+    completed?: boolean;
     estimated_delivery_date: string;
     currency: string;
     created_at?: string;
@@ -52,6 +58,7 @@ class OrderModel {
                 date: order.created_at,
                 total_order_amount: order.total_order_amount,
                 status: order.status,
+                completed: order.completed,
                 estimated_delivery_date: order.estimated_delivery_date,
                 currency: order.currency,
             };
@@ -71,6 +78,7 @@ class OrderModel {
                     quantity: order.quantity,
                     book: order.book,
                     date: order.created_at,
+                    completed: order.completed,
                     total_order_amount: order.total_order_amount,
                     status: order.status,
                     estimated_delivery_date: order.estimated_delivery_date,
@@ -80,12 +88,36 @@ class OrderModel {
             }));
 
             return all_orders;
-
         } catch (error) {
             throw new CustomError('Internal Server Error', 500);
         }
     };
+    public updateTXNREF = async (data: Pay) => {
+        try {
+            const conn = await client.connect();
+            const sql = `UPDATE orders SET txn_ref = '${data.reference}' WHERE user_id = ${data.user_id} AND id = ${data.order_id} RETURNING txn_ref`;
+            const res = await conn.query(sql);
+            conn.release();
 
+            const order: Order = await globalModel.FINDONE('ORDERS', 'txn_ref', data.reference);
+
+            return order.txn_ref === res.rows[0].txn_ref ? true : false;
+        } catch (error) {
+            throw new CustomError(`${error}`, 500);
+        }
+    };
+    public updateStatus = async (user_id: string, order_id: string) => {
+        try {
+            const conn = await client.connect();
+            const sql = `UPDATE orders SET completed = true WHERE user_id = '${user_id}' AND id = '${order_id}' RETURNING *`;
+            const res = await conn.query(sql);
+            conn.release();
+
+            return res.rows[0].completed === true ? true : false;
+        } catch (error) {
+            throw new CustomError(`${error}`, 500);
+        }
+    };
     public destroy = async (order_id: number) => {
         try {
             const destroy = await globalModel.Destroy('ORDERS', order_id);

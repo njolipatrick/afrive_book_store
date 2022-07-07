@@ -136,8 +136,7 @@ class AuthModel {
         );
         if (encrypt) {
             const token = sign({
-                username: user.id,
-                password: user.username,
+                _id: user.id,
                 role: user.role
             }, String(TOKEN_SECRET), {
                 expiresIn: '7d'
