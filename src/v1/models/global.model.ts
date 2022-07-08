@@ -2,13 +2,13 @@ import client from '../../../config/database';
 import CustomError from '../utiles/error.utile';
 
 class GlobalQuery {
-    async CHECKMODEL(model: string, table: string, value: string | number): Promise<boolean> {
+    async CHECKMODEL(model: string, table: string, value?: string | number): Promise<boolean> {
         try {
             const conn = await client.connect();
             const sql = `SELECT * FROM ${model} WHERE ${table}='${value}'`;
 
             const res = await conn.query(sql);
-            conn.release();
+            conn.release(); 
 
             return res.rowCount >= 1 ? true : false;
         } catch (error) {

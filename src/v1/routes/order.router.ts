@@ -6,6 +6,7 @@ const order = Router();
 
 order.post('/', verifyToken, orderController.create);
 order.get('/', verifyToken, orderController.getOrdersByUserID);
+order.get('/:reference/verify', verifyToken, orderController.verifyPayment);
 order.delete('/:order_id', verifyToken, orderController.destroy);
 
 export default order;

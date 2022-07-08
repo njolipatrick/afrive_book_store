@@ -8,6 +8,7 @@ CREATE TABLE orders (
   completed BOOLEAN DEFAULT FALSE,
   estimated_delivery_date VARCHAR(255) NOT NULL,
   currency VARCHAR(255) NOT NULL,
+  checkout_url VARCHAR(255) NOT NULL,
   book json,
   created_at timestamp default current_timestamp,
   updated_at timestamp default current_timestamp

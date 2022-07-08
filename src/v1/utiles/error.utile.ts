@@ -5,7 +5,7 @@ class CustomError extends Error {
     constructor(message: string | boolean|string[], statusCode?: number) {
         super(String(message));
         this.statusCode = statusCode;
-        this.isOperational = true;
+        this.isOperational = false;
         Error.captureStackTrace(this, this.constructor);
     }
 }

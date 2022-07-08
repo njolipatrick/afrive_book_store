@@ -1,13 +1,13 @@
-import client from '../../../config/database'; 
-import CustomError from '../utiles/error.utile'; 
+import client from '../../../config/database';
+import CustomError from '../utiles/error.utile';
 import globalModel from './global.model';
 
 export type Pay = {
     user_id?: string;
     amount: number;
     email: string;
+    txn_ref?: string;
     reference?: string;
-    order_id: string;
 }
 export type ReturnBookOrder = {
     book_name: string;
@@ -18,7 +18,7 @@ export type Order = {
     id?: number | string;
     order_id: string | number | undefined;
     user_id?: string | number | undefined;
-    txn_ref: string;
+    txn_ref?: string;
     quantity: number;
     book?: string;
     date?: string;
@@ -28,6 +28,7 @@ export type Order = {
     estimated_delivery_date: string;
     currency: string;
     created_at?: string;
+    checkout_url?: string;
 };
 
 export type Delivery = {
@@ -41,14 +42,14 @@ export type Delivery = {
 class OrderModel {
     public create = async (data: Order) => {
         try {
-            const { user_id, txn_ref, book, total_order_amount, status, estimated_delivery_date, currency } = data;
-            const conn = await client.connect();
-            const sql = 'INSERT INTO orders (user_id, txn_ref, book, total_order_amount, status, estimated_delivery_date, currency)VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *;';
-            const values = [user_id, txn_ref, book, total_order_amount, status, estimated_delivery_date, currency];
-            const res = await conn.query(sql, values);
-            const order: Order = res.rows[0];
-            conn.release();
+            const { user_id, txn_ref, book, total_order_amount, status, estimated_delivery_date, currency, checkout_url } = data;
+            const conn = await client.connect();             
+            const sql = 'INSERT INTO orders (user_id, txn_ref, book, total_order_amount, status, estimated_delivery_date, currency, checkout_url)VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *;';
+            const values = [user_id, txn_ref, book, total_order_amount, status, estimated_delivery_date, currency, checkout_url];
+            const res = await conn.query(sql, values); 
 
+            const order: Order = res.rows[0];
+            conn.release(); 
 
             const details: Order = {
                 order_id: order.id,
@@ -61,6 +62,7 @@ class OrderModel {
                 completed: order.completed,
                 estimated_delivery_date: order.estimated_delivery_date,
                 currency: order.currency,
+                checkout_url: order.checkout_url
             };
             return details;
         } catch (error) {
@@ -94,22 +96,19 @@ class OrderModel {
     };
     public updateTXNREF = async (data: Pay) => {
         try {
-            const conn = await client.connect();
-            const sql = `UPDATE orders SET txn_ref = '${data.reference}' WHERE user_id = ${data.user_id} AND id = ${data.order_id} RETURNING txn_ref`;
-            const res = await conn.query(sql);
-            conn.release();
+            const order: Order = await globalModel.FINDONE('ORDERS', 'txn_ref', data.txn_ref);
 
-            const order: Order = await globalModel.FINDONE('ORDERS', 'txn_ref', data.reference);          
+            return order.txn_ref === order.txn_ref ? true : false;
 
-            return order.txn_ref === res.rows[0].txn_ref ? true : false;
         } catch (error) {
             throw new CustomError(`${error}`, 500);
         }
     };
-    public updateStatus = async (user_id: string, order_id: string) => {
+    
+    public updateStatus = async (user_id: string, reference: string) => {
         try {
             const conn = await client.connect();
-            const sql = `UPDATE orders SET completed = true WHERE user_id = '${user_id}' AND id = '${order_id}' RETURNING *`;
+            const sql = `UPDATE orders SET completed = true WHERE user_id = '${user_id}' AND txn_ref = '${reference}' RETURNING *`;
             const res = await conn.query(sql);
             conn.release();
 
@@ -118,6 +117,7 @@ class OrderModel {
             throw new CustomError(`${error}`, 500);
         }
     };
+
     public destroy = async (order_id: number) => {
         try {
             const destroy = await globalModel.Destroy('ORDERS', order_id);
