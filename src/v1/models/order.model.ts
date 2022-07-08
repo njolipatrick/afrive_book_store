@@ -1,4 +1,5 @@
-import client from '../../../config/database'; 
+import client from '../../../config/database';
+import order from '../routes/order.router';
 import CustomError from '../utiles/error.utile'; 
 import globalModel from './global.model';
 
@@ -99,7 +100,7 @@ class OrderModel {
             const res = await conn.query(sql);
             conn.release();
 
-            const order: Order = await globalModel.FINDONE('ORDERS', 'txn_ref', data.reference);
+            const order: Order = await globalModel.FINDONE('ORDERS', 'txn_ref', data.reference);          
 
             return order.txn_ref === res.rows[0].txn_ref ? true : false;
         } catch (error) {
