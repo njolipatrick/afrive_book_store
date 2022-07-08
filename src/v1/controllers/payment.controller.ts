@@ -6,11 +6,11 @@ import paymentService from '../services/payment.service';
 class PaymentController {
     public pay = catchAsync(async (req: Request, res: Response) => {
         const result = await paymentService.pay(req);
-        res.status(201).json(response('Cart Created Succesfully', result));
+        res.status(200).json(response('Payment Link Created Succesfully', result));
     });
     public verifyPayment = catchAsync(async (req: Request, res: Response) => {
         const result = await paymentService.verifyPayment(req);
-        res.status(200).json(response('Carts Found', result));
+        res.status(200).json(response('Payment Verfied', result));
     });
 }
 export default new PaymentController;
