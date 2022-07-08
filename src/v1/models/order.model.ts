@@ -1,5 +1,4 @@
-import client from '../../../config/database';
-import order from '../routes/order.router';
+import client from '../../../config/database'; 
 import CustomError from '../utiles/error.utile'; 
 import globalModel from './global.model';
 

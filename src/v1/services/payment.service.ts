@@ -3,7 +3,7 @@ import orderModel, { Order, Pay } from '../models/order.model';
 import { decoder } from '../utiles/auth.utile';
 import CustomError from '../utiles/error.utile';
 import Validator from 'validatorjs';
-import { request, Request } from 'express';
+import {  Request } from 'express';
 import { paystack } from '../utiles/paystack';
 const { initializePayment, verifyPayment } = paystack();
 
