@@ -69,6 +69,8 @@ class OrderService {
         if (!orderRef) throw new CustomError(`Order not found for txn_ref ${reference}`, 404);
 
         const res = await verifyPayment(orderRef.txn_ref);
+        console.log(res.data.data.status);
+
         if (res.data.data.status === 'success') {
             const orderStatus = await orderModel.updateStatus(user_id, reference);
 
@@ -77,8 +79,14 @@ class OrderService {
             }
             const order: Order = await globalModel.FINDONE('ORDERS', 'txn_ref', reference);
             return order;
-        } else {
-            throw new CustomError('Order verification failed, Client should make payment again', 400);
+        } else if (res.data.data.status === 'abandoned') {
+            throw new CustomError('Order verification failed, Client haven\'t made payment yet', 400);
+        }
+        else if (res.data.data.status === 'failed') {
+            throw new CustomError('Order verification failed, Client payment declined', 400);
+        }
+        else {
+            throw new CustomError('Order verification failed, Client payment not success', 400);
         }
     };
 
