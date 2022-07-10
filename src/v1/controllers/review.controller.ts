@@ -13,7 +13,7 @@ class ReviewController {
         res.status(200).json(response('Reviews Found', result));
     });
     public getReviewsByUserID = catchAsync(async (req: Request, res: Response) => {
-        const result = await reviewService.getReviewsByUserID(req.params.user_id);
+        const result = await reviewService.getReviewsByUserID(req);
         res.status(200).json(response('Review Found', result));
     });
     public getReviewsByBookID = catchAsync(async (req: Request, res: Response) => {
@@ -25,7 +25,7 @@ class ReviewController {
         res.status(200).json(response('Review Found', result));
     });
     public update = catchAsync(async (req: Request, res: Response) => {
-        const result = await reviewService.update(req.params.review_id, req.body);
+        const result = await reviewService.update(req);
         res.status(200).json(response('Review Updated Successfully', result));
     });
     public destroy = catchAsync(async (req: Request, res: Response) => {

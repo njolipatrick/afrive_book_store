@@ -5,13 +5,15 @@ import { Book } from './book.model';
 import globalModel from './global.model';
 
 export type Review = {
-    id?: number;
+    id?: number
+    review_id?: number;
     comment: string;
     user_id: string | number;
     book_id: string | number;
     rate: number;
 }
 export type Rate = {
+    review_id?: number;
     name: string;
     comment: string;
     startRating: number;
@@ -31,6 +33,7 @@ class ReviewModel {
             const user: User = await globalModel.FINDONE('Users', 'id', String(user_id));
 
             const details: Rate = {
+                review_id: review.id,
                 name: `${user.firstname} ${user.lastname}`,
                 comment: review.comment,
                 startRating: review.rate
@@ -49,6 +52,7 @@ class ReviewModel {
                 const user: User = await globalModel.FINDONE('Users', 'id', review.user_id);
 
                 const details: Rate = {
+                    review_id: review.id,
                     name: `${user.firstname} ${user.lastname}`,
                     comment: review.comment,
                     startRating: review.rate
@@ -69,6 +73,7 @@ class ReviewModel {
                 const user: User = await globalModel.FINDONE('Users', 'id', review.user_id);
 
                 const details: Rate = {
+                    review_id: review.id,
                     name: `${user.firstname} ${user.lastname}`,
                     comment: review.comment,
                     startRating: review.rate
@@ -89,6 +94,7 @@ class ReviewModel {
                 const user: User = await globalModel.FINDONE('Users', 'id', review.user_id);
 
                 const details: Rate = {
+                    review_id: review.id,
                     name: `${user.firstname} ${user.lastname}`,
                     comment: review.comment,
                     startRating: review.rate
@@ -100,14 +106,16 @@ class ReviewModel {
             throw new CustomError('Internal Server Error', 500);
         }
     };
-    public update = async (id: string, data: Review) => {
+    public update = async (data: Review) => {
         try {
-            const { comment, user_id, book_id, rate } = data;
+            const { comment, user_id, book_id, rate, review_id } = data;
 
             const conn = await client.connect();
-            const sql = 'UPDATE Reviews SET comment = $1, user_id = $2, book_id=$3, rate=$4 WHERE id = $5';
-            const values = [comment, user_id, book_id, rate, id];
-            const res = await conn.query(sql, values);
+            const sql = 'UPDATE Reviews SET comment = $1, rate=$2 WHERE user_id = $3 AND book_id = $4 AND id = $5 RETURNING *;';
+            const values = [comment, rate, user_id, book_id, review_id];
+            const res = await conn.query(sql, values); 
+
+
             conn.release();
 
             const review: Review = res.rows[0];

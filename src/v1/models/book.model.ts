@@ -73,11 +73,11 @@ class BookModel {
             const resE = await conn.query(sql, values);
             const ebook: Ebook = resE.rows[0];
 
-            //Create Review
-            sql = 'INSERT INTO reviews (comment, user_id, book_id, rate)VALUES ($1, $2, $3, $4) RETURNING *;';
-            values = [comment, user_id, book.id, rate];
-            const resR = await conn.query(sql, values);
-            const review: Review = resR.rows[0];
+            // Create Review
+            // sql = 'INSERT INTO reviews (comment, user_id, book_id, rate)VALUES ($1, $2, $3, $4) RETURNING *;';
+            // values = [comment, user_id, book.id, rate];
+            // const resR = await conn.query(sql, values);
+            // const review: Review = resR.rows[0];
 
             const category_array = await this.categories(book.id);
             const rating = await this.rating(book.id);
