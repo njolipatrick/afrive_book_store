@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { NextFunction, Request, Response } from 'express';
-import CustomError from './error.utile';
+import {CustomError} from './error.utile';
 import { config } from 'dotenv';
 const { TOKEN_SECRET } = process.env;
 config();

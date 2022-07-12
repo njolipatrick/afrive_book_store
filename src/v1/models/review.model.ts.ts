@@ -1,5 +1,5 @@
 import client from '../../../config/database';
-import CustomError from '../utiles/error.utile';
+import { CustomError } from '../utiles/error.utile';
 import { User } from './auth.model';
 import { Book } from './book.model';
 import globalModel from './global.model';
@@ -113,7 +113,7 @@ class ReviewModel {
             const conn = await client.connect();
             const sql = 'UPDATE Reviews SET comment = $1, rate=$2 WHERE user_id = $3 AND book_id = $4 AND id = $5 RETURNING *;';
             const values = [comment, rate, user_id, book_id, review_id];
-            const res = await conn.query(sql, values); 
+            const res = await conn.query(sql, values);
 
 
             conn.release();

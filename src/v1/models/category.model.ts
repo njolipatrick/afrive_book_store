@@ -1,5 +1,5 @@
 import client from '../../../config/database';
-import CustomError from '../utiles/error.utile';
+import { CustomError } from '../utiles/error.utile';
 import bookModel, { Book, ReturnedBook } from './book.model';
 import { Ebook } from './ebook.model';
 import globalModel from './global.model';
@@ -37,13 +37,13 @@ class CategoryModel {
     };
     public getCategorysByName = async (name: string): Promise<Book[]> => {
         try {
-            
+
             const categorys: Category[] = await globalModel.SEARCH('CATEGORIES', 'name', name, 20);
-            
+
 
             const all_books = await Promise.all(categorys.map(async category => {
                 const ebook: Ebook = await globalModel.FINDONE('CATEGORIES', 'book_id', category.book_id);
-                 
+
                 const book: Book = await globalModel.FINDONE('BOOKS', 'id', category.book_id);
 
                 let EBOOK: Ebook = { status: null, format: null };

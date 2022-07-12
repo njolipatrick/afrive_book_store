@@ -1,5 +1,5 @@
 import globalModel from '../models/global.model';
-import CustomError from '../utiles/error.utile';
+import { CustomError } from '../utiles/error.utile';
 import Validator from 'validatorjs';
 import { Request } from 'express';
 import categoryModel, { Category } from '../models/category.model';
@@ -32,9 +32,9 @@ class CategoryService {
 
         return category;
     };
-    
-    public getCategorysByName = async (req:Request) => {
-        const {name} = req.body;
+
+    public getCategorysByName = async (req: Request) => {
+        const { name } = req.body;
         const category = await categoryModel.getCategorysByName(name);
         return category;
     };

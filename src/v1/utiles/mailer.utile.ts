@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer';
-import CustomError from './error.utile';
+import {CustomError} from './error.utile';
 import { config } from 'dotenv';
 import { formatMessage } from './response.util';
 config();

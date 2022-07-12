@@ -1,10 +1,9 @@
 import globalModel from '../models/global.model';
 import reviewModel, { Review, Rate } from '../models/review.model.ts';
-import CustomError from '../utiles/error.utile';
+import { CustomError } from '../utiles/error.utile';
 import Validator from 'validatorjs';
 import { Request } from 'express';
-import { decoder } from '../utiles/auth.utile';
-import book from '../routes/book.router';
+import { decoder } from '../utiles/auth.utile'; 
 
 class ReviewService {
     public create = async (req: Request): Promise<Rate> => {
@@ -78,7 +77,7 @@ class ReviewService {
             comment: 'string',
             rate: 'integer|max:5',
             review_id: 'integer'
-        }; 
+        };
 
         const validation = new Validator(data, rules);
         if (validation.fails()) {
@@ -94,8 +93,8 @@ class ReviewService {
 
         if (bookReview.user_id == data.user_id && bookReview.book_id != data.book_id) {
             throw new CustomError('Review doesn\'t exist for this user or book', 404);
-        } 
-        
+        }
+
 
         const findReview = await globalModel.CHECKMODEL('REVIEWS', 'id', data.review_id);
         if (!findReview) {

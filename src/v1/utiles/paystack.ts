@@ -1,8 +1,6 @@
-import { Request } from 'express';
 import dotenv from 'dotenv';
 import axios from 'axios';
-import CustomError from '../utiles/error.utile';
-import { formatMessage } from './response.util';
+import { CustomError } from '../utiles/error.utile';
 
 dotenv.config();
 
@@ -22,7 +20,7 @@ export const paystack = () => {
 				email: form.email,
 				amount: form.amount
 			};
-			const url = 'https://api.paystack.co/transaction/initialize'; 
+			const url = 'https://api.paystack.co/transaction/initialize';
 
 			return await axios.post(url, submit, {
 				headers:

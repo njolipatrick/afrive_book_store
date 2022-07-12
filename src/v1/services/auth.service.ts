@@ -1,7 +1,7 @@
 import { Request } from 'express';
 import Validator from 'validatorjs';
 import AuthModel, { User, Data } from '../models/auth.model';
-import CustomError from '../utiles/error.utile';
+import { CustomError } from '../utiles/error.utile';
 import { sendConfirmationEmail, ResetPasswordEmail, SuccessPasswordChange, sendWelcomeEmail } from '../utiles/mailer.utile';
 import authModel from '../models/auth.model';
 import { codeGenerator, slugify } from '../utiles/generator.util';
@@ -39,7 +39,7 @@ class AuthService {
             };
             return data;
         } else {
-            const randomUserCode = codeGenerator(36); 
+            const randomUserCode = codeGenerator(36);
             const newName = name.split(' ');
 
             const data: User = {
@@ -89,8 +89,8 @@ class AuthService {
         const findUser = await globalModel.CHECKMODEL('users', 'email', email);
         if (findUser) {
 
-            const user: Data | undefined = await AuthModel.login(email, password); 
-            
+            const user: Data | undefined = await AuthModel.login(email, password);
+
             return user;
         } else {
             throw new CustomError(`User with ${email} not found`, 404);

@@ -1,7 +1,7 @@
 import express, { Request, Response, Application, urlencoded, json } from 'express';
 import routerV1 from './v1/routes/index.router';
 const app: Application = express();
-import { notFoundHandler, errorController } from './v1/utiles/errorHandler';
+import { notFoundHandler, errorController } from './v1/utiles/error.utile';
 import cors from 'cors';
 // import morgan from 'morgan';
 // import fs from 'fs';

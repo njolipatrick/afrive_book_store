@@ -1,10 +1,9 @@
 import globalModel from '../models/global.model';
 import orderModel, { Order, Pay } from '../models/order.model';
-import CustomError from '../utiles/error.utile';
+import { CustomError } from '../utiles/error.utile';
 import Validator from 'validatorjs';
 import { Request } from 'express';
-import { decoder } from '../utiles/auth.utile';
-import { codeGenerator } from '../utiles/generator.util';
+import { decoder } from '../utiles/auth.utile'; 
 
 import { paystack } from '../utiles/paystack';
 import { User } from '../models/auth.model';
@@ -69,7 +68,6 @@ class OrderService {
         if (!orderRef) throw new CustomError(`Order not found for txn_ref ${reference}`, 404);
 
         const res = await verifyPayment(orderRef.txn_ref);
-        console.log(res.data.data.status);
 
         if (res.data.data.status === 'success') {
             const orderStatus = await orderModel.updateStatus(user_id, reference);

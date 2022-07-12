@@ -1,5 +1,5 @@
 import globalModel from '../models/global.model';
-import CustomError from '../utiles/error.utile';
+import { CustomError } from '../utiles/error.utile';
 import Validator from 'validatorjs';
 import { Request } from 'express';
 import ebookModel, { Ebook } from '../models/ebook.model';

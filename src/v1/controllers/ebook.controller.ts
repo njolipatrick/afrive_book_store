@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { response } from '../utiles/response.util';
-import catchAsync from '../utiles/catchAsync';
+import { catchAsync } from '../utiles/error.utile';
 import ebookService from '../services/ebook.service';
 
 class EbookController {

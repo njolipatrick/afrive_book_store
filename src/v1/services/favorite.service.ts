@@ -1,7 +1,7 @@
 import globalModel from '../models/global.model';
 import FavoriteModel, { Favorite, FavoriteDetails } from '../models/favorite.model';
 import { decoder } from '../utiles/auth.utile';
-import CustomError from '../utiles/error.utile';
+import { CustomError } from '../utiles/error.utile';
 import Validator from 'validatorjs';
 import { Request } from 'express';
 

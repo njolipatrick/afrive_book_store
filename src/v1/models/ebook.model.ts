@@ -1,12 +1,12 @@
 import client from '../../../config/database';
-import CustomError from '../utiles/error.utile';
+import { CustomError } from '../utiles/error.utile';
 import globalModel from './global.model';
 
 export type Ebook = {
     id?: number;
-    book_id?: string|null;
-    status?: boolean|null;
-    format?: string[]|null;
+    book_id?: string | null;
+    status?: boolean | null;
+    format?: string[] | null;
 }
 class EbooksModel {
     public create = async (data: Ebook) => {
@@ -45,8 +45,8 @@ class EbooksModel {
     public destroy = async (book_id: number) => {
         try {
             const ebook: Ebook = await globalModel.FINDONE('EBOOKS', 'book_id', book_id);
-             
-            
+
+
             const destroy = await globalModel.Destroy('EBOOKS', Number(ebook.id));
             return destroy ? destroy : false;
         } catch (error) {

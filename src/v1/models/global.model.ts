@@ -1,5 +1,5 @@
 import client from '../../../config/database';
-import CustomError from '../utiles/error.utile';
+import { CustomError } from '../utiles/error.utile';
 
 class GlobalQuery {
     async CHECKMODEL(model: string, table: string, value?: string | number): Promise<boolean> {
@@ -8,7 +8,7 @@ class GlobalQuery {
             const sql = `SELECT * FROM ${model} WHERE ${table}='${value}'`;
 
             const res = await conn.query(sql);
-            conn.release(); 
+            conn.release();
 
             return res.rowCount >= 1 ? true : false;
         } catch (error) {
@@ -22,7 +22,7 @@ class GlobalQuery {
             const res = await conn.query(sql);
 
             conn.release();
-            return res.rows[0];
+            return res.rows[0] === undefined ? {} : res.rows[0];
         } catch (error) {
             throw new CustomError(`${error}`, 404);
         }

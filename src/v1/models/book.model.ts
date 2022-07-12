@@ -1,10 +1,9 @@
 import client from '../../../config/database';
-import CustomError from '../utiles/error.utile';
+import { CustomError } from '../utiles/error.utile';
 import globalModel from './global.model';
 import { Category } from './category.model';
 import { Ebook } from './ebook.model';
-import { Rate, Review } from './review.model.ts';
-import reviewService from '../services/review.service';
+import { Rate, Review } from './review.model.ts'; 
 import { User } from './auth.model';
 export type NEWBOOKOBJ = {
     title: string;
@@ -278,7 +277,7 @@ class BookModel {
                 }
 
                 const rating = await this.rating(book.id);
-                
+
                 const category_array = await this.categories(book.id);
 
                 const details: ReturnedBook = {

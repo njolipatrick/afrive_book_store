@@ -1,5 +1,5 @@
 import client from '../../../config/database';
-import CustomError from '../utiles/error.utile';
+import { CustomError } from '../utiles/error.utile';
 import { User } from './auth.model';
 import { Book } from './book.model';
 import globalModel from './global.model';

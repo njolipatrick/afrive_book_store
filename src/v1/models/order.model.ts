@@ -1,5 +1,5 @@
 import client from '../../../config/database';
-import CustomError from '../utiles/error.utile';
+import { CustomError } from '../utiles/error.utile';
 import globalModel from './global.model';
 
 export type Pay = {
@@ -43,13 +43,13 @@ class OrderModel {
     public create = async (data: Order) => {
         try {
             const { user_id, txn_ref, book, total_order_amount, status, estimated_delivery_date, currency, checkout_url } = data;
-            const conn = await client.connect();             
+            const conn = await client.connect();
             const sql = 'INSERT INTO orders (user_id, txn_ref, book, total_order_amount, status, estimated_delivery_date, currency, checkout_url)VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *;';
             const values = [user_id, txn_ref, book, total_order_amount, status, estimated_delivery_date, currency, checkout_url];
-            const res = await conn.query(sql, values); 
+            const res = await conn.query(sql, values);
 
             const order: Order = res.rows[0];
-            conn.release(); 
+            conn.release();
 
             const details: Order = {
                 order_id: order.id,
@@ -104,7 +104,7 @@ class OrderModel {
             throw new CustomError(`${error}`, 500);
         }
     };
-    
+
     public updateStatus = async (user_id: string, reference: string) => {
         try {
             const conn = await client.connect();

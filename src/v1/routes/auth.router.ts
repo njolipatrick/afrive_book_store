@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import {verifyToken} from '../utiles/auth.utile';
+import { verifyToken } from '../utiles/auth.utile';
 import authController from '../controllers/auth.controller';
 const auth = Router();
 
@@ -10,7 +10,7 @@ auth.post('/login', authController.login);
 auth.get('/verify/:email/:token', authController.verifyEmail);
 auth.post('/send-reset-password-link/', authController.SendResetPasswordMail);
 auth.post('/reset-password/', authController.ResetPassword);
-auth.get('/test', (req, res) => {
+auth.get('/test', verifyToken, (req, res) => {
     res.status(200).json({ message: 'Ok' });
 });
 

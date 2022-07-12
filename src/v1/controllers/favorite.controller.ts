@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { response } from '../utiles/response.util';
-import catchAsync from '../utiles/catchAsync';
+import { catchAsync } from '../utiles/error.utile';
 import favoriteService from '../services/favorite.service';
 
 class FavoriteController {

@@ -1,5 +1,5 @@
 import client from '../../../config/database';
-import CustomError from '../utiles/error.utile';
+import { CustomError } from '../utiles/error.utile';
 import { User } from './auth.model';
 import { Book } from './book.model';
 import globalModel from './global.model';
@@ -42,7 +42,7 @@ class FavoriteModel {
             throw new CustomError(`${error}`, 500);
         }
     };
-    public index = async (user_id:string|number): Promise<FavoriteDetails[]> => {
+    public index = async (user_id: string | number): Promise<FavoriteDetails[]> => {
         try {
             const favorites: Favorite[] = await globalModel.FINDWHERE('FAVORITES', 'user_id', user_id);
 
