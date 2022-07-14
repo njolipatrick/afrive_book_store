@@ -3,7 +3,7 @@ import { CustomError } from '../utiles/error.utile';
 import globalModel from './global.model';
 import { Category } from './category.model';
 import { Ebook } from './ebook.model';
-import { Rate, Review } from './review.model.ts'; 
+import { Rate, Review } from './review.model.ts';
 import { User } from './auth.model';
 export type NEWBOOKOBJ = {
     title: string;
@@ -124,7 +124,8 @@ class BookModel {
             const details: Rate = {
                 name: `${user.firstname} ${user.lastname}`,
                 comment: review.comment,
-                startRating: review.rate
+                startRating: review.rate,
+                date: review.updated_at
             };
             return details;
         }));

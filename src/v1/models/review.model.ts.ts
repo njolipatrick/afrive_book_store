@@ -11,12 +11,15 @@ export type Review = {
     user_id: string | number;
     book_id: string | number;
     rate: number;
+    date?: string;
+    updated_at?: string;
 }
 export type Rate = {
     review_id?: number;
     name: string;
     comment: string;
     startRating: number;
+    date?: string;
 }
 
 class ReviewModel {
@@ -36,7 +39,8 @@ class ReviewModel {
                 review_id: review.id,
                 name: `${user.firstname} ${user.lastname}`,
                 comment: review.comment,
-                startRating: review.rate
+                startRating: review.rate,
+                date: review.updated_at
             };
             return details;
         } catch (error) {
@@ -55,7 +59,8 @@ class ReviewModel {
                     review_id: review.id,
                     name: `${user.firstname} ${user.lastname}`,
                     comment: review.comment,
-                    startRating: review.rate
+                    startRating: review.rate,
+                    date: review.updated_at
                 };
                 return details;
             }));
@@ -76,7 +81,8 @@ class ReviewModel {
                     review_id: review.id,
                     name: `${user.firstname} ${user.lastname}`,
                     comment: review.comment,
-                    startRating: review.rate
+                    startRating: review.rate,
+                    date: review.updated_at
                 };
                 return details;
             }));
@@ -97,7 +103,8 @@ class ReviewModel {
                     review_id: review.id,
                     name: `${user.firstname} ${user.lastname}`,
                     comment: review.comment,
-                    startRating: review.rate
+                    startRating: review.rate,
+                    date: review.updated_at
                 };
                 return details;
             }));
@@ -124,7 +131,8 @@ class ReviewModel {
             const details: Rate = {
                 name: `${user.firstname} ${user.lastname}`,
                 comment: review.comment,
-                startRating: review.rate
+                startRating: review.rate,
+                date: review.updated_at
             };
             return details;
         } catch (error) {
