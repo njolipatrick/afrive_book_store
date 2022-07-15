@@ -122,6 +122,7 @@ class BookModel {
             const user: User = await globalModel.FINDONE('Users', 'id', review.user_id);
 
             const details: Rate = {
+                review_id: review.id,
                 name: `${user.firstname} ${user.lastname}`,
                 comment: review.comment,
                 startRating: review.rate,
@@ -316,10 +317,8 @@ class BookModel {
 
             if (ebook === undefined) {
                 newEbook = { status: null, format: null };
-
             } else {
                 newEbook = { status: ebook.status, format: [String(ebook.format)] };
-
             }
 
             const rating = await this.rating(book.id);

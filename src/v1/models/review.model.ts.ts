@@ -129,6 +129,7 @@ class ReviewModel {
             const user: User = await globalModel.FINDONE('Users', 'id', user_id);
 
             const details: Rate = {
+                review_id: review.id,
                 name: `${user.firstname} ${user.lastname}`,
                 comment: review.comment,
                 startRating: review.rate,
