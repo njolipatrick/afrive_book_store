@@ -122,7 +122,6 @@ class ReviewModel {
             const values = [comment, rate, user_id, book_id, review_id];
             const res = await conn.query(sql, values);
 
-
             conn.release();
 
             const review: Review = res.rows[0];
