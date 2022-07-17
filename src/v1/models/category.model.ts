@@ -40,7 +40,6 @@ class CategoryModel {
 
             const categorys: Category[] = await globalModel.SEARCH('CATEGORIES', 'name', name, 20);
 
-
             const all_books = await Promise.all(categorys.map(async category => {
                 const ebook: Ebook = await globalModel.FINDONE('CATEGORIES', 'book_id', category.book_id);
 

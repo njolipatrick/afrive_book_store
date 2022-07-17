@@ -125,7 +125,7 @@ class BookModel {
                 review_id: review.id,
                 name: `${user.firstname} ${user.lastname}`,
                 comment: review.comment,
-                startRating: review.rate,
+                startRating: review.rate > 0 ? review.rate : 1,
                 date: review.updated_at
             };
             return details;
@@ -139,7 +139,8 @@ class BookModel {
             count += element.startRating;
         });
         const length = reviewsRate.length;
-        return count / length;
+        const rate = count / length;
+        return rate > 0 ? rate : 1;
     };
     public index = async (limit: number) => {
         try {
