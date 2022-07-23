@@ -10,7 +10,7 @@
 		"dev": "nodemon src/server.ts",
 		"build": "db-migrate --env production up",
 		"jasmine": "NODE_ENV=test jasmine",
-		"test-up": "npx tsc && db-migrate --env test up && npm run jasmine",
+		"test": "npx tsc && db-migrate --env test up && npm run jasmine",
 		"test-down": "db-migrate --env test down --count 20",
 		"postinstall": "tsc",
 		"reset": "db-migrate reset && db-migrate up && npm run dev"
