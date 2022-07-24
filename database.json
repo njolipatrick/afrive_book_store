@@ -1,6 +1,6 @@
 {
 	"production": {
-		"driver": { "ENV": "DRIVER" },
+		"driver": "pg",
 		"host": { "ENV": "POSTGRES_HOST_PROD" },
 		"database": { "ENV": "POSTGRES_DB_PROD" },
 		"user": { "ENV": "POSTGRES_USER_PROD" },
@@ -8,14 +8,14 @@
 		"ssl": { "rejectUnauthorized": false }
 	},
 	"dev": {
-		"driver": { "ENV": "DRIVER" },
+		"driver": "pg",
 		"host": { "ENV": "POSTGRES_HOST" },
 		"database": { "ENV": "POSTGRES_DEV_DB" },
 		"user": { "ENV": "POSTGRES_USER" },
 		"password": { "ENV": "POSTGRES_PASSWORD" }
 	},
 	"test": {
-		"driver": { "ENV": "DRIVER" },
+		"driver": "pg",
 		"host": { "ENV": "POSTGRES_HOST" },
 		"database": { "ENV": "POSTGRES_TEST_DB" },
 		"user": { "ENV": "POSTGRES_USER" },
