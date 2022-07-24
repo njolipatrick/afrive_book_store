@@ -18,6 +18,52 @@ jobs:
       API_SECRET: ${{ secrets.API_SECRET }}
       CLOUD_NAME: ${{ secrets.CLOUD_NAME }}
       
+
+# service containers to run with `postgres-job`
+    services:
+      # label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgres:latest
+        # service environment variables
+        # `POSTGRES_HOST` is `postgres`
+        env:
+          # optional (defaults to `postgres`)
+          POSTGRES_DB: ${{SECRET.POSTGRES_DEV_DB}}
+          # required
+          POSTGRES_PASSWORD: ${{SECRET.POSTGRES_PASSWORD}}
+          # optional (defaults to `5432`)
+          POSTGRES_PORT: 5432
+          # optional (defaults to `postgres`)
+          POSTGRES_USER: ${{SECRET.POSTGRES_USER}}
+        ports:
+          # maps tcp port 5432 on service container to the host
+          - 5432:5432
+        # set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Install PostgreSQL client
+        run: |
+          apt-get update
+          apt-get install --yes postgresql-client
+
+      # queries database with postgres client
+      - name: Query database
+        run: psql -h postgres -d ${{SECRET.POSTGRES_DEV_DB}} -U ${{SECRET.POSTGRES_USER}} -c 'SELECT 1;'
+        env:
+          # postgress password is required; alternatively, you can run:
+          # `PGPASSWORD=postgres_password psql ...`
+          PGPASSWORD: ${{SECRET.POSTGRES_PASSWORD}}
+
+
+
+
+
     strategy:
       matrix:
         node-version: [16.x]
