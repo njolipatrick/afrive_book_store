@@ -8,7 +8,7 @@
 		"lint": "npx prettier --write . && npx eslint",
 		"start": "NODE_ENV=production node build/src/server.js",
 		"dev": "nodemon src/server.ts",
-		"build": "db-migrate --env production up",
+		"build": "db-migrate --env dev up",
 		"jasmine": "NODE_ENV=test jasmine",
 		"test": "npx tsc && db-migrate --env test up && npm run jasmine",
 		"test-down": "db-migrate --env test down --count 20",
