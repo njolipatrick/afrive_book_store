@@ -1,24 +1,24 @@
 {
 	"production": {
-		"driver": "pg",
-		"host": "ec2-52-73-184-24.compute-1.amazonaws.com",
-		"database": "dfpcedps04iiuk",
-		"user": "xgykckdqlglteu",
-		"password": "b911bbf1accc254a3d1d808b1669cd81a974474179b195d18453584c49277656",
+		"driver": { "ENV": "DRIVER" },
+		"host": { "ENV": "POSTGRES_HOST_PROD" },
+		"database": { "ENV": "POSTGRES_DB_PROD" },
+		"user": { "ENV": "POSTGRES_USER_PROD" },
+		"password": { "ENV": "POSTGRES_PASSWORD_PROD" },
 		"ssl": { "rejectUnauthorized": false }
 	},
 	"dev": {
-		"driver": "pg",
-		"host": "127.0.0.1",
-		"database": "abs_dev",
-		"user": "njoli",
-		"password": "6theog"
+		"driver": { "ENV": "DRIVER" },
+		"host": { "ENV": "POSTGRES_HOST" },
+		"database": { "ENV": "POSTGRES_DEV_DB" },
+		"user": { "ENV": "POSTGRES_USER" },
+		"password": { "ENV": "POSTGRES_PASSWORD" }
 	},
 	"test": {
-		"driver": "pg",
-		"host": "127.0.0.1",
-		"database": "abs_test",
-		"user": "njoli",
-		"password": "6theog"
+		"driver": { "ENV": "DRIVER" },
+		"host": { "ENV": "POSTGRES_HOST" },
+		"database": { "ENV": "POSTGRES_TEST_DB" },
+		"user": { "ENV": "POSTGRES_USER" },
+		"password": { "ENV": "POSTGRES_PASSWORD" }
 	}
 }
