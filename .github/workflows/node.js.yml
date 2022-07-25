@@ -5,31 +5,42 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ "production" ]
+    branches: ['production']
   pull_request:
-    branches: [ "production" ]
+    branches: ['production']
 
 jobs:
-  build:
-
+  integration-test:
     runs-on: ubuntu-latest
-    env: 
-      API_KEY: ${{ secrets.API_KEY }}
-      API_SECRET: ${{ secrets.API_SECRET }}
-      CLOUD_NAME: ${{ secrets.CLOUD_NAME }}
-      
     strategy:
       matrix:
-        node-version: [16.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
+        node-version: [14.x]
+    services:
+      postgres:
+        image: postgres:12-alpine
+        env:
+          POSTGRES_USER: localUser
+          POSTGRES_PASSWORD: localPassword
+          POSTGRES_DB: test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm ci
-    - run: npm run build 
-    - run: npm test
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile
+      - name: Integration testing
+        run: |
+          npm ci
+          npm run build 
+          npm test
+        env:
+          DATABASE_URL: postgresql://localUser:localPassword@localhost:5432/test
