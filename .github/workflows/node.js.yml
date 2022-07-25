@@ -5,11 +5,7 @@ name: Node.js CI
 
 on:
   push:
-<<<<<<< HEAD
-    branches: ['production']
-=======
     branches: ['production', 'dev']
->>>>>>> f370e78ab05e6dadab70fe4429b5e7b8635cb2c4
   pull_request:
     branches: ['production']
 
