@@ -46,6 +46,4 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - run: npm run build
-          env:
-              DATABASE_URL: postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@localhost:5432/${{ secrets.POSTGRES_DEV_DB }}
       - run: npm test
