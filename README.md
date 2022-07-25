@@ -6,19 +6,12 @@ Afrive is a web app that allows users to shop for books from various African aut
 
 ## API Documentation
 
-The documentation for the Pstit API can be found here [Afrive Book Store API Docs](https://documenter.getpostman.com/view/11537019/UzBmM7a1)
+The documentation for the Afrive Book API can be found here [Afrive Book Store API Docs](https://documenter.getpostman.com/view/11537019/UzBmM7a1)
 
 ## Features
 
 Based on API Endpoints requirement, the features covered for the endpoints are:
 
-Books
-
-- Index
-- Show
-- Search By (Category, Title, Author)
-- Create [token required]
-- Delete [token required]
 
 Authentication
 
@@ -29,6 +22,14 @@ Authentication
 - Reset Password
 - Get Google URL
 - Login with Google endpoint
+
+Books
+
+- Index
+- Show
+- Search By (Category, Title, Author)
+- Create [token required]
+- Delete [token required]
 
 Orders
 

@@ -5,11 +5,16 @@ name: Node.js CI
 
 on:
   push:
+<<<<<<< HEAD
     branches: ['production']
+=======
+    branches: ['production', 'dev']
+>>>>>>> f370e78ab05e6dadab70fe4429b5e7b8635cb2c4
   pull_request:
     branches: ['production']
 
 jobs:
+<<<<<<< HEAD
   integration-test:
     runs-on: ubuntu-latest
     strategy:
@@ -24,11 +29,36 @@ jobs:
           POSTGRES_DB: test
         ports:
           - 5432:5432
+=======
+  build:
+    runs-on: ubuntu-latest
+    env:
+      API_KEY: ${{ secrets.API_KEY }}
+      API_SECRET: ${{ secrets.API_SECRET }}
+      CLOUD_NAME: ${{ secrets.CLOUD_NAME }}
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    # Service containers to run with `runner-job`
+    services:
+      # Label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgres:12-alpine
+        # Provide the password for postgres
+        env:
+          POSTGRES_PASSWORD: 6theog
+        # Set health checks to wait until postgres has started
+>>>>>>> f370e78ab05e6dadab70fe4429b5e7b8635cb2c4
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+<<<<<<< HEAD
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
@@ -44,3 +74,34 @@ jobs:
           npm test
         env:
           DATABASE_URL: postgresql://localUser:localPassword@localhost:5432/test
+=======
+        ports:
+          # Maps tcp port 5432 on service container to the host
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      # Performs a clean installation of all dependencies in the `package.json` file
+      # For more information, see https://docs.npmjs.com/cli/ci.html
+      - name: Install dependencies
+      - run: npm ci
+
+      - name: Connect to PostgreSQL
+        # Runs a script that creates a PostgreSQL table, populates
+        # the table with data, and then retrieves the data
+        run: node client.js
+        # Environment variables used by the `client.js` script to create
+        # a new PostgreSQL table.
+        env:
+          # The hostname used to communicate with the PostgreSQL service container
+          POSTGRES_HOST: 127.0.0.1
+          # The default PostgreSQL port
+          POSTGRES_PORT: 5432
+      - run: npm run build
+      - run: npm test
+>>>>>>> f370e78ab05e6dadab70fe4429b5e7b8635cb2c4
