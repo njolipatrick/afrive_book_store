@@ -5,7 +5,7 @@
 		"database": { "ENV": "POSTGRES_DB_PROD" },
 		"user": { "ENV": "POSTGRES_USER_PROD" },
 		"password": { "ENV": "POSTGRES_PASSWORD_PROD" },
-		"ssl": { "rejectUnauthorized": false }
+		"ssl": { "rejectUnauthorized": true }
 	},
 	"dev": {
 		"driver": "pg",
