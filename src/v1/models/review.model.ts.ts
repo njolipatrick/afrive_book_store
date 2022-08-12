@@ -116,7 +116,7 @@ class ReviewModel {
     public update = async (data: Review) => {
         try {
             const { comment, user_id, book_id, rate, review_id } = data;
-
+           
             const conn = await client.connect();
             const sql = 'UPDATE Reviews SET comment = $1, rate=$2 WHERE user_id = $3 AND book_id = $4 AND id = $5 RETURNING *;';
             const values = [comment, rate, user_id, book_id, review_id];
