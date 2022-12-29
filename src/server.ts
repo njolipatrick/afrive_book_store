@@ -1,10 +1,10 @@
 import app from './app';
 import dotenv from 'dotenv';
 dotenv.config();
-const { ADDRESS } = process.env;
+const { ADDRESS, PORT } = process.env;
 
-const PORT = process.env.PORT || 8000;
+const SERVICEPORT: number = PORT as unknown as number || 8000;
 
 app.listen(PORT, (): void => {
-    console.log(`Server running on http://${ADDRESS}:${PORT}`);
+    console.log(`Server running on http://${ADDRESS}:${SERVICEPORT}`);
 });

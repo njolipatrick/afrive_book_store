@@ -3,11 +3,12 @@ import {CustomError} from './error.utile';
 import { config } from 'dotenv';
 import { formatMessage } from './response.util';
 config();
-const { MAIL_USER, MAIL_PASSWORD, MAILER, BASE_URL, MAIL_HOST, CLIENT_BASE_URL } = process.env;
+const { MAIL_USER, MAIL_PASSWORD, MAILER, MAIL_HOST, CLIENT_BASE_URL } = process.env;
 
 const transport = nodemailer.createTransport(
     {
-        service: MAIL_HOST,
+        host: MAIL_HOST,
+        port: 2525,
         auth: {
             user: MAIL_USER,
             pass: MAIL_PASSWORD
@@ -27,7 +28,7 @@ export const sendConfirmationEmail = async (name: string, email: string, confirm
         <a href=${CLIENT_BASE_URL}/api/v1/auth/verify/${email}/${confirmationCode}> Click here</a>
         </div>`,
         });
-    } catch (error) {
+    } catch (error) { 
         throw new CustomError('Confirmation email not sent', 500);
     }
 };
@@ -60,7 +61,7 @@ export const ResetPasswordEmail = async (email: string, confirmationCode?: strin
             <a href=${CLIENT_BASE_URL}/reset-password?email=${email}&code=${confirmationCode}> Click here</a> 
             </div>`,
         });
-    } catch (error) {
+    } catch (error) {         
         throw new CustomError(`${error}`, 500);
     }
 };
