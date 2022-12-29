@@ -1,11 +1,5 @@
 {
-	"prod": {
-		"driver": "pg",
-		"host": { "ENV": "POSTGRES_HOST_PROD" },
-		"database": { "ENV": "POSTGRES_DB_PROD" },
-		"user": { "ENV": "POSTGRES_USER_PROD" },
-		"password": { "ENV": "POSTGRES_PASSWORD_PROD" }
-	},
+	"prod": {"ENV": "DATABASE_URL"},
 	"dev": {
 		"driver": "pg",
 		"host": { "ENV": "POSTGRES_HOST" },

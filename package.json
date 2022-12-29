@@ -6,14 +6,15 @@
 	"main": "src/v1/server.ts",
 	"scripts": {
 		"lint": "npx prettier --write . && npx eslint",
-		"start": "NODE_ENV=production node build/src/server.js",
+		"start": "npm run migrate",
 		"dev": "nodemon src/server.ts",
 		"build": "tsc",
 		"jasmine": "NODE_ENV=test jasmine",
-		"test": "npx tsc && db-migrate --env test up && npm run jasmine",
+		"test": "npx tsc && db-migrate --env dev up && npm run jasmine",
 		"test-down": "db-migrate --env test down --count 20",
 		"postinstall": "tsc",
-		"reset": "db-migrate reset && db-migrate up && npm run dev"
+		"reset": "db-migrate  --env production reset && db-migrate  --env production up && npm run dev",
+		"migrate": "npm run build && db-migrate  --env production up && node build/src/server.js"
 	},
 	"repository": {
 		"type": "git",
