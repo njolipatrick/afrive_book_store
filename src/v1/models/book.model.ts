@@ -1,110 +1,356 @@
 import client from '../../../config/database';
-import CustomError from '../utiles/error.utile';
+import { CustomError } from '../utiles/error.utile';
 import globalModel from './global.model';
+import { Category } from './category.model';
+import { Ebook } from './ebook.model';
+import { Rate, Review } from './review.model.ts';
+import { User } from './auth.model';
+export type NEWBOOKOBJ = {
+    title: string;
+    image: string;
+    author: string;
+    price: string;
+    description: string;
+    status: string;
+}
 
 export type Book = {
     id: number;
     title: string;
-    isbn: string;
     author: string;
-    publisher: string;
-    genre: string;
-    image_link?: string;
+    img?: string;
+    image?: string;
     description: string;
     price: number;
     status: string;
+    name?: string;
     format?: string;
-    hasEbook: boolean;
-    category?: string[] | string;
-    averageRating?: string[];
-    eBook?: {
-        status: string;
-        format?: string[];
-    },
+    comment?: string;
+    user_id?: string;
+    rate?: string;
 }
+export type ReturnedBook = {
+    id: number;
+    title: string;
+    author: string;
+    img?: string;
+    description: string;
+    price: number,
+    status: string;
+
+    category?: string[],
+
+    eBook?: { status?: boolean | null; format?: string[] | null };
+    bookRating?: {
+        averageRating?: number;
+        ratings?: Rate[]
+    }
+}
+
 class BookModel {
 
     public create = async (data: Book) => {
         try {
-            const { title, isbn, author, publisher, genre, format, category, image_link, hasEbook, description, price, status, averageRating, eBook } = data;
+            const { rate, comment, user_id, name, format, title, author, img, description, price, status } = data;
             const conn = await client.connect();
-            let sql = 'INSERT INTO books (title, ISBN, author, publisher, genre, image_link, hasEbook, description, price)VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *;';
-            let values = [title, isbn, author, publisher, genre, image_link, hasEbook, description, price];
-            const res = await conn.query(sql, values);
-            const book: Book = res.rows[0];
-            const book_id = res.rows[0].id;
 
-            if (hasEbook) {
-                sql = 'INSERT INTO ebooks(status, format, book_id)VALUES($1, $2, $3)RETURNING *;';
-                values = [status, format, book_id];
-                const addEbook = await conn.query(sql, values);
-                book.eBook = {
-                    status: addEbook.rows[0].status,
-                    format: [addEbook.rows[0].format]
-                };
-            }
-            if (!category) {
-                conn.release();
-                return book;
-            }
-            sql = 'INSERT INTO categories(name, book_id)VALUES($1, $2) RETURNING *;';
-            values = [category, book_id];
-            const addCategory = await conn.query(sql, values);
-            book.category = [addCategory.rows[0].name];
+            //Create book
+            let sql = 'INSERT INTO books (title, author, image, description, price, status)VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;';
+            let values = [title, author, img, description, price, status];
+            const resB = await conn.query(sql, values);
+            const book: Book = resB.rows[0];
+
+            //Create Category
+            sql = 'INSERT INTO categories (book_id, name)VALUES ($1, $2) RETURNING *;';
+            values = [book.id, name];
+            await conn.query(sql, values);
+            // const category: Category = resC.rows[0];
+
+            //Create Ebook
+            sql = 'INSERT INTO ebooks (book_id, status, format)VALUES ($1, $2, $3) RETURNING *;';
+            values = [book.id, status, format];
+            const resE = await conn.query(sql, values);
+            const ebook: Ebook = resE.rows[0];
+
+            // Create Review
+            // sql = 'INSERT INTO reviews (comment, user_id, book_id, rate)VALUES ($1, $2, $3, $4) RETURNING *;';
+            // values = [comment, user_id, book.id, rate];
+            // const resR = await conn.query(sql, values);
+            // const review: Review = resR.rows[0];
+
+            const category_array = await this.categories(book.id);
+            const rating = await this.rating(book.id);
+
+            const newBook: ReturnedBook = {
+                id: book.id,
+                title: book.title,
+                author: book.author,
+                img: book.image,
+                description: book.description,
+                price: book.price,
+                status: book.status,
+                category: category_array,
+                eBook: { status: ebook.status, format: [String(ebook.format)] },
+                bookRating: {
+                    averageRating: this.averageRating(rating),
+                    ratings: rating //Return an array of all rating to book
+                }
+            };
+
             conn.release();
-            return book;
+            return newBook;
         } catch (error) {
             throw new CustomError(`${error}`, 500);
         }
     };
-    public index = async () => {
+    public categories = async (book_id: string | number): Promise<string[]> => {
+        //Get all Category
+        const all_category: Category[] = await globalModel.FINDWHERE('CATEGORIES', 'book_id', book_id);
+
+        const categories: string[] = [];
+
+        all_category.forEach((category) => {
+            categories.push(category.name);
+        });
+        return categories;
+    };
+    public rating = async (book_id: string | number): Promise<Rate[]> => {
+
+        const reviews: Review[] = await globalModel.FINDWHERE('REVIEWS', 'book_id', book_id);
+
+        const all_reviews: Rate[] = await Promise.all(reviews.map(async review => {
+            const user: User = await globalModel.FINDONE('Users', 'id', review.user_id);
+
+            const details: Rate = {
+                review_id: review.id,
+                name: `${user.firstname} ${user.lastname}`,
+                comment: review.comment,
+                startRating: review.rate > 0 ? review.rate : 1,
+                date: review.updated_at
+            };
+            return details;
+        }));
+
+        return all_reviews;
+    };
+    public averageRating = (reviewsRate: Rate[]) => {
+        let count = 0;
+        reviewsRate.forEach(element => {
+            count += element.startRating;
+        });
+        const length = reviewsRate.length;
+        const rate = count / length;
+        return rate > 0 ? rate : 1;
+    };
+    public index = async (limit: number) => {
         try {
-            const conn = await client.connect();
-            const sql = 'SELECT * FROM books ORDER BY id DESC;';
-            const res = await conn.query(sql);
+            const books: Book[] = await globalModel.FINDALL('Books', limit);
 
-            const books = res.rows;
+            const all_books = await Promise.all(books.map(async book => {
+                const ebook: Ebook = await globalModel.FINDONE('ebooks', 'book_id', book.id);
+                let newEbook: Ebook = { status: null, format: null };
+                if (ebook === undefined) {
+                    newEbook = { status: null, format: null };
 
-            return books;
+                } else {
+                    newEbook = { status: ebook.status, format: [String(ebook.format)] };
+
+                }
+                const rating = await this.rating(book.id);
+
+                const category_array = await this.categories(book.id);
+                const details: ReturnedBook = {
+                    id: book.id,
+                    title: book.title,
+                    author: book.author,
+                    img: book.image,
+                    description: book.description,
+                    price: book.price,
+                    status: book.status,
+                    category: category_array,
+                    eBook: newEbook,
+                    bookRating: {
+                        averageRating: this.averageRating(rating),
+                        ratings: rating //Return an array of all rating to book
+                    }
+                };
+                return details;
+            }));
+
+            return all_books;
+        } catch (error) {
+            throw new CustomError(`${error}`, 500);
+        }
+    };
+    public SearcBooksCategoryByName = async (name: string): Promise<ReturnedBook[]> => {
+        try {
+
+            const categorys: Category[] = await globalModel.SEARCH('CATEGORIES', 'name', name, 20);
+
+            const all_books = await Promise.all(categorys.map(async category => {
+                const ebook: Ebook = await globalModel.FINDONE('CATEGORIES', 'book_id', category.book_id);
+                const book: Book = await globalModel.FINDONE('BOOKS', 'id', category.book_id);
+
+                let newEbook: Ebook = { status: null, format: null };
+
+                if (ebook === undefined) {
+                    newEbook = { status: null, format: null };
+                } else {
+                    newEbook = { status: ebook.status, format: [String(ebook.format)] };
+                }
+                const rating = await this.rating(category.book_id);
+
+                const category_array = await this.categories(category.book_id);
+                const details: ReturnedBook = {
+                    id: book.id,
+                    title: book.title,
+                    author: book.author,
+                    img: book.image,
+                    description: book.description,
+                    price: book.price,
+                    status: book.status,
+                    category: category_array,
+                    eBook: newEbook,
+                    bookRating: {
+                        averageRating: this.averageRating(rating),
+                        ratings: rating //Return an array of all rating to book
+                    }
+                };
+                return details;
+            }));
+            return all_books;
+        } catch (error) {
+            throw new CustomError(`${error}`, 500);
+        }
+    };
+    public SearcBooksByAuthor = async (author: string): Promise<ReturnedBook[]> => {
+        try {
+            const books: Book[] = await globalModel.SEARCH('Books', 'author', author, 3);
+
+            const all_books = await Promise.all(books.map(async book => {
+                const ebook: Ebook = await globalModel.FINDONE('EBOOKS', 'book_id', book.id);
+
+                let newEbook: Ebook = { status: null, format: null };
+
+                if (ebook === undefined) {
+                    newEbook = { status: null, format: null };
+                } else {
+                    newEbook = { status: ebook.status, format: [String(ebook.format)] };
+                }
+
+                const rating = await this.rating(book.id);
+
+                const category_array = await this.categories(book.id);
+                const details: ReturnedBook = {
+                    id: book.id,
+                    title: book.title,
+                    author: book.author,
+                    img: book.image,
+                    description: book.description,
+                    price: book.price,
+                    status: book.status,
+                    category: category_array,
+                    eBook: newEbook,
+                    bookRating: {
+                        averageRating: this.averageRating(rating),
+                        ratings: rating //Return an array of all rating to book
+                    }
+                };
+                return details;
+            }));
+            return all_books;
+        } catch (error) {
+            throw new CustomError(`${error}`, 500);
+        }
+    };
+    public SearcBooksByTitle = async (title: string): Promise<ReturnedBook[]> => {
+        try {
+
+            const books: Book[] = await globalModel.SEARCH('Books', 'title', title, 10);
+
+            const all_books = await Promise.all(books.map(async book => {
+                const ebook: Ebook = await globalModel.FINDONE('EBOOKS', 'book_id', book.id);
+
+                let newEbook: Ebook = { status: null, format: null };
+
+                if (ebook === undefined) {
+                    newEbook = { status: null, format: null };
+                } else {
+                    newEbook = { status: ebook.status, format: [String(ebook.format)] };
+                }
+
+                const rating = await this.rating(book.id);
+
+                const category_array = await this.categories(book.id);
+
+                const details: ReturnedBook = {
+                    id: book.id,
+                    title: book.title,
+                    author: book.author,
+                    img: book.image,
+                    description: book.description,
+                    price: book.price,
+                    status: book.status,
+                    category: category_array,
+                    eBook: newEbook,
+                    bookRating: {
+                        averageRating: this.averageRating(rating),
+                        ratings: rating //Return an array of all rating to book
+                    }
+                };
+                return details;
+            }));
+            return all_books;
         } catch (error) {
             throw new CustomError(`${error}`, 500);
         }
     };
     public show = async (id: number) => {
         try {
-            const conn = await client.connect();
-            let sql = 'SELECT * FROM books WHERE id=$1 RETURNING *;';
-            let values = [id];
-            const res = await conn.query(sql, values);
-            const book: Book = res.rows[0];
-            sql = 'SELECT * FROM categories WHERE book_id=$1 ORDER BY book_id DESC RETURNING *;';
-            values = [book.id];
-            const category = await conn.query(sql, values);
-            book.category = [category.rows[0].category];
-            if (book.hasEbook) {
-                sql = 'SELECT * FROM ebooks WHERE book_id=$1 ORDER BY book_id DESC RETURNING *;';
-                values = [book.id];
-                const addEbook = await conn.query(sql, values);
-                book.eBook = {
-                    status: addEbook.rows[0].status,
-                    format: [addEbook.rows[0].format]
-                };
-                return book;
+
+            const book: Book = await globalModel.FINDONE('BOOKS', 'id', id);
+
+            const ebook: Ebook = await globalModel.FINDONE('EBOOKS', 'book_id', book.id);
+
+            const category_array = await this.categories(book.id);
+
+            let newEbook: Ebook = { status: null, format: null };
+
+            if (ebook === undefined) {
+                newEbook = { status: null, format: null };
+            } else {
+                newEbook = { status: ebook.status, format: [String(ebook.format)] };
             }
-            return book;
+
+            const rating = await this.rating(book.id);
+
+            const newBook: ReturnedBook = {
+                id: book.id,
+                title: book.title,
+                author: book.author,
+                img: book.image,
+                description: book.description,
+                price: book.price,
+                status: book.status,
+                category: category_array,
+                eBook: newEbook,
+                bookRating: {
+                    averageRating: this.averageRating(rating),
+                    ratings: rating //Return an array of all rating to book
+                }
+            };
+            return newBook;
         } catch (error) {
             throw new CustomError('Internal Server Error', 500);
         }
     };
     public update = async (id: number, data: Book) => {
         try {
-            const { title, isbn, author, publisher,
-                genre, image_link, description,
-                status, price, format, hasEbook } = data;
+            const { title, author, image, description, price, status } = data;
 
             const conn = await client.connect();
-            const sql = 'UPDATE books SET title = $1, isbn = $2, author=$3, publisher=$4, genre=$5, image_link=$6, description=$7, price=$8, format=$9, status=$10 hasEbook=$11  WHERE id = $12';
-            const values = [title, isbn, author, publisher, genre, image_link, description, String(price), String(format), status, String(hasEbook)];
+            const sql = 'UPDATE books SET title = $1, author = $2, image=$3, description=$4, price=$5, status=$6 WHERE id = $7';
+            const values = [title, author, image, description, price, status, id];
             const result = await conn.query(sql, values);
             return result.rows[0];
         } catch (error) {
@@ -113,7 +359,7 @@ class BookModel {
     };
     public destroy = async (book_id: number) => {
         try {
-            const destroy = await globalModel.Destroy(book_id);
+            const destroy = await globalModel.Destroy('BOOKS', book_id);
             return destroy ? destroy : false;
         } catch (error) {
             throw new CustomError('Internal Server Error', 500);

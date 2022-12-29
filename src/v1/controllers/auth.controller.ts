@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import authService from '../services/auth.service';
-import catchAsync from '../utiles/catchAsync';
+import {catchAsync} from '../utiles/error.utile';
 import { User } from '../models/auth.model';
 import { response } from '../utiles/response.util';
 class AutheticationController {
@@ -26,7 +26,7 @@ class AutheticationController {
     });
     public SendResetPasswordMail = catchAsync(async (req: Request, res: Response): Promise<void | User | undefined> => {
         const result = await authService.SendResetPasswordMail(req);
-        res.status(200).json(response('Password Resent Email Sent Successfully', result));
+        res.status(200).json(response('Password Reset Email Sent Successfully', result));
     });
     public ResetPassword = catchAsync(async (req: Request, res: Response): Promise<void | User | undefined> => {
         const result = await authService.ResetPassword(req);

@@ -1,15 +1,14 @@
 import nodemailer from 'nodemailer';
-import CustomError from './error.utile';
+import {CustomError} from './error.utile';
 import { config } from 'dotenv';
 import { formatMessage } from './response.util';
 config();
-const { MAIL_HOST, MAIL_PORT, MAIL_USER, MAIL_PASSWORD, MAILER, PORT, ADDRESS } = process.env;
-
+const { MAIL_USER, MAIL_PASSWORD, MAILER, MAIL_HOST, CLIENT_BASE_URL } = process.env;
 
 const transport = nodemailer.createTransport(
     {
-        host: String(MAIL_HOST),
-        port: Number(MAIL_PORT),
+        host: MAIL_HOST,
+        port: 2525,
         auth: {
             user: MAIL_USER,
             pass: MAIL_PASSWORD
@@ -18,6 +17,7 @@ const transport = nodemailer.createTransport(
 
 export const sendConfirmationEmail = async (name: string, email: string, confirmationCode?: string) => {
     try {
+        await transport.verify();
         await transport.sendMail({
             from: String(MAILER),
             to: email,
@@ -25,15 +25,16 @@ export const sendConfirmationEmail = async (name: string, email: string, confirm
             html: `<h1>Email Confirmation</h1>
         <h2>Hello ${formatMessage(String(name))}</h2>
         <p>Thank you for subscribing. Please confirm your email by clicking on the following link</p>
-        <a href=http://${ADDRESS}:${PORT}/api/v1/auth/verify/${email}/${confirmationCode}> Click here</a>
+        <a href=${CLIENT_BASE_URL}/api/v1/auth/verify/${email}/${confirmationCode}> Click here</a>
         </div>`,
         });
-    } catch (error) {
-        throw new CustomError('Verification email not sent.', 400);
+    } catch (error) { 
+        throw new CustomError('Confirmation email not sent', 500);
     }
 };
 export const sendWelcomeEmail = async (name: string, email: string) => {
     try {
+        await transport.verify();
         await transport.sendMail({
             from: String(MAILER),
             to: email,
@@ -43,11 +44,12 @@ export const sendWelcomeEmail = async (name: string, email: string) => {
         <p>Welcome to Afrive Book Store</p>`
         });
     } catch (error) {
-        throw new CustomError('Verification email not sent.', 400);
+        throw new CustomError('Verification email not sent.', 500);
     }
 };
 export const ResetPasswordEmail = async (email: string, confirmationCode?: string) => {
     try {
+        await transport.verify();
         await transport.sendMail({
             from: String(MAILER),
             to: email,
@@ -55,17 +57,17 @@ export const ResetPasswordEmail = async (email: string, confirmationCode?: strin
             html: `
             <div> <h1>Reset your Password</h1>
             <p>We are sending you this email because you requested to change your password.
-            click on the link to change your password</p>
-            <h3>Code: <strong>${confirmationCode}</strong></h3>
-            <p>Please Pass this as your request body.</p>
+            click on the link to change your password</p> 
+            <a href=${CLIENT_BASE_URL}/reset-password?email=${email}&code=${confirmationCode}> Click here</a> 
             </div>`,
         });
-    } catch (error) {
-        throw new CustomError('Reset Password email not sent, please try again.', 400);
+    } catch (error) {         
+        throw new CustomError(`${error}`, 500);
     }
 };
 export const SuccessPasswordChange = async (email: string, name?: string) => {
     try {
+        await transport.verify();
         await transport.sendMail({
             from: String(MAILER),
             to: email,
@@ -76,6 +78,6 @@ export const SuccessPasswordChange = async (email: string, name?: string) => {
             </div>`,
         });
     } catch (error) {
-        throw new CustomError('Reset Password email not sent, please try again.', 400);
+        throw new CustomError('Change Password email not sent, please try again.', 500);
     }
 };

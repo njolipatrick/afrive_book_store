@@ -1,13 +1,16 @@
 import bookController from '../controllers/book.controller';
-import upload from '../utiles/multer.utile';
 import { Router } from 'express';
+import { verifyToken } from '../utiles/auth.utile';
 
 const book = Router();
 
-book.post('/', upload.single('image_link'), bookController.create);
+book.post('/', verifyToken, bookController.create);
 book.get('/', bookController.index);
-book.post('/:id', bookController.show);
+book.get('/search/category', bookController.SearcBooksCategoryByName);
+book.get('/search/title', bookController.SearcBooksByTitle);
+book.get('/search/author', bookController.SearcBooksByAuthor);
+book.get('/:id', bookController.show);
 book.put('/:id', bookController.update);
-book.delete('/:id', bookController.destroy);
+book.delete('/:id', verifyToken, bookController.destroy);
 
 export default book;

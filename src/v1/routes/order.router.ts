@@ -1,14 +1,12 @@
 import orderController from '../controllers/order.controller';
 import { Router } from 'express';
+import { verifyToken } from '../utiles/auth.utile';
 
 const order = Router();
 
-order.post('/:user_id', orderController.create);
-order.get('/', orderController.index);
-order.get('/:user_id', orderController.getOrdersByUserID);
-order.get('/:user_id/order', orderController.getOrdersByOrderID);
-order.get('/:book_id', orderController.getOrdersByBookID);
-order.put('/:order_id', orderController.update);
-order.delete('/:order_id', orderController.destroy);
+order.post('/', verifyToken, orderController.create);
+order.get('/', verifyToken, orderController.getOrdersByUserID);
+order.get('/:reference/verify', verifyToken, orderController.verifyPayment);
+order.delete('/:order_id', verifyToken, orderController.destroy);
 
 export default order;
