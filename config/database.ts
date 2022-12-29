@@ -9,14 +9,14 @@ const {
   POSTGRES_TEST_DB,
   POSTGRES_USER,
   POSTGRES_PASSWORD,
-  NODE_ENV
+  NODE_ENV, DATABASE_URL
 } = process.env;
 
 let client: Pool;
 
 if (NODE_ENV === 'production') {
   console.log('::server in production mode');
-  const connectionString = String(process.env.DATABASE_URL);
+  const connectionString = String(DATABASE_URL);
   client = new Pool({
     connectionString
   });

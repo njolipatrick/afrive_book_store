@@ -1,5 +1,5 @@
 {
-	"production": {
+	"prod": {
 		"driver": "pg",
 		"host": { "ENV": "POSTGRES_HOST_PROD" },
 		"database": { "ENV": "POSTGRES_DB_PROD" },
