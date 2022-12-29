@@ -42,7 +42,7 @@ export const errorController = (err: CustomError, req: Request, res: Response, n
 };
 export const notFoundHandler = (req: Request, res: Response, next: NextFunction) => {
     const err: ResponseError = new Error(`Route http//:${req.hostname}${req.path} not found `);
-    err.statusCode = 400;
+    err.statusCode = 404;
     next(err);
 };
 export class CustomError extends Error {
