@@ -100,20 +100,18 @@ class AuthService {
     async verifyEmail(req: Request) {
         const { email, token } = req.params;
         if (!(email && token)) throw new CustomError('User _id or token not provided', 400);
-        const findUser = await globalModel.CHECKMODEL('users', 'email', email);
+        const findUser = await globalModel.CHECKMODEL('users', 'email', email); 
 
-        if (findUser) {
-            const user = await AuthModel.verifyEmail(email, token);
-
-            if (user) {
-                const user: User = await globalModel.FINDONE('users', 'email', email);
-                return `${user.firstname} ${user.lastname} has been successfully verified`;
-            } else {
-                throw new CustomError(`Provided token was invalid for user ${email}`);
-            }
-        } else {
-            throw new CustomError(`User with ${email} does not exist`, 404);
+        if (!findUser) {
+            throw new CustomError(`User with ${findUser} does not exist`, 404);
         }
+        const user = await AuthModel.verifyEmail(email, token);
+
+        if (!user) {
+            throw new CustomError(`Provided token was invalid for user ${email}`);
+        } 
+        const VerifiedUser: User = await globalModel.FINDONE('users', 'email', email);
+        return `${VerifiedUser.firstname} ${VerifiedUser.lastname} has been successfully verified`;
     }
     async SendResetPasswordMail(req: Request): Promise<Data> {
         const data = req.body;

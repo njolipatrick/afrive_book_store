@@ -13,7 +13,7 @@
 		"test": "npx tsc && db-migrate --env dev up && npm run jasmine",
 		"test-down": "db-migrate --env test down --count 20",
 		"postinstall": "tsc",
-		"reset": "db-migrate  --env production reset && db-migrate  --env production up && npm run dev",
+		"reset": "db-migrate  --env production reset && db-migrate  --env production up && npm run start",
 		"migrate": "npm run build && db-migrate  --env production up"
 	},
 	"repository": {
@@ -33,6 +33,7 @@
 	},
 	"homepage": "https://github.com/ogmaro/afrive_book_store#readme",
 	"dependencies": {
+		"@sendgrid/mail": "^7.7.0",
 		"@types/dateformat": "^5.0.0",
 		"@types/multer": "^1.4.7",
 		"@types/validatorjs": "^3.15.0",
@@ -64,6 +65,7 @@
 		"@types/jasmine": "^4.0.3",
 		"@types/jsonwebtoken": "^8.5.8",
 		"@types/morgan": "^1.9.3",
+		"@types/node": "^18.11.18",
 		"@types/nodemailer": "^6.4.4",
 		"@types/pg": "^8.6.5",
 		"@types/response-time": "^2.3.5",
@@ -81,7 +83,8 @@
 		"npm": "^8.10.0",
 		"prettier": "^2.6.2",
 		"response-time": "^2.3.2",
-		"ts-node": "^10.7.0",
+		"ts-node": "^10.9.1",
+		"tslib": "^2.4.1",
 		"typescript": "^4.6.4"
 	}
 }

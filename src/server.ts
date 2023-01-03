@@ -1,7 +1,7 @@
 import app from './app';
-import dotenv from 'dotenv';
-dotenv.config();
-const { ADDRESS, PORT } = process.env;
+import {config} from 'dotenv';
+config();
+const { ADDRESS, PORT } = process.env; 
 
 const SERVICEPORT: number = PORT as unknown as number || 8000;
 
