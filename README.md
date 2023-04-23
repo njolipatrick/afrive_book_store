@@ -67,50 +67,45 @@ Based on API Endpoints requirement, the features covered for the endpoints are:
 
 ## Dependencies
 To install Afrive Book Store API, you will need the following:
-
-  
-
 - Node
-
 - PostgreSQL
-
 - db-migrate
-
 - Other dependencies required are listed in the package.json file. Use `npm install` on the command line
-
 - Environment variables are defined in a .env file. You can find a .example.env file in the repository root to guide you on setting up your .env file.
-
-  
-
-## Installation
-
-  
+## Installation 
 
 The steps outline will provide a walkthrough on how to install the app on your local machine
-
-  
-
 - Clone this repository
-
 - From the terminal, change directory to store_front_api app folder
+- Ensure that you are on the **dev** branch. If on any other branch, run `git checkout dev` on the terminal.
+- Create a new branch from the dev branch.
+-  Copy .example.env to a new file .env 
+`cp .example.env .env`
+- Install node packages from the termial using this command
+     ```npm install```
 
-- Ensure that you are on the **develop** branch. If on any other branch, run `git checkout develop` on the terminal.
-
-- Run `npm install` from your terminal in your project directory to install all dependencies
-
-- Then run the app with the command `npm start`
-
-  
+- Create a postgres database connection
+```POSTGRES_HOST=```
+```POSTGRES_DEV_DB=```
+```POSTGRES_TEST_DB=```
+```POSTGRES_USER=```
+```POSTGRES_PASSWORD=```
 
 ## Usage
 
-  
-
-To test out the endpoints, follow the following steps
-
-  
-
-- Once all dependencies have beeen installed, run `npm start` on your terminal to test the endpoints
+   | Command | Description|
+   |---|---|
+   |`npm start`|run the server in production mode|
+   |`npm run dev`|run the server in dev mode|
+   |`npm run lint`|style formatter|
+   |`npm run build`|build typescipt files|   
+   |`npm run dev`|run the test in test enviroment|
+   |`npm run migrate`|run databse migration files|
+   |`npm run reset`|clean out database and restart the app|
+   |`npm run dev`|run test files in dev enviroment|
+   |`npm run test-down`|drop database|
+   |`npm run dev`|run the server in dev mood|
+   
 
 The app link for the hosted app on heroku is "http://afrive-book-store.herokuapp.com/".
 
@@ -131,35 +126,23 @@ The app link for the hosted app on heroku is "http://afrive-book-store.herokuapp
 
 ## How to contribute
 
-  
-
-Contributions are welcome and appreciated
-
-  
-
-- Fork this repository
-
-- Open a terminal and execute the following command to make a local copy $ `git clone git@github.com:ogmaro/Afrive_Book_Store.git`
+  Contributions are welcome and appreciated
+- Clone the repository
+	- Open a terminal and execute the following command to make a local copy 
+		 `git clone https://github.com/ogmaro/afrive_book_store.git`
 
 - Run `cd Afrive_Book_Store` to navigate into the folder
 
-- Make your contributions to your local repo
+- Create a new branch with the action_abbriveration-contribution_name
+	e.g. `ft-google-auth`
+	
+- Make your contributions to your newly created branch.
 
-- Add a connection to the original repo using $ `git remote add repo_nickname git@github.com:ogmaro/Afrive_Book_Store.gitt`. Note: repo_nickname is a nickname you choose
+- When done, ensure to test your code.
 
-- Run git $ `remote -v` to verify that the connection is established
+- Commit and push you code to github.
 
-- Make your contributions to your local copy of the project
-
-- Run $ `git add filename`, `git commit -m "commit message"` to add and commit your contributions
-
-- Run $ `git push origin proposed-feature-name` to push your changes to your copy of the repository
-
-- If you feel you've made a contribution that will improve the project, raise a Pull Request against develop branch.
-
-- Be descriptive enough about your contributions so other contributors will understand what you've done
-
-  
+- If you feel you've made a contribution that will improve the project, raise a Pull Request against develop branch.  
 
 Pull Requests should:
 
