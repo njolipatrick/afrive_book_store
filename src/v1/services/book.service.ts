@@ -4,6 +4,8 @@ import Validator from 'validatorjs';
 import { Request } from 'express';
 import globalModel from '../models/global.model';
 import { decoder } from '../utiles/auth.utile';
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient();
 class BookService {
     public create = async (req: Request) => {
         const data: Book = req.body;
@@ -12,7 +14,7 @@ class BookService {
             title: 'required|string',
             image: 'required|string',
             author: 'required|string',
-            price: 'required|string',
+            price: 'required|integer',
             description: 'required|string',
             status: 'required|boolean',
         };
@@ -22,14 +24,16 @@ class BookService {
         if (validation.fails()) {
             throw new CustomError('There was a problem with your input data', 400);
         }
-        data.user_id = decoder(req)._id;
-        data.img = data.image;
+        data.user_id = 'decoder(req)._id';
+        data.img = 'data.image';
 
         const { author } = data;
         const findAuthor = await globalModel.CHECKMODEL('BOOKS', 'author', author);
         if (findAuthor) throw new CustomError(`Book with ${author} already exist`, 400);
 
-        const book = await bookModel.create(data);
+        const book = await prisma.books.create({
+            data: data
+        });
         return book;
     };
     public index = async (req: Request) => {

@@ -33,6 +33,7 @@
 	},
 	"homepage": "https://github.com/ogmaro/afrive_book_store#readme",
 	"dependencies": {
+		"@prisma/client": "^4.13.0",
 		"@sendgrid/mail": "^7.7.0",
 		"@types/dateformat": "^5.0.0",
 		"@types/multer": "^1.4.7",
@@ -81,6 +82,7 @@
 		"nodemon": "^2.0.16",
 		"npm": "^8.10.0",
 		"prettier": "^2.6.2",
+		"prisma": "^4.13.0",
 		"response-time": "^2.3.2",
 		"ts-node": "^10.7.0",
 		"typescript": "^4.6.4"
