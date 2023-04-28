@@ -9,7 +9,8 @@ import globalModel from '../models/global.model';
 import { getGoogleAuthURL, getTokens } from '../utiles/google.auth';
 const { TOKEN_SECRET } = process.env;
 import { sign } from 'jsonwebtoken';
-
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient();
 class AuthService {
     async googleAuthURL(req: Request) {
         return getGoogleAuthURL();
@@ -56,29 +57,11 @@ class AuthService {
             return user;
         }
     }
-    async register(req: Request): Promise<Data | undefined> {
-        const data: User = req.body;
-
-        const { firstname, lastname, password, email, username, password_confirmation } = data;
-        const rules = {
-            firstname: 'required|string',
-            lastname: 'required|string',
-            password: 'required|string|min:8',
-            password_confirmation: 'required|string|min:8',
-            email: 'required|email|string',
-            username: 'required|string|min:4',
-        };
-        const validation = new Validator(data, rules);
-        if (password !== password_confirmation) throw new CustomError('Password do not match with confirm password.', 409);
-        if (validation.fails()) {
-            throw new CustomError('There was a problem with your input data', 400);
-        }
-
-        const findUser = await globalModel.CHECKMODEL('users', 'email', email);
-        if (findUser) throw new CustomError(`User with ${email} already exist, please login`, 400);
-
-        const user: Data = await AuthModel.register(data);
-        await sendConfirmationEmail(firstname, email, user.verification_token);
+    async getUserByEmail(email: string) {
+        return await prisma.users.findFirst({ where: { email } });
+    }
+    async register(userData: User) {        
+        const user = await prisma.users.create({ data: {...userData} });
         return user;
     }
     async login(data: User): Promise<Data> {
@@ -100,7 +83,7 @@ class AuthService {
     async verifyEmail(req: Request) {
         const { email, token } = req.params;
         if (!(email && token)) throw new CustomError('User _id or token not provided', 400);
-        const findUser = await globalModel.CHECKMODEL('users', 'email', email); 
+        const findUser = await globalModel.CHECKMODEL('users', 'email', email);
 
         if (!findUser) {
             throw new CustomError(`User with ${findUser} does not exist`, 404);
@@ -109,7 +92,7 @@ class AuthService {
 
         if (!user) {
             throw new CustomError(`Provided token was invalid for user ${email}`);
-        } 
+        }
         const VerifiedUser: User = await globalModel.FINDONE('users', 'email', email);
         return `${VerifiedUser.firstname} ${VerifiedUser.lastname} has been successfully verified`;
     }

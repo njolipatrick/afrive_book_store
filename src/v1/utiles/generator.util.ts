@@ -1,4 +1,4 @@
-export const codeGenerator = (number: number): string | undefined => {
+export const codeGenerator = (number: number): string  => {
     return Math.random().toString(number).slice(2);
 };
 export function slugify(text: string):string {

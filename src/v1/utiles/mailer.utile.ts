@@ -1,8 +1,11 @@
 import { formatMessage } from './response.util';
 import { CustomError } from './error.utile';
 import sgMail from '@sendgrid/mail';
-const {SENDGRID_API_KEY, MAILER, CLIENT_BASE_URL } = process.env;
-sgMail.setApiKey(String(SENDGRID_API_KEY)); 
+import nodemailer, { TestAccount } from 'nodemailer';
+import Email from '../../../common/email.templates';
+
+const { SENDGRID_API_KEY, MAILER, CLIENT_BASE_URL } = process.env;
+sgMail.setApiKey(String(SENDGRID_API_KEY));
 
 export const sendConfirmationEmail = async (name: string, email: string, confirmationCode?: string) => {
     try {
@@ -72,4 +75,52 @@ export const SuccessPasswordChange = async (email: string, name?: string) => {
     } catch (error) {
         throw new CustomError('Change Password email not sent, please try again.', 500);
     }
+};
+
+export const sendMail = async (
+    template_data: { name?: string | null, confirmationCode?: string | null, subject?: string | null },
+    reciever?: string | null) => {
+
+
+    const message = {
+        to: reciever as string,
+        from: 'ogmaro@gmail.com',
+        templateId: 'd-5fc693b79cc44ca3800bc14052e69ff4',
+        dynamic_tempate_data: template_data ?? {}
+    };
+
+    await sgMail.send(message);
+
+    // return (send as any)?.response;
+};
+
+export const sendMailv2 = async (mailOptions: { content: string, sentTo?: string, subject?: string }) => {
+    const template_message = new Email();
+
+    const message = {
+        to: mailOptions.sentTo,
+        from: 'ogmaro@gmail.com',// set to .env
+        subject: mailOptions.subject, // Subject line 
+        html: mailOptions.content, // html body
+    };
+
+    // create reusable transporter object using the default SMTP transport
+    const transport = nodemailer.createTransport({
+        host: 'sandbox.smtp.mailtrap.io',
+        port: 2525,
+        auth: {
+            user: 'bbbb426802b7ae',
+            pass: '7c669296175717'
+        }
+    });
+
+    // send mail with defined transport object
+    const info = await transport.sendMail(message);
+    console.log(info);
+    console.log('Message sent: %s', info.messageId);
+    // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+
+    // Preview only available when sending through an Ethereal account
+    console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+    // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
 };
