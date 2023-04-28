@@ -13,8 +13,8 @@ const auth = Router();
 
 auth.post('/register', registerValidationRules(), validate, authController.register);
 auth.post('/login', loginValidationRules(), validate, authController.login);
-auth.get('/verify/:email/:token',verifyEmailValidationRules(), validate, authController.verifyEmail);
-auth.post('/send-reset-password-link/',sendResetPasswordEmailValidationRules(), validate, authController.SendResetPasswordMail);
+auth.get('/verify/',verifyEmailValidationRules(), validate, authController.verifyEmail);
+auth.post('/send-reset-password-link',sendResetPasswordEmailValidationRules(), validate, authController.SendResetPasswordMail);
 auth.post('/reset-password/', resetPasswordValidationRules(), validate, authController.ResetPassword);
 auth.get('/google-login-url', authController.googleAuthURL);
 auth.post('/google-login', authController.googleAuthUser);

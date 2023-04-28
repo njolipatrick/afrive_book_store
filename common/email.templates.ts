@@ -1,5 +1,5 @@
 export default class EmailTemplates {
-  public successResetPassword = (name: string, verification_token: string): string => {
+  public successResetPassword = (name: string): string => {
     return `<h1>Welcome, ${name}!</h1>
         <p>Thanks for trying Afrive Book. We’re thrilled to have you on board. To get the most out of Afrive Book, do this primary next step:</p>
         
@@ -12,7 +12,6 @@ export default class EmailTemplates {
                     <table border="0" cellspacing="0" cellpadding="0">
                       <tr>
                         <td>
-                          ${verification_token}
                         </td>
                       </tr>
                     </table>
@@ -24,7 +23,7 @@ export default class EmailTemplates {
         </table>
         `;
   };
-  public requestResetPassword = (name: string): string => {
+  public requestResetPassword = (name: string, token: string): string => {
     return `<h1>Hi ${name},</h1>
     <p>You recently requested to reset your password for your {{ product_name }} account. Use the button below to reset it.</p>
     <!-- Action -->
@@ -38,6 +37,9 @@ export default class EmailTemplates {
                 <table border="0" cellspacing="0" cellpadding="0">
                   <tr>
                     <td>
+                    <h3>
+                    ${token}
+                    </h3>
                       <a href="{{action_url}}" class="button button--" target="_blank">Reset your password</a>
                     </td>
                   </tr>

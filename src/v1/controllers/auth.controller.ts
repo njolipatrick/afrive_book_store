@@ -75,7 +75,7 @@ class AutheticationController {
             }
             //validate if password is corrrect
             const encrypt = await PasswordManager.compare((user as any)?.password, req.body.password);
-            if(!encrypt){
+            if (!encrypt) {
                 throw new Error('NOT_FOUND');
             }
             const token = sign({
@@ -84,31 +84,93 @@ class AutheticationController {
             }, String(TOKEN_SECRET), {
                 expiresIn: '7d'
             });
-            
+
             //generate auth token and send to the user
             (user as any).token = token;
-            const login= _.omit(user, 'password', 'verification_token');
-            
+            const login = _.omit(user, 'password', 'verification_token');
+
             res.status(200).json(response('User Logged in Successfully', login));
 
         } catch (error) {
             // console.log(error);
-            
+
             return res.status(500).json(response('Internal server error', error));
         }
     };
-    public verifyEmail = catchAsync(async (req: Request, res: Response): Promise<void | User | undefined> => {
-        const result = await authService.verifyEmail(req);
-        res.status(200).json(response('User email has be successfully verified', result));
-    });
-    public SendResetPasswordMail = catchAsync(async (req: Request, res: Response): Promise<void | User | undefined> => {
-        const result = await authService.SendResetPasswordMail(req);
-        res.status(200).json(response('Password Reset Email Sent Successfully', result));
-    });
-    public ResetPassword = catchAsync(async (req: Request, res: Response): Promise<void | User | undefined> => {
-        const result = await authService.ResetPassword(req);
-        res.status(200).json(response('Password Successfully Updated', result));
-    });
+    public verifyEmail = async (req: Request, res: Response) => {
+        try {
+            const { email, token } = req.query;
+
+            const user = await authService.getUserByEmailAndToken(email as string, token as string);
+            if (!user) {
+                throw new Error('NOT_FOUND');
+            }
+
+            const result = await authService.verifyEmail(email as string);
+
+            return res.status(200).json(response('User email has been successfully verified', result));
+        } catch (error) {
+            if ((error as any).message === 'NOT_FOUND') {
+                return res.status(404).json(response('User not found'));
+            }
+            return res.status(500).json(response('Internal server error', error));
+        }
+    };
+    public SendResetPasswordMail = async (req: Request, res: Response) => {
+        try {
+            const { email } = req.body;
+
+            const findUser = await authService.getUserByEmail(email as string);
+            if (!findUser) throw new Error('NOT_FOUND');
+
+            const token = codeGenerator(36);
+
+            const message = new EmailTemplates();
+            const mailOption = { content: message.requestResetPassword(findUser.firstname as string, token), sentTo: email, subject: 'Requested Password Reset' };
+            await sendMailv2(mailOption);
+
+
+
+            return res.status(200).json(response('Password Reset Email Sent Successfully'));
+        } catch (error) {
+            if ((error as any).message === 'NOT_FOUND') {
+                return res.status(404).json(response('User not found'));
+            }
+            return res.status(500).json(response('Internal server error', error));
+        }
+    };
+    public ResetPassword = async (req: Request, res: Response) => {
+
+        try {
+            const { email, token, password } = req.body;
+            //get the user
+            const user = await authService.getUserByEmail(email);
+            if (!user) throw new Error('NOT_FOUND');
+
+            if (token != user.verification_token) throw new Error('INVALID_TOKEN');
+
+            const hashpassword = await PasswordManager.hash(password);
+            
+            const userUpdate = await authService.ResetPassword({
+                email, password: hashpassword
+            });
+
+            const message = new EmailTemplates();
+            const mailOption = { content: message.successResetPassword(user.firstname as string), sentTo: email, subject: 'Password Reset Successful' };
+            await sendMailv2(mailOption);
+
+
+            res.status(200).json(response('Password Successfully Updated', userUpdate));
+        } catch (error) {
+            if ((error as any).message === 'INVALID_TOKEN') {
+                return res.status(400).json(response('User provided an invalid token'));
+            }
+            if ((error as any).message === 'NOT_FOUND') {
+                return res.status(404).json(response('User not found'));
+            }
+            return res.status(500).json(response('Internal server error', error));
+        }
+    };
 }
 
 export default new AutheticationController; 
