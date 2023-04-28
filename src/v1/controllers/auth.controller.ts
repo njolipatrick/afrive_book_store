@@ -6,9 +6,11 @@ import { response } from '../utiles/response.util';
 import { codeGenerator } from '../utiles/generator.util';
 import { PasswordManager } from '../utiles/password.manager.utile';
 import { sendMail, sendMailv2 } from '../utiles/mailer.utile';
-import { Prisma } from '@prisma/client';
-import { isEmpty } from 'lodash';
+import { Prisma, users } from '@prisma/client';
+import _, { isEmpty } from 'lodash';
 import EmailTemplates from '../../../common/email.templates';
+import { sign } from 'jsonwebtoken';
+const { TOKEN_SECRET } = process.env;
 class AutheticationController {
     public googleAuthURL = catchAsync(async (req: Request, res: Response): Promise<void | User | undefined> => {
         const result = await authService.googleAuthURL(req);
@@ -65,8 +67,35 @@ class AutheticationController {
         }
     };
     public login = async (req: Request, res: Response) => {
-        // const result = await authService.login(req.body);
-        // res.status(200).json(response('User Logged in Successfully', result));
+        try {
+            //validate is email exist
+            const user = await authService.getUserByEmail(req.body.email);
+            if (!user) {
+                throw new Error('NOT_FOUND');
+            }
+            //validate if password is corrrect
+            const encrypt = await PasswordManager.compare((user as any)?.password, req.body.password);
+            if(!encrypt){
+                throw new Error('NOT_FOUND');
+            }
+            const token = sign({
+                _id: user.id,
+                role: user.role
+            }, String(TOKEN_SECRET), {
+                expiresIn: '7d'
+            });
+            
+            //generate auth token and send to the user
+            (user as any).token = token;
+            const login= _.omit(user, 'password', 'verification_token');
+            
+            res.status(200).json(response('User Logged in Successfully', login));
+
+        } catch (error) {
+            // console.log(error);
+            
+            return res.status(500).json(response('Internal server error', error));
+        }
     };
     public verifyEmail = catchAsync(async (req: Request, res: Response): Promise<void | User | undefined> => {
         const result = await authService.verifyEmail(req);

@@ -9,7 +9,7 @@ import globalModel from '../models/global.model';
 import { getGoogleAuthURL, getTokens } from '../utiles/google.auth';
 const { TOKEN_SECRET } = process.env;
 import { sign } from 'jsonwebtoken';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, users } from '@prisma/client';
 const prisma = new PrismaClient();
 class AuthService {
     async googleAuthURL(req: Request) {
@@ -57,28 +57,12 @@ class AuthService {
             return user;
         }
     }
-    async getUserByEmail(email: string) {
+    async getUserByEmail(email: string):Promise<users|null> {
         return await prisma.users.findFirst({ where: { email } });
     }
     async register(userData: User) {        
         const user = await prisma.users.create({ data: {...userData} });
         return user;
-    }
-    async login(data: User): Promise<Data> {
-        const { email, password } = data;
-        if (!email) throw new CustomError('Input field email is required', 400);
-        if (!password) throw new CustomError('Input field password is required', 400);
-
-        const findUser = await globalModel.CHECKMODEL('users', 'email', email);
-        if (findUser) {
-
-            const user: Data | undefined = await AuthModel.login(email, password);
-
-            return user;
-        } else {
-            throw new CustomError(`User with ${email} not found`, 404);
-        }
-
     }
     async verifyEmail(req: Request) {
         const { email, token } = req.params;
