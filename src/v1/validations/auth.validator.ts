@@ -1,5 +1,6 @@
 import { body, check, validationResult, query, param } from 'express-validator';
 import { PrismaClient } from '@prisma/client';
+import { isEmpty } from 'lodash';
 const prisma = new PrismaClient();
 export const registerValidationRules = () => {
     return [
@@ -16,8 +17,6 @@ export const registerValidationRules = () => {
         body('password')
             .isLength({ min: 6 })
             .trim()
-            .isString()
-            .notEmpty()
             .withMessage('Please provide a valid password'),
         body('password_confirmation')
             .custom((value, { req }) => {
@@ -32,8 +31,6 @@ export const registerValidationRules = () => {
             }
         }),
         body('email')
-            .trim()
-            .isString()
             .isEmail()
             .withMessage('Please provide a valid email'),
         body('username')
@@ -52,33 +49,25 @@ export const loginValidationRules = () => {
             .isString()
             .withMessage('Please provide a valid password'),
         body('email')
-            .trim()
-            .isString()
             .isEmail()
-            .notEmpty()
             .withMessage('Please provide a valid email')
     ];
 };
 export const verifyEmailValidationRules = () => {
     return [
-        body('token')
-            .trim()
-            .isString()
-            .isLength({ min: 12, max: 20 })
+        query('token')
+            .isLength({ min: 10, max: 15 })
             .withMessage('Please provide a valid token'),
-        body('email')
-            .trim()
-            .isString()
-            .notEmpty()
+        query('email')
+            .isEmail()
             .withMessage('Please provide a valid email')
     ];
 };
 export const sendResetPasswordEmailValidationRules = () => {
     return [
         body('email')
-            .trim()
-            .isString()
-            .withMessage('Please provide a valid username'),
+            .isEmail()
+            .withMessage('Please provide a valid email'),
     ];
 };
 
@@ -90,7 +79,6 @@ export const resetPasswordValidationRules = () => {
             .isLength({ min: 12, max: 20 })
             .notEmpty()
             .withMessage('Please provide a valid token'),
-
         body('email')
             .trim()
             .isString()

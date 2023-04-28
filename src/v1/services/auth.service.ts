@@ -57,28 +57,33 @@ class AuthService {
             return user;
         }
     }
-    async getUserByEmail(email: string):Promise<users|null> {
+    async getUserByEmail(email: string): Promise<users | null> {
         return await prisma.users.findFirst({ where: { email } });
     }
-    async register(userData: User) {        
-        const user = await prisma.users.create({ data: {...userData} });
+    async getUserByEmailAndToken(email: string, verification_token: string): Promise<users | null> {
+        return await prisma.users.findFirst({ where: { email, verification_token } });
+    }
+    async register(userData: User) {
+        const user = await prisma.users.create({ data: { ...userData } });
         return user;
     }
-    async verifyEmail(req: Request) {
-        const { email, token } = req.params;
-        if (!(email && token)) throw new CustomError('User _id or token not provided', 400);
-        const findUser = await globalModel.CHECKMODEL('users', 'email', email);
+    async verifyEmail(email: string) {
 
-        if (!findUser) {
-            throw new CustomError(`User with ${findUser} does not exist`, 404);
-        }
-        const user = await AuthModel.verifyEmail(email, token);
+        const user = await prisma.users.update({
+
+            where: {
+                email: email,
+            },
+            data: {
+                isverified: true,
+                verification_token: null
+            },
+        });
 
         if (!user) {
-            throw new CustomError(`Provided token was invalid for user ${email}`);
+            throw new Error('UPDATE_FAILED');
         }
-        const VerifiedUser: User = await globalModel.FINDONE('users', 'email', email);
-        return `${VerifiedUser.firstname} ${VerifiedUser.lastname} has been successfully verified`;
+        return user;
     }
     async SendResetPasswordMail(req: Request): Promise<Data> {
         const data = req.body;
@@ -101,23 +106,16 @@ class AuthService {
 
         return user;
     }
-    async ResetPassword(req: Request): Promise<Data> {
-        const data = req.body;
-        const { email, token, password, password_confirmation } = data;
-        const rules = {
-            email: 'required|email|string',
-            token: 'required|string|min:8',
-            password: 'required|string|min:8',
-            password_confirmation: 'required|string:min:8',
-        };
+    async ResetPassword(userUpdate: { //extract this to an interface
+        email: string, password: string
+    }) {
 
-        const validation = new Validator(data, rules);
-        if (validation.fails()) throw new CustomError('There was a problem with your input data', 400);
-        if (password !== password_confirmation) throw new CustomError('Password do not match with confirm password.', 409);
-
-        const user: Data = await AuthModel.ResetPassword(email, token, password);
-        await SuccessPasswordChange(email, user.firstname);
-        return user;
+        return await prisma.users.update({
+            where: { email: userUpdate.email }, data: {
+                password: userUpdate.password,
+                verification_token: null
+            },
+        });
     }
 
 }
