@@ -1,19 +1,18 @@
-import client from '../../../config/database';
-import { CustomError } from '../utiles/error.utile';
-import globalModel from './global.model';
-import { Category } from './category.model';
-import { Ebook } from './ebook.model';
-import { Rate, Review } from './review.model.ts';
-import { User } from './auth.model';
-export type NEWBOOKOBJ = {
-    title: string;
-    image: string;
-    author: string;
-    price: string;
-    description: string;
-    status: string;
-}
-
+// import client from '../../../config/database';
+// import { CustomError } from '../utiles/error.utile';
+// import globalModel from './global.model';
+// import { Category } from './category.model';
+// import { Ebook } from './ebook.model';
+// import { Rate, Review } from './review.model.ts';
+// import { User } from './auth.model';
+// export type NEWBOOKOBJ = {
+//     title: string;
+//     image: string;
+//     author: string;
+//     price: string;
+//     description: string;
+//     status: string;
+// }
 export type Book = {
     id: number;
     title: string;
@@ -23,347 +22,348 @@ export type Book = {
     description: string;
     price: number;
     status: string;
-    name?: string;
+    category_name?: string;
     format?: string;
     comment?: string;
     user_id?: string;
     rate?: string;
 }
-export type ReturnedBook = {
-    id: number;
-    title: string;
-    author: string;
-    img?: string;
-    description: string;
-    price: number,
-    status: string;
 
-    category?: string[],
+// export type ReturnedBook = {
+//     id: number;
+//     title: string;
+//     author: string;
+//     img?: string;
+//     description: string;
+//     price: number,
+//     status: string;
 
-    eBook?: { status?: boolean | null; format?: string[] | null };
-    bookRating?: {
-        averageRating?: number;
-        ratings?: Rate[]
-    }
-}
+//     category?: string[],
 
-class BookModel {
+//     eBook?: { status?: boolean | null; format?: string[] | null };
+//     bookRating?: {
+//         averageRating?: number;
+//         ratings?: Rate[]
+//     }
+// }
 
-    public create = async (data: Book) => {
-        try {
-            const { rate, comment, user_id, name, format, title, author, img, description, price, status } = data;
-            const conn = await client.connect();
+// class BookModel {
 
-            //Create book
-            let sql = 'INSERT INTO books (title, author, image, description, price, status)VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;';
-            let values = [title, author, img, description, price, status];
-            const resB = await conn.query(sql, values);
-            const book: Book = resB.rows[0];
+//     public create = async (data: Book) => {
+//         try {
+//             const { rate, comment, user_id, category_name, format, title, author, img, description, price, status } = data;
+//             const conn = await client.connect();
 
-            //Create Category
-            sql = 'INSERT INTO categories (book_id, name)VALUES ($1, $2) RETURNING *;';
-            values = [book.id, name];
-            await conn.query(sql, values);
-            // const category: Category = resC.rows[0];
+//             //Create book
+//             let sql = 'INSERT INTO books (title, author, image, description, price, status)VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;';
+//             let values = [title, author, img, description, price, status];
+//             const resB = await conn.query(sql, values);
+//             const book: Book = resB.rows[0];
 
-            //Create Ebook
-            sql = 'INSERT INTO ebooks (book_id, status, format)VALUES ($1, $2, $3) RETURNING *;';
-            values = [book.id, status, format];
-            const resE = await conn.query(sql, values);
-            const ebook: Ebook = resE.rows[0];
+//             //Create Category
+//             sql = 'INSERT INTO categories (book_id, category_name)VALUES ($1, $2) RETURNING *;';
+//             values = [book.id, category_name];
+//             await conn.query(sql, values);
+//             // const category: Category = resC.rows[0];
 
-            // Create Review
-            // sql = 'INSERT INTO reviews (comment, user_id, book_id, rate)VALUES ($1, $2, $3, $4) RETURNING *;';
-            // values = [comment, user_id, book.id, rate];
-            // const resR = await conn.query(sql, values);
-            // const review: Review = resR.rows[0];
+//             //Create Ebook
+//             sql = 'INSERT INTO ebooks (book_id, status, format)VALUES ($1, $2, $3) RETURNING *;';
+//             values = [book.id, status, format];
+//             const resE = await conn.query(sql, values);
+//             const ebook: Ebook = resE.rows[0];
 
-            const category_array = await this.categories(book.id);
-            const rating = await this.rating(book.id);
+//             // Create Review
+//             // sql = 'INSERT INTO reviews (comment, user_id, book_id, rate)VALUES ($1, $2, $3, $4) RETURNING *;';
+//             // values = [comment, user_id, book.id, rate];
+//             // const resR = await conn.query(sql, values);
+//             // const review: Review = resR.rows[0];
 
-            const newBook: ReturnedBook = {
-                id: book.id,
-                title: book.title,
-                author: book.author,
-                img: book.image,
-                description: book.description,
-                price: book.price,
-                status: book.status,
-                category: category_array,
-                eBook: { status: ebook.status, format: [String(ebook.format)] },
-                bookRating: {
-                    averageRating: this.averageRating(rating),
-                    ratings: rating //Return an array of all rating to book
-                }
-            };
+//             const category_array = await this.categories(book.id);
+//             const rating = await this.rating(book.id);
 
-            conn.release();
-            return newBook;
-        } catch (error) {
-            throw new CustomError(`${error}`, 500);
-        }
-    };
-    public categories = async (book_id: string | number): Promise<string[]> => {
-        //Get all Category
-        const all_category: Category[] = await globalModel.FINDWHERE('CATEGORIES', 'book_id', book_id);
+//             const newBook: ReturnedBook = {
+//                 id: book.id,
+//                 title: book.title,
+//                 author: book.author,
+//                 img: book.image,
+//                 description: book.description,
+//                 price: book.price,
+//                 status: book.status,
+//                 category: category_array,
+//                 eBook: { status: ebook.status, format: [String(ebook.format)] },
+//                 bookRating: {
+//                     averageRating: this.averageRating(rating),
+//                     ratings: rating //Return an array of all rating to book
+//                 }
+//             };
 
-        const categories: string[] = [];
+//             conn.release();
+//             return newBook;
+//         } catch (error) {
+//             throw new CustomError(`${error}`, 500);
+//         }
+//     };
+//     public categories = async (book_id: string | number): Promise<string[]> => {
+//         //Get all Category
+//         const all_category: Category[] = await globalModel.FINDWHERE('CATEGORIES', 'book_id', book_id);
 
-        all_category.forEach((category) => {
-            categories.push(category.name);
-        });
-        return categories;
-    };
-    public rating = async (book_id: string | number): Promise<Rate[]> => {
+//         const categories: string[] = [];
 
-        const reviews: Review[] = await globalModel.FINDWHERE('REVIEWS', 'book_id', book_id);
+//         all_category.forEach((category) => {
+//             categories.push(category.category_name);
+//         });
+//         return categories;
+//     };
+//     public rating = async (book_id: string | number): Promise<Rate[]> => {
 
-        const all_reviews: Rate[] = await Promise.all(reviews.map(async review => {
-            const user: User = await globalModel.FINDONE('Users', 'id', review.user_id);
+//         const reviews: Review[] = await globalModel.FINDWHERE('REVIEWS', 'book_id', book_id);
 
-            const details: Rate = {
-                review_id: review.id,
-                name: `${user.firstname} ${user.lastname}`,
-                comment: review.comment,
-                startRating: review.rate > 0 ? review.rate : 1,
-                date: review.updated_at
-            };
-            return details;
-        }));
+//         const all_reviews: Rate[] = await Promise.all(reviews.map(async review => {
+//             const user: User = await globalModel.FINDONE('Users', 'id', review.user_id);
 
-        return all_reviews;
-    };
-    public averageRating = (reviewsRate: Rate[]) => {
-        let count = 0;
-        reviewsRate.forEach(element => {
-            count += element.startRating;
-        });
-        const length = reviewsRate.length;
-        const rate = count / length;
-        return rate > 0 ? rate : 1;
-    };
-    public index = async (limit: number) => {
-        try {
-            const books: Book[] = await globalModel.FINDALL('Books', limit);
+//             const details: Rate = {
+//                 review_id: review.id,
+//                 category_name: `${user.firstname} ${user.lastname}`,
+//                 comment: review.comment,
+//                 startRating: review.rate > 0 ? review.rate : 1,
+//                 date: review.updated_at
+//             };
+//             return details;
+//         }));
 
-            const all_books = await Promise.all(books.map(async book => {
-                const ebook: Ebook = await globalModel.FINDONE('ebooks', 'book_id', book.id);
-                let newEbook: Ebook = { status: null, format: null };
-                if (ebook === undefined) {
-                    newEbook = { status: null, format: null };
+//         return all_reviews;
+//     };
+//     public averageRating = (reviewsRate: Rate[]) => {
+//         let count = 0;
+//         reviewsRate.forEach(element => {
+//             count += element.startRating;
+//         });
+//         const length = reviewsRate.length;
+//         const rate = count / length;
+//         return rate > 0 ? rate : 1;
+//     };
+//     public index = async (limit: number) => {
+//         try {
+//             const books: Book[] = await globalModel.FINDALL('Books', limit);
 
-                } else {
-                    newEbook = { status: ebook.status, format: [String(ebook.format)] };
+//             const all_books = await Promise.all(books.map(async book => {
+//                 const ebook: Ebook = await globalModel.FINDONE('ebooks', 'book_id', book.id);
+//                 let newEbook: Ebook = { status: null, format: null };
+//                 if (ebook === undefined) {
+//                     newEbook = { status: null, format: null };
 
-                }
-                const rating = await this.rating(book.id);
+//                 } else {
+//                     newEbook = { status: ebook.status, format: [String(ebook.format)] };
 
-                const category_array = await this.categories(book.id);
-                const details: ReturnedBook = {
-                    id: book.id,
-                    title: book.title,
-                    author: book.author,
-                    img: book.image,
-                    description: book.description,
-                    price: book.price,
-                    status: book.status,
-                    category: category_array,
-                    eBook: newEbook,
-                    bookRating: {
-                        averageRating: this.averageRating(rating),
-                        ratings: rating //Return an array of all rating to book
-                    }
-                };
-                return details;
-            }));
+//                 }
+//                 const rating = await this.rating(book.id);
 
-            return all_books;
-        } catch (error) {
-            throw new CustomError(`${error}`, 500);
-        }
-    };
-    public SearcBooksCategoryByName = async (name: string): Promise<ReturnedBook[]> => {
-        try {
+//                 const category_array = await this.categories(book.id);
+//                 const details: ReturnedBook = {
+//                     id: book.id,
+//                     title: book.title,
+//                     author: book.author,
+//                     img: book.image,
+//                     description: book.description,
+//                     price: book.price,
+//                     status: book.status,
+//                     category: category_array,
+//                     eBook: newEbook,
+//                     bookRating: {
+//                         averageRating: this.averageRating(rating),
+//                         ratings: rating //Return an array of all rating to book
+//                     }
+//                 };
+//                 return details;
+//             }));
 
-            const categorys: Category[] = await globalModel.SEARCH('CATEGORIES', 'name', name, 20);
+//             return all_books;
+//         } catch (error) {
+//             throw new CustomError(`${error}`, 500);
+//         }
+//     };
+//     public SearcBooksCategoryByName = async (category_name: string): Promise<ReturnedBook[]> => {
+//         try {
 
-            const all_books = await Promise.all(categorys.map(async category => {
-                const ebook: Ebook = await globalModel.FINDONE('CATEGORIES', 'book_id', category.book_id);
-                const book: Book = await globalModel.FINDONE('BOOKS', 'id', category.book_id);
+//             const categorys: Category[] = await globalModel.SEARCH('CATEGORIES', 'category_name', category_name, 20);
 
-                let newEbook: Ebook = { status: null, format: null };
+//             const all_books = await Promise.all(categorys.map(async category => {
+//                 const ebook: Ebook = await globalModel.FINDONE('CATEGORIES', 'book_id', category.book_id);
+//                 const book: Book = await globalModel.FINDONE('BOOKS', 'id', category.book_id);
 
-                if (ebook === undefined) {
-                    newEbook = { status: null, format: null };
-                } else {
-                    newEbook = { status: ebook.status, format: [String(ebook.format)] };
-                }
-                const rating = await this.rating(category.book_id);
+//                 let newEbook: Ebook = { status: null, format: null };
 
-                const category_array = await this.categories(category.book_id);
-                const details: ReturnedBook = {
-                    id: book.id,
-                    title: book.title,
-                    author: book.author,
-                    img: book.image,
-                    description: book.description,
-                    price: book.price,
-                    status: book.status,
-                    category: category_array,
-                    eBook: newEbook,
-                    bookRating: {
-                        averageRating: this.averageRating(rating),
-                        ratings: rating //Return an array of all rating to book
-                    }
-                };
-                return details;
-            }));
-            return all_books;
-        } catch (error) {
-            throw new CustomError(`${error}`, 500);
-        }
-    };
-    public SearcBooksByAuthor = async (author: string): Promise<ReturnedBook[]> => {
-        try {
-            const books: Book[] = await globalModel.SEARCH('Books', 'author', author, 3);
+//                 if (ebook === undefined) {
+//                     newEbook = { status: null, format: null };
+//                 } else {
+//                     newEbook = { status: ebook.status, format: [String(ebook.format)] };
+//                 }
+//                 const rating = await this.rating(category.book_id);
 
-            const all_books = await Promise.all(books.map(async book => {
-                const ebook: Ebook = await globalModel.FINDONE('EBOOKS', 'book_id', book.id);
+//                 const category_array = await this.categories(category.book_id);
+//                 const details: ReturnedBook = {
+//                     id: book.id,
+//                     title: book.title,
+//                     author: book.author,
+//                     img: book.image,
+//                     description: book.description,
+//                     price: book.price,
+//                     status: book.status,
+//                     category: category_array,
+//                     eBook: newEbook,
+//                     bookRating: {
+//                         averageRating: this.averageRating(rating),
+//                         ratings: rating //Return an array of all rating to book
+//                     }
+//                 };
+//                 return details;
+//             }));
+//             return all_books;
+//         } catch (error) {
+//             throw new CustomError(`${error}`, 500);
+//         }
+//     };
+//     public SearcBooksByAuthor = async (author: string): Promise<ReturnedBook[]> => {
+//         try {
+//             const books: Book[] = await globalModel.SEARCH('Books', 'author', author, 3);
 
-                let newEbook: Ebook = { status: null, format: null };
+//             const all_books = await Promise.all(books.map(async book => {
+//                 const ebook: Ebook = await globalModel.FINDONE('EBOOKS', 'book_id', book.id);
 
-                if (ebook === undefined) {
-                    newEbook = { status: null, format: null };
-                } else {
-                    newEbook = { status: ebook.status, format: [String(ebook.format)] };
-                }
+//                 let newEbook: Ebook = { status: null, format: null };
 
-                const rating = await this.rating(book.id);
+//                 if (ebook === undefined) {
+//                     newEbook = { status: null, format: null };
+//                 } else {
+//                     newEbook = { status: ebook.status, format: [String(ebook.format)] };
+//                 }
 
-                const category_array = await this.categories(book.id);
-                const details: ReturnedBook = {
-                    id: book.id,
-                    title: book.title,
-                    author: book.author,
-                    img: book.image,
-                    description: book.description,
-                    price: book.price,
-                    status: book.status,
-                    category: category_array,
-                    eBook: newEbook,
-                    bookRating: {
-                        averageRating: this.averageRating(rating),
-                        ratings: rating //Return an array of all rating to book
-                    }
-                };
-                return details;
-            }));
-            return all_books;
-        } catch (error) {
-            throw new CustomError(`${error}`, 500);
-        }
-    };
-    public SearcBooksByTitle = async (title: string): Promise<ReturnedBook[]> => {
-        try {
+//                 const rating = await this.rating(book.id);
 
-            const books: Book[] = await globalModel.SEARCH('Books', 'title', title, 10);
+//                 const category_array = await this.categories(book.id);
+//                 const details: ReturnedBook = {
+//                     id: book.id,
+//                     title: book.title,
+//                     author: book.author,
+//                     img: book.image,
+//                     description: book.description,
+//                     price: book.price,
+//                     status: book.status,
+//                     category: category_array,
+//                     eBook: newEbook,
+//                     bookRating: {
+//                         averageRating: this.averageRating(rating),
+//                         ratings: rating //Return an array of all rating to book
+//                     }
+//                 };
+//                 return details;
+//             }));
+//             return all_books;
+//         } catch (error) {
+//             throw new CustomError(`${error}`, 500);
+//         }
+//     };
+//     public SearcBooksByTitle = async (title: string): Promise<ReturnedBook[]> => {
+//         try {
 
-            const all_books = await Promise.all(books.map(async book => {
-                const ebook: Ebook = await globalModel.FINDONE('EBOOKS', 'book_id', book.id);
+//             const books: Book[] = await globalModel.SEARCH('Books', 'title', title, 10);
 
-                let newEbook: Ebook = { status: null, format: null };
+//             const all_books = await Promise.all(books.map(async book => {
+//                 const ebook: Ebook = await globalModel.FINDONE('EBOOKS', 'book_id', book.id);
 
-                if (ebook === undefined) {
-                    newEbook = { status: null, format: null };
-                } else {
-                    newEbook = { status: ebook.status, format: [String(ebook.format)] };
-                }
+//                 let newEbook: Ebook = { status: null, format: null };
 
-                const rating = await this.rating(book.id);
+//                 if (ebook === undefined) {
+//                     newEbook = { status: null, format: null };
+//                 } else {
+//                     newEbook = { status: ebook.status, format: [String(ebook.format)] };
+//                 }
 
-                const category_array = await this.categories(book.id);
+//                 const rating = await this.rating(book.id);
 
-                const details: ReturnedBook = {
-                    id: book.id,
-                    title: book.title,
-                    author: book.author,
-                    img: book.image,
-                    description: book.description,
-                    price: book.price,
-                    status: book.status,
-                    category: category_array,
-                    eBook: newEbook,
-                    bookRating: {
-                        averageRating: this.averageRating(rating),
-                        ratings: rating //Return an array of all rating to book
-                    }
-                };
-                return details;
-            }));
-            return all_books;
-        } catch (error) {
-            throw new CustomError(`${error}`, 500);
-        }
-    };
-    public show = async (id: number) => {
-        try {
+//                 const category_array = await this.categories(book.id);
 
-            const book: Book = await globalModel.FINDONE('BOOKS', 'id', id);
+//                 const details: ReturnedBook = {
+//                     id: book.id,
+//                     title: book.title,
+//                     author: book.author,
+//                     img: book.image,
+//                     description: book.description,
+//                     price: book.price,
+//                     status: book.status,
+//                     category: category_array,
+//                     eBook: newEbook,
+//                     bookRating: {
+//                         averageRating: this.averageRating(rating),
+//                         ratings: rating //Return an array of all rating to book
+//                     }
+//                 };
+//                 return details;
+//             }));
+//             return all_books;
+//         } catch (error) {
+//             throw new CustomError(`${error}`, 500);
+//         }
+//     };
+//     public show = async (id: number) => {
+//         try {
 
-            const ebook: Ebook = await globalModel.FINDONE('EBOOKS', 'book_id', book.id);
+//             const book: Book = await globalModel.FINDONE('BOOKS', 'id', id);
 
-            const category_array = await this.categories(book.id);
+//             const ebook: Ebook = await globalModel.FINDONE('EBOOKS', 'book_id', book.id);
 
-            let newEbook: Ebook = { status: null, format: null };
+//             const category_array = await this.categories(book.id);
 
-            if (ebook === undefined) {
-                newEbook = { status: null, format: null };
-            } else {
-                newEbook = { status: ebook.status, format: [String(ebook.format)] };
-            }
+//             let newEbook: Ebook = { status: null, format: null };
 
-            const rating = await this.rating(book.id);
+//             if (ebook === undefined) {
+//                 newEbook = { status: null, format: null };
+//             } else {
+//                 newEbook = { status: ebook.status, format: [String(ebook.format)] };
+//             }
 
-            const newBook: ReturnedBook = {
-                id: book.id,
-                title: book.title,
-                author: book.author,
-                img: book.image,
-                description: book.description,
-                price: book.price,
-                status: book.status,
-                category: category_array,
-                eBook: newEbook,
-                bookRating: {
-                    averageRating: this.averageRating(rating),
-                    ratings: rating //Return an array of all rating to book
-                }
-            };
-            return newBook;
-        } catch (error) {
-            throw new CustomError('Internal Server Error', 500);
-        }
-    };
-    public update = async (id: number, data: Book) => {
-        try {
-            const { title, author, image, description, price, status } = data;
+//             const rating = await this.rating(book.id);
 
-            const conn = await client.connect();
-            const sql = 'UPDATE books SET title = $1, author = $2, image=$3, description=$4, price=$5, status=$6 WHERE id = $7';
-            const values = [title, author, image, description, price, status, id];
-            const result = await conn.query(sql, values);
-            return result.rows[0];
-        } catch (error) {
-            throw new CustomError(`${error}`, 500);
-        }
-    };
-    public destroy = async (book_id: number) => {
-        try {
-            const destroy = await globalModel.Destroy('BOOKS', book_id);
-            return destroy ? destroy : false;
-        } catch (error) {
-            throw new CustomError('Internal Server Error', 500);
-        }
-    };
-}
-export default new BookModel;
+//             const newBook: ReturnedBook = {
+//                 id: book.id,
+//                 title: book.title,
+//                 author: book.author,
+//                 img: book.image,
+//                 description: book.description,
+//                 price: book.price,
+//                 status: book.status,
+//                 category: category_array,
+//                 eBook: newEbook,
+//                 bookRating: {
+//                     averageRating: this.averageRating(rating),
+//                     ratings: rating //Return an array of all rating to book
+//                 }
+//             };
+//             return newBook;
+//         } catch (error) {
+//             throw new CustomError('Internal Server Error', 500);
+//         }
+//     };
+//     public update = async (id: number, data: Book) => {
+//         try {
+//             const { title, author, image, description, price, status } = data;
+
+//             const conn = await client.connect();
+//             const sql = 'UPDATE books SET title = $1, author = $2, image=$3, description=$4, price=$5, status=$6 WHERE id = $7';
+//             const values = [title, author, image, description, price, status, id];
+//             const result = await conn.query(sql, values);
+//             return result.rows[0];
+//         } catch (error) {
+//             throw new CustomError(`${error}`, 500);
+//         }
+//     };
+//     public destroy = async (book_id: number) => {
+//         try {
+//             const destroy = await globalModel.Destroy('BOOKS', book_id);
+//             return destroy ? destroy : false;
+//         } catch (error) {
+//             throw new CustomError('Internal Server Error', 500);
+//         }
+//     };
+// }
+// export default new BookModel;
