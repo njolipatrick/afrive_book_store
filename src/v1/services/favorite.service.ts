@@ -11,7 +11,7 @@ class FavoriteService {
         const { book_id } = req.params;
         const data: Favorite = {
             book_id,
-            user_id: decoder(req)._id
+            user_id: decoder(req)._id  as unknown as string
         };
 
         const rules = {

@@ -11,7 +11,7 @@ class CartService {
         const { book_id } = req.params;
         const data: Cart = {
             book_id,
-            user_id: decoder(req)._id
+            user_id: decoder(req)._id as unknown as string
         };
 
         const rules = {

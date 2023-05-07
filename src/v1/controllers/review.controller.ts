@@ -5,8 +5,8 @@ import reviewService from '../services/review.service';
 
 class ReviewController {
     public create = catchAsync(async (req: Request, res: Response) => {
-        const result = await reviewService.create(req);
-        res.status(201).json(response('Review Created Succesfully', result));
+        // const result = await reviewService.create(req);
+        // res.status(201).json(response('Review Created Succesfully', result));
     });
     public index = catchAsync(async (req: Request, res: Response) => {
         const result = await reviewService.index();

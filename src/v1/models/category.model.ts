@@ -1,13 +1,12 @@
 import client from '../../../config/database';
-import { CustomError } from '../utiles/error.utile';
-import bookModel, { Book, ReturnedBook } from './book.model';
+import { CustomError } from '../utiles/error.utile'; 
 import { Ebook } from './ebook.model';
 import globalModel from './global.model';
 
 export type Category = {
     id?: number;
-    book_id: string;
-    name: string;
+    book_id?: number;
+    name?: string;
 }
 class CategoryModel {
     public create = async (data: Category) => {
@@ -35,50 +34,50 @@ class CategoryModel {
             throw new CustomError(`${error}`, 500);
         }
     };
-    public getCategorysByName = async (name: string): Promise<Book[]> => {
-        try {
+    // public getCategorysByName = async (name: string): Promise<Book[]> => {
+    //     try {
 
-            const categorys: Category[] = await globalModel.SEARCH('CATEGORIES', 'name', name, 20);
+    //         const categorys: Category[] = await globalModel.SEARCH('CATEGORIES', 'name', name, 20);
 
-            const all_books = await Promise.all(categorys.map(async category => {
-                const ebook: Ebook = await globalModel.FINDONE('CATEGORIES', 'book_id', category.book_id);
+    //         const all_books = await Promise.all(categorys.map(async category => {
+    //             const ebook: Ebook = await globalModel.FINDONE('CATEGORIES', 'book_id', category.book_id);
 
-                const book: Book = await globalModel.FINDONE('BOOKS', 'id', category.book_id);
+    //             const book: Book = await globalModel.FINDONE('BOOKS', 'id', category.book_id);
 
-                let EBOOK: Ebook = { status: null, format: null };
+    //             let EBOOK: Ebook = { status: null, format: null };
 
-                if (ebook === undefined) {
-                    EBOOK = { status: null, format: null };
-                } else {
-                    EBOOK = { status: ebook.status, format: ebook.format };
-                }
-                const rating = await bookModel.rating(category.book_id);
+    //             if (ebook === undefined) {
+    //                 EBOOK = { status: null, format: null };
+    //             } else {
+    //                 EBOOK = { status: ebook.status, format: ebook.format };
+    //             }
+    //             const rating = await bookModel.rating(category.book_id);
 
-                const category_array = await bookModel.categories(category.book_id);
-                const details: ReturnedBook = {
-                    id: book.id,
-                    title: book.title,
-                    author: book.author,
-                    img: book.image,
-                    description: book.description,
-                    price: book.price,
-                    status: book.status,
-                    category: category_array,
-                    eBook: EBOOK,
-                    bookRating: {
-                        averageRating: bookModel.averageRating(rating),
-                        ratings: rating //Return an array of all rating to book
-                    }
+    //             const category_array = await bookModel.categories(category.book_id);
+    //             const details: ReturnedBook = {
+    //                 id: book.id,
+    //                 title: book.title,
+    //                 author: book.author,
+    //                 img: book.image,
+    //                 description: book.description,
+    //                 price: book.price,
+    //                 status: book.status,
+    //                 category: category_array,
+    //                 eBook: EBOOK,
+    //                 bookRating: {
+    //                     averageRating: bookModel.averageRating(rating),
+    //                     ratings: rating //Return an array of all rating to book
+    //                 }
 
-                };
-                return details;
-            }));
+    //             };
+    //             return details;
+    //         }));
 
-            return all_books;
-        } catch (error) {
-            throw new CustomError(`${error}`, 500);
-        }
-    };
+    //         return all_books;
+    //     } catch (error) {
+    //         throw new CustomError(`${error}`, 500);
+    //     }
+    // };
     public destroy = async (category_id: number) => {
         try {
             const destroy = await globalModel.Destroy('CATEGORIES', category_id);

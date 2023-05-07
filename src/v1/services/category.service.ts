@@ -3,28 +3,13 @@ import { CustomError } from '../utiles/error.utile';
 import Validator from 'validatorjs';
 import { Request } from 'express';
 import categoryModel, { Category } from '../models/category.model';
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient();
 
 class CategoryService {
-    public create = async (req: Request): Promise<Category> => {
-        const data: Category = req.body;
-        const { name } = data;
-        const { book_id } = req.params;
-        data.book_id = book_id;
-        const rules = {
-            book_id: 'required|string',
-            name: 'required|string'
-        };
+    public create = async (data: Category) => {
 
-        const validation = new Validator(data, rules);
-        if (validation.fails()) {
-            throw new CustomError('There was a problem with your input data', 400);
-        }
-
-        const CheckBook = await globalModel.CHECKMODEL('Books', 'id', book_id);
-        if (!CheckBook) throw new CustomError(`Book with ${book_id} doesn't already exist`, 400);
-
-        const category: Category = await categoryModel.create(data);
-        return category;
+        return prisma.categories.create({ data });
     };
 
     public index = async (): Promise<Category[]> => {
@@ -33,11 +18,11 @@ class CategoryService {
         return category;
     };
 
-    public getCategorysByName = async (req: Request) => {
-        const { name } = req.body;
-        const category = await categoryModel.getCategorysByName(name);
-        return category;
-    };
+    // public getCategorysByName = async (req: Request) => {
+    //     const { name } = req.body;
+    //     const category = await categoryModel.getCategorysByName(name);
+    //     return category;
+    // };
 
     public destroy = async (req: Request) => {
         const { category_id } = req.params;

@@ -40,7 +40,7 @@ class CartModel {
 
             const details: CartDetails = {
                 id: cart.id,
-                book_name: book.title,
+                book_name: book.title  as string,
                 user_name: user.username,
                 created_at: cart.created_at
             };
@@ -59,7 +59,7 @@ class CartModel {
 
                 const details: CartDetails = {
                     id: cart.id,
-                    book_name: book.title,
+                    book_name: book.title  as string,
                     user_name: user.username,
                     created_at: cart.created_at
                 };

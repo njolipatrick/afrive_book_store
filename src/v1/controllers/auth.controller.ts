@@ -72,7 +72,8 @@ class AutheticationController {
             const user = await authService.getUserByEmail(req.body.email);
             if (!user) {
                 throw new Error('NOT_FOUND');
-            }
+            }console.log(user);
+            
             //validate if password is corrrect
             const encrypt = await PasswordManager.compare((user as any)?.password, req.body.password);
             if (!encrypt) {
@@ -92,9 +93,9 @@ class AutheticationController {
             res.status(200).json(response('User Logged in Successfully', login));
 
         } catch (error) {
-            // console.log(error);
+            console.log(error);
 
-            return res.status(500).json(response('Internal server error', error));
+            return res.status(500).json(response('Internal server error', error, false));
         }
     };
     public verifyEmail = async (req: Request, res: Response) => {

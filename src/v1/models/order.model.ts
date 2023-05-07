@@ -1,5 +1,6 @@
 import client from '../../../config/database';
 import { CustomError } from '../utiles/error.utile';
+import { Book } from './book.model';
 import globalModel from './global.model';
 
 export type Pay = {
@@ -8,6 +9,17 @@ export type Pay = {
     email: string;
     txn_ref?: string;
     reference?: string;
+}
+export interface PlaceOrder {
+    user_id: number
+    txn_ref: string
+    total_order_amount: string
+    status: string
+    completed?: boolean | null
+    estimated_delivery_date: string
+    currency: string
+    checkout_url: string
+    book?: Book
 }
 export type ReturnBookOrder = {
     book_name: string;

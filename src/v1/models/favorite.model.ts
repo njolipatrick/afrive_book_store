@@ -33,7 +33,7 @@ class FavoriteModel {
 
             const details: FavoriteDetails = {
                 id: favorite.id,
-                book_name: book.title,
+                book_name: book.title  as string,
                 user_name: user.username,
                 created_at: favorite.created_at
             };
@@ -52,7 +52,7 @@ class FavoriteModel {
 
                 const details: FavoriteDetails = {
                     id: favorite.id,
-                    book_name: book.title,
+                    book_name: book.title  as string,
                     user_name: user.username,
                     created_at: favorite.created_at
                 };

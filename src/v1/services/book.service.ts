@@ -1,97 +1,42 @@
-import bookModel, { Book } from '../models/book.model';
-import { CustomError } from '../utiles/error.utile';
-import Validator from 'validatorjs';
-import { Request } from 'express';
-import globalModel from '../models/global.model';
-import { decoder } from '../utiles/auth.utile';
-import { PrismaClient } from '@prisma/client';
+
+import { Prisma, PrismaClient, books } from '@prisma/client';
+import { newBook } from '../models/book.model';
 const prisma = new PrismaClient();
 class BookService {
-    public create = async (req: Request) => {
-        const data: Book = req.body;
+    public create = async (data: newBook) => {
 
-        const rules = {
-            title: 'required|string',
-            image: 'required|string',
-            author: 'required|string',
-            price: 'required|integer',
-            description: 'required|string',
-            status: 'required|boolean',
-        };
-
-
-        const validation = new Validator(data, rules);
-        if (validation.fails()) {
-            throw new CustomError('There was a problem with your input data', 400);
-        }
-        data.user_id = 'decoder(req)._id';
-        data.img = 'data.image';
-
-        const { author } = data;
-        const findAuthor = await globalModel.CHECKMODEL('BOOKS', 'author', author);
-        if (findAuthor) throw new CustomError(`Book with ${author} already exist`, 400);
-
-        const book = await prisma.books.create({
-            data: data
+        return await prisma.books.create({
+            data
         });
-        return book;
+         
     };
-    public index = async (req: Request) => {
-        const { limit } = req.query;
-        if (typeof (limit) === 'string') {
-            const data = Number(limit);
-            if (isNaN(data) || data === 0) {
-                const book = bookModel.index(20);
-                return book;
-            }
-            const book = bookModel.index(data);
-            return book;
-        }
-        const book = bookModel.index(20);
-        return book;
-
+    public index = async () => {
+        return await prisma.books.findMany({ include: { ebooks: true, categories: true, reviews: true } });
     };
-    public SearcBooksCategoryByName = async (req: Request) => {
-        const { name } = req.body;
-        const category = await bookModel.SearcBooksCategoryByName(name as string);
-        return category;
+    public show = async (book_id: number) => {
+        return await prisma.books.findFirst({ where: { id: book_id }, include: { ebooks: true, categories: true, reviews: true } });
     };
-    public SearcBooksByTitle = async (req: Request) => {
-        const { title } = req.body;
-        const category = await bookModel.SearcBooksByTitle(title as string);
-        return category;
+    public getBookById = async (book_id: number) => {
+        return await prisma.books.findFirst({ where: { id: book_id } });
     };
-    public SearcBooksByAuthor = async (req: Request) => {
-        const { author } = req.body;
-        const category = await bookModel.SearcBooksByAuthor(author as string);
-        return category;
+    public search = async (search: string) => {
+        const books = prisma.books.findMany({ where: { title: search } });
+        const categories = prisma.books.findMany({ where: { title: search } });
+        const authors = prisma.books.findMany({ where: { author: search } });
+        return { books, categories, authors };
     };
-    public show = async (id: string) => {
-        const findBook = await globalModel.CHECKMODEL('BOOKS', 'id', id);
-        if (!findBook) {
-            throw new CustomError(`Book with ${id} does not exist`, 404);
-        }
-        const book = await bookModel.show(Number(id));
-        return book;
+    public update = async (book_id: number, data: newBook) => { 
+        return prisma.books.update({
+            where: { id: book_id },
+            data
+        });
     };
-    public update = async (id: string, data: Book) => {
-        const findBook = await globalModel.CHECKMODEL('BOOKS', 'id', id);
-        if (!findBook) {
-            throw new CustomError(`Book with ${id} does not exist`, 404);
-        }
-        const book = await bookModel.update(Number(id), data);
-        return book;
-    };
-    public destroy = async (id: string) => {
-        const findBook = await globalModel.CHECKMODEL('BOOKS', 'id', id);
-        if (!findBook) {
-            throw new CustomError(`Book with ${id} does not exist`, 404);
-        }
-        const book = bookModel.destroy(Number(id));
+    public destroy = async (book_id: number) => {
+        const book = await prisma.books.delete({ where: { id: book_id } });
         if (!book) {
-            throw new CustomError('Error book not deleted', 400);
+            throw new Error('NOT_DELETED');
         }
-        return 'Book Successfully Deleted';
+        return true;
     };
 }
 export default new BookService;

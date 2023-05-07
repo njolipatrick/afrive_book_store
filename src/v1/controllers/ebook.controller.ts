@@ -4,10 +4,10 @@ import { catchAsync } from '../utiles/error.utile';
 import ebookService from '../services/ebook.service';
 
 class EbookController {
-    public create = catchAsync(async (req: Request, res: Response) => {
-        const result = await ebookService.create(req);
-        res.status(201).json(response('Ebook Created Succesfully', result));
-    });
+    // public create = catchAsync(async (req: Request, res: Response) => {
+    //     const result = await ebookService.create(req);
+    //     res.status(201).json(response('Ebook Created Succesfully', result));
+    // });
     public index = catchAsync(async (req: Request, res: Response) => {
         const result = await ebookService.index();
         res.status(200).json(response('Ebook Found', result));

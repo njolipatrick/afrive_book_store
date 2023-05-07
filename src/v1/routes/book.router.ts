@@ -1,16 +1,16 @@
 import bookController from '../controllers/book.controller';
 import { Router } from 'express';
 import { verifyToken } from '../utiles/auth.utile';
+import { validate } from '../validations/validator';
+import { createBookValidationRules,updateBookValidationRules, validateIds } from '../validations/book.validation';
 
 const book = Router();
 
-book.post('/', verifyToken, bookController.create);
+book.post('/', createBookValidationRules(), validate, verifyToken, bookController.create);
 book.get('/', bookController.index);
-book.get('/search/category', bookController.SearcBooksCategoryByName);
-book.get('/search/title', bookController.SearcBooksByTitle);
-book.get('/search/author', bookController.SearcBooksByAuthor);
-book.get('/:id', bookController.show);
-book.put('/:id', bookController.update);
-book.delete('/:id', verifyToken, bookController.destroy);
+book.get('/:book_id/show', validateIds('book_id'), validate, bookController.show);
+book.get('/search', bookController.search);
+book.put('/:book_id', updateBookValidationRules(), validate, bookController.update);
+book.delete('/:book_id', validateIds('book_id'), validate, verifyToken, bookController.destroy);
 
 export default book;

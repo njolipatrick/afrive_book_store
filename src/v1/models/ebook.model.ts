@@ -4,9 +4,9 @@ import globalModel from './global.model';
 
 export type Ebook = {
     id?: number;
-    book_id?: string | null;
+    book_id?: number | null;
     status?: boolean | null;
-    format?: string[] | null;
+    format?: string | null;
 }
 class EbooksModel {
     public create = async (data: Ebook) => {

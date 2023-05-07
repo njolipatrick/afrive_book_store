@@ -16,10 +16,11 @@ auth.post('/login', loginValidationRules(), validate, authController.login);
 auth.get('/verify/',verifyEmailValidationRules(), validate, authController.verifyEmail);
 auth.post('/send-reset-password-link',sendResetPasswordEmailValidationRules(), validate, authController.SendResetPasswordMail);
 auth.post('/reset-password/', resetPasswordValidationRules(), validate, authController.ResetPassword);
-auth.get('/google-login-url', authController.googleAuthURL);
-auth.post('/google-login', authController.googleAuthUser);
 auth.get('/test', verifyToken, (req, res) => {
     res.status(200).json({ message: 'Ok' });
 });
+// Not in Use
+auth.get('/google-login-url', authController.googleAuthURL);
+auth.post('/google-login', authController.googleAuthUser);
 
 export default auth;
