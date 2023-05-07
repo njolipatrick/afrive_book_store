@@ -60,6 +60,9 @@ class AuthService {
     async getUserByEmail(email: string): Promise<users | null> {
         return await prisma.users.findFirst({ where: { email } });
     }
+    async getUserById(id: number): Promise<users | null> {
+        return await prisma.users.findFirst({ where: { id } });
+    }
     async getUserByEmailAndToken(email: string, verification_token: string): Promise<users | null> {
         return await prisma.users.findFirst({ where: { email, verification_token } });
     }
@@ -85,27 +88,27 @@ class AuthService {
         }
         return user;
     }
-    async SendResetPasswordMail(req: Request): Promise<Data> {
-        const data = req.body;
-        const { email } = data;
-        const rules = {
-            email: 'required|email|string'
-        };
+    // async SendResetPasswordMail(req: Request): Promise<Data> {
+    //     const data = req.body;
+    //     const { email } = data;
+    //     const rules = {
+    //         email: 'required|email|string'
+    //     };
 
-        const validation = new Validator(data, rules);
-        if (validation.fails()) throw new CustomError(validation.errors.first('email'), 400);
+    //     const validation = new Validator(data, rules);
+    //     if (validation.fails()) throw new CustomError(validation.errors.first('email'), 400);
 
-        const findUser = await globalModel.CHECKMODEL('users', 'email', email);
-        if (!findUser) throw new CustomError(`User with ${email} not found.`, 400);
+    //     const findUser = await globalModel.CHECKMODEL('users', 'email', email);
+    //     if (!findUser) throw new CustomError(`User with ${email} not found.`, 400);
 
-        const token = codeGenerator(36);
+    //     const token = codeGenerator(36);
 
-        await ResetPasswordEmail(email, token);
+    //     await ResetPasswordEmail(email, token);
 
-        const user: Data = await authModel.SendResetPasswordMail(email, token);
+    //     const user: Data = await authModel.SendResetPasswordMail(email, token);
 
-        return user;
-    }
+    //     return user;
+    // }
     async ResetPassword(userUpdate: { //extract this to an interface
         email: string, password: string
     }) {

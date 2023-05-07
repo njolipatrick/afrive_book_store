@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import axios from 'axios';
 import { CustomError } from '../utiles/error.utile';
+import { codeGenerator } from './generator.util';
 
 dotenv.config();
 
@@ -21,17 +22,17 @@ export const paystack = () => {
 				amount: form.amount
 			};
 			const url = 'https://api.paystack.co/transaction/initialize';
-
+					
 			return await axios.post(url, submit, {
 				headers:
 				{
 					'Content-Type': 'application/json',
 					'Authorization': `Bearer ${String(PAYSTACK_SECERT_KEY)}`,
-					'reference': String(form.reference)
+					'reference': codeGenerator(36)
 				}
 			});
 		} catch (err) {
-			throw new CustomError(`${err}`, 400);
+			throw new Error('PAYMENT_FAILED');
 		}
 	};
 	const verifyPayment = async (ref?: string) => {

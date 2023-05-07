@@ -1,18 +1,21 @@
+import { Category } from './category.model';
+import { Ebook } from './ebook.model';
+import { Review } from './review.model.ts';
 
 export type Book = {
     id: number;
-    title: string;
-    author: string;
+    title?: string|null;
+    author?: string|null;
     img?: string;
-    image?: string;
-    description: string;
-    price: number;
-    status: string;
+    image?: string|null;
+    description?: string|null;
+    price?: number|null;
+    status?: string|null;
     category_name?: string;
     format?: string;
     comment?: string;
     user_id?: string;
-    rate?: string;
+    rate?: string; 
 }
 
 export interface newBook { title?: string, image?: string, author?: string, description?: string, prices?: number, status?: string }

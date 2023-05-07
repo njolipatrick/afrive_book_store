@@ -28,7 +28,7 @@ class ReviewService {
         if (!findReview) {
             throw new CustomError(`Review with UserID ${user_id} does not exist`, 404);
         }
-        const review: Rate[] = await reviewModel.getReviewsByUserID(user_id);
+        const review: Rate[] = await reviewModel.getReviewsByUserID(user_id as unknown as string);
         return review;
     };
     public getReviewsByBookID = async (book_id: string): Promise<Rate[]> => {

@@ -15,10 +15,10 @@ class BookController {
 
             const bookData = {
                 price: Number(data.price),
-                title: data.title,
-                status: data.status,
-                description: data.description,
-                author: data.author
+                title: data.title as string,
+                status: data.status  as string,
+                description: data.description  as string,
+                author: data.author  as string
             };
 
             const result = await bookService.create(bookData);
