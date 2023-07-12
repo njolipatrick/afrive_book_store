@@ -1,8 +1,5 @@
-import globalModel from '../models/global.model';
-import { CustomError } from '../utiles/error.utile';
-import Validator from 'validatorjs';
-import { Request } from 'express';
-import ebookModel, { Ebook } from '../models/ebook.model';
+
+import { Ebook } from '../models/ebook.model';
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 class EbookService {
@@ -10,33 +7,15 @@ class EbookService {
         return await prisma.ebooks.create({ data });
     };
 
-    public index = async (): Promise<Ebook[]> => {
-        const ebook: Ebook[] = await ebookModel.index();
-        return ebook;
+    public index = async () => {
+        return await prisma.ebooks.findMany({});
     };
 
-    public getEBookByBookID = async (req: Request): Promise<Ebook> => {
-        const { book_id } = req.params;
-        const findReview = await globalModel.CHECKMODEL('EBOOKS', 'book_id', book_id);
-
-        if (!findReview) {
-            throw new CustomError(`Ebook with BookID ${book_id} does not exist`, 404);
-        }
-        const ebook: Ebook = await ebookModel.getEBookByBookID(book_id);
-        return ebook;
+    public getEBookByBookID = async (book_id: number) => {
+        return prisma.ebooks.findFirst({ where: { book_id } });
     };
-    public destroy = async (req: Request) => {
-        const { book_id } = req.params;
-        const findEBOOK = await globalModel.CHECKMODEL('EBOOKS', 'book_id', book_id);
-        if (!findEBOOK) {
-            throw new CustomError(`EBOOKS with bookID ${book_id} does not exist`, 404);
-        }
-
-        const ebook = ebookModel.destroy(Number(book_id));
-        if (!ebook) {
-            throw new CustomError('Error ebook not deleted', 400);
-        }
-        return 'EBOOKS Successfully Deleted';
+    public destroy = async (id: number) => {
+        return await prisma.ebooks.delete({ where: { id } });
     };
 }
 export default new EbookService;

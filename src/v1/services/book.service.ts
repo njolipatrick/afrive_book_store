@@ -4,20 +4,17 @@ import { newBook } from '../models/book.model';
 const prisma = new PrismaClient();
 class BookService {
     public create = async (data: newBook) => {
+        return await prisma.books.create({ data });
 
-        return await prisma.books.create({
-            data
-        });
-         
     };
     public index = async () => {
         return await prisma.books.findMany({ include: { ebooks: true, categories: true, reviews: true } });
     };
-    public show = async (book_id: number) => {
-        return await prisma.books.findFirst({ where: { id: book_id }, include: { ebooks: true, categories: true, reviews: true } });
+    public show = async (id: number) => {
+        return await prisma.books.findFirst({ where: { id }, include: { ebooks: true, categories: true, reviews: true } });
     };
-    public getBookById = async (book_id: number) => {
-        return await prisma.books.findFirst({ where: { id: book_id } });
+    public getBookById = async (id: number) => {
+        return await prisma.books.findFirst({ where: { id } });
     };
     public search = async (search: string) => {
         const books = prisma.books.findMany({ where: { title: search } });
@@ -25,9 +22,9 @@ class BookService {
         const authors = prisma.books.findMany({ where: { author: search } });
         return { books, categories, authors };
     };
-    public update = async (book_id: number, data: newBook) => { 
+    public update = async (id: number, data: newBook) => {
         return prisma.books.update({
-            where: { id: book_id },
+            where: { id },
             data
         });
     };

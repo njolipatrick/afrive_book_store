@@ -1,9 +1,8 @@
 import { Request, Response } from 'express';
 import { response } from '../utiles/response.util';
-import { catchAsync } from '../utiles/error.utile';
 import bookService from '../services/book.service';
 import { decoder } from '../utiles/auth.utile';
-import { Book } from '../models/book.model';
+import { Book, newBook } from '../models/book.model';
 import categoryService from '../services/category.service';
 import ebookService from '../services/ebook.service';
 import reviewService from '../services/review.service';
@@ -13,12 +12,12 @@ class BookController {
         try {
             const data: Book = req.body;
 
-            const bookData = {
-                price: Number(data.price),
+            const bookData: newBook = {
+                price: data.price as number,
                 title: data.title as string,
-                status: data.status  as string,
-                description: data.description  as string,
-                author: data.author  as string
+                status: data.status as string,
+                description: data.description as string,
+                author: data.author as string
             };
 
             const result = await bookService.create(bookData);
@@ -36,9 +35,9 @@ class BookController {
 
             const review = await reviewService.create({
                 book_id: result.id,
-                user_id: Number(decoder(req)._id),
-                comment: String(data.comment),
-                rate: Number(data.rate)
+                user_id: decoder(req)._id as unknown as number,
+                comment: data.comment as unknown as string,
+                rate: data.rate as unknown as number
             });
             if (!review) {
                 throw new Error('NOT_CREATED');
@@ -71,7 +70,7 @@ class BookController {
     };
     public update = async (req: Request, res: Response) => {
         try {
-            const { title, author, image, description, price, status } = req.body;
+            const { title, author, description, price, status } = req.body;
             const book = await bookService.show(Number(req.params.book_id));
             if (!book) {
                 throw new Error('NOT_FOUND');
