@@ -30,7 +30,7 @@ class OrderService {
     public updatePaymentStatus = async (id: number, reference: string) => {
         return await prisma.orders.update({ where: { id }, data: { txn_ref: reference } });
     };
-    public destroy = async (user_id: number, order_id: number) => {
+    public destroy = async ( order_id: number) => {
 
         return await prisma.orders.delete({ where: { id: order_id } });
     };

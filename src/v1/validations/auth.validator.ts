@@ -74,10 +74,7 @@ export const sendResetPasswordEmailValidationRules = () => {
 export const resetPasswordValidationRules = () => {
     return [
         body('token')
-            .trim()
-            .isString()
-            .isLength({ min: 12, max: 20 })
-            .notEmpty()
+        .isLength({ min: 10, max: 15 })
             .withMessage('Please provide a valid token'),
         body('email')
             .trim()

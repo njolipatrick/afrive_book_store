@@ -25,7 +25,7 @@ export default class EmailTemplates {
   };
   public requestResetPassword = (name: string, token: string): string => {
     return `<h1>Hi ${name},</h1>
-    <p>You recently requested to reset your password for your {{ product_name }} account. Use the button below to reset it.</p>
+    <p>You recently requested to reset your password for your  account. Use the button below to reset it.</p>
     <!-- Action -->
     <table class="body-action" align="center" width="100%" cellpadding="0" cellspacing="0">
       <tr>
@@ -53,7 +53,7 @@ export default class EmailTemplates {
     <p><em>This password reset is only valid for the next 24 hours.</em></p>
     <p>If you did not request a password reset, please ignore this email or <a href="{{support_url}}">contact support</a> if you have questions.</p>
     <p>Thanks,
-      <br>The Beezop Team</p>
+      <br>The  Team</p>
     <!-- Sub copy -->
     <table class="body-sub">
       <tr>
@@ -108,7 +108,7 @@ export default class EmailTemplates {
                 </tr>
                 </table>
                 
-                <p>If you did not sign up for a Beezop account, please ignore this email.</p>
+                <p>If you did not sign up for a  account, please ignore this email.</p>
                 
                 <p>Thanks,
           <br>Afrive Book</p>`;

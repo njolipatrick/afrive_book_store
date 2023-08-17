@@ -1,44 +1,23 @@
-import { Request } from 'express';
-import Validator from 'validatorjs';
-import AuthModel, { User, Data } from '../models/auth.model';
-import { CustomError } from '../utiles/error.utile';
-import { sendConfirmationEmail, ResetPasswordEmail, SuccessPasswordChange, sendWelcomeEmail } from '../utiles/mailer.utile';
-import authModel from '../models/auth.model';
-import { codeGenerator, slugify } from '../utiles/generator.util';
-import globalModel from '../models/global.model';
-import { getGoogleAuthURL, getTokens } from '../utiles/google.auth';
-const { TOKEN_SECRET } = process.env;
-import { sign } from 'jsonwebtoken';
+import { Request } from 'express'; 
+import  { User } from '../models/auth.model'; 
+import { codeGenerator, slugify } from '../utiles/generator.util'; 
+import { getGoogleAuthURL, getTokens } from '../utiles/google.auth';  
 import { PrismaClient, users } from '@prisma/client';
+import { PasswordManager } from '../utiles/password.manager.utile';
 const prisma = new PrismaClient();
 class AuthService {
-    async googleAuthURL(req: Request) {
+    async googleAuthURL() {
         return getGoogleAuthURL();
     }
     async googleAuthUserSignUp(req: Request) {
 
-        const { name, email, picture } = await getTokens(req);
+        const { name, email, id } = await getTokens(req);
 
-        const checkUser = await globalModel.CHECKMODEL('USERS', 'email', email);
-        if (checkUser) {
-            const user: User = await globalModel.FINDONE('USERS', 'email', email);
+        const user = await prisma.users.findFirst({ where: { email } });
 
-            const token = sign({
-                _id: user.id,
-                role: user.role
-            }, String(TOKEN_SECRET), {
-                expiresIn: '7d'
-            });
+        if (user) { 
 
-            const data = {
-                firstname: user.firstname,
-                lastname: user.lastname,
-                username: user.username,
-                email: user.email,
-                isverified: user.isverified,
-                token: token
-            };
-            return data;
+            return {email, id};
         } else {
             const randomUserCode = codeGenerator(36);
             const newName = name.split(' ');
@@ -48,13 +27,15 @@ class AuthService {
                 lastname: newName[1],
                 email: email,
                 username: slugify(name) + randomUserCode,
-                password: '',
+                password: await PasswordManager.hash(id),
                 role: 'user',
                 isverified: true,
             };
-            const user: Data = await AuthModel.googleAuthUserSignUp(data);
-            await sendWelcomeEmail(data.firstname, email);
-            return user;
+            const user = await prisma.users.create({ data });
+            if (!user) {
+                throw new Error('Error');
+            }
+            return {id, email};
         }
     }
     async getUserByEmail(email: string): Promise<users | null> {
@@ -88,27 +69,17 @@ class AuthService {
         }
         return user;
     }
-    // async SendResetPasswordMail(req: Request): Promise<Data> {
-    //     const data = req.body;
-    //     const { email } = data;
-    //     const rules = {
-    //         email: 'required|email|string'
-    //     };
-
-    //     const validation = new Validator(data, rules);
-    //     if (validation.fails()) throw new CustomError(validation.errors.first('email'), 400);
-
-    //     const findUser = await globalModel.CHECKMODEL('users', 'email', email);
-    //     if (!findUser) throw new CustomError(`User with ${email} not found.`, 400);
-
-    //     const token = codeGenerator(36);
-
-    //     await ResetPasswordEmail(email, token);
-
-    //     const user: Data = await authModel.SendResetPasswordMail(email, token);
-
-    //     return user;
-    // }
+    async requestPasswordReset(email: string, verification_token: string) {
+        const user = await prisma.users.update({
+            where: { email }, data: {
+                verification_token
+            },
+        });
+        if (!user) {
+            throw new Error('UPDATE_FAILED');
+        }
+        return user;
+    }
     async ResetPassword(userUpdate: { //extract this to an interface
         email: string, password: string
     }) {

@@ -55,6 +55,11 @@ class BookController {
     };
     public index = async (req: Request, res: Response) => {
         try {
+            const {search} = req.query;
+            if(search){ 
+                const result = await bookService.search(String(search));
+                return res.status(200).json(response('Books Found', result));
+            }
             const result = await bookService.index();
             res.status(200).json(response('Books Found', result));
         } catch (error) {

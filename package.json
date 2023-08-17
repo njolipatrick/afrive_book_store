@@ -7,14 +7,14 @@
 	"scripts": {
 		"lint": "npx prettier --write . && npx eslint",
 		"start": "NODE_ENV=production node build/src/server.js",
-		"dev": "NODE_ENV=dev nodemon src/server.ts",
+		"dev": "nodemon src/server.ts",
 		"build": "tsc",
 		"jasmine": "NODE_ENV=test jasmine",
 		"test": "npx tsc && db-migrate --env dev up && npm run jasmine",
 		"test-down": "db-migrate --env test down --count 20",
 		"postinstall": "tsc",
 		"reset": "db-migrate  --env production reset && db-migrate  --env production up && npm run start",
-		"migrate": "npm run build && db-migrate  --env production up"
+		"migrate": "prisma migrate dev"
 	},
 	"repository": {
 		"type": "git",
@@ -83,7 +83,7 @@
 		"jasmine-ts": "^0.4.0",
 		"morgan": "^1.10.0",
 		"nodemon": "^2.0.16",
-		"npm": "^8.10.0",
+		"npm": "^9.8.1",
 		"prettier": "^2.6.2",
 		"prisma": "^4.13.0",
 		"response-time": "^2.3.2",

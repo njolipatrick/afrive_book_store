@@ -156,7 +156,7 @@ class OrderController {
             if (find_order.user_id !== user_id) {
                 throw new Error('ACCESS_DENIED');
             }
-            const result = await orderService.destroy(user_id, find_order.id);
+            const result = await orderService.destroy( find_order.id);
             if (!result) {
                 throw new Error('NOT_DELETED');
             }

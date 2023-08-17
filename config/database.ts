@@ -27,6 +27,7 @@ if (NODE_ENV === 'production') {
     database: POSTGRES_TEST_DB,
     user: POSTGRES_USER,
     password: POSTGRES_PASSWORD,
+    port: 5431
   });
 } else {
   console.log('::server in developer mode');
@@ -35,6 +36,7 @@ if (NODE_ENV === 'production') {
     database: POSTGRES_DEV_DB,
     user: POSTGRES_USER,
     password: POSTGRES_PASSWORD,
+    port: 5431
   });
 }
 

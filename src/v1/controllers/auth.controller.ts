@@ -5,26 +5,29 @@ import { User } from '../models/auth.model';
 import { response } from '../utiles/response.util';
 import { codeGenerator } from '../utiles/generator.util';
 import { PasswordManager } from '../utiles/password.manager.utile';
-import { sendMail, sendMailv2 } from '../utiles/mailer.utile';
-import { Prisma, users } from '@prisma/client';
-import _, { isEmpty } from 'lodash';
+import { sendMailv2 } from '../utiles/mailer.utile';
+import { Prisma } from '@prisma/client';
+import _ from 'lodash';
 import EmailTemplates from '../../../common/email.templates';
 import { sign } from 'jsonwebtoken';
 const { TOKEN_SECRET } = process.env;
 class AutheticationController {
     public googleAuthURL = catchAsync(async (req: Request, res: Response): Promise<void | User | undefined> => {
-        const result = await authService.googleAuthURL(req);
+        const result = await authService.googleAuthURL();
         res.status(201).json(response('Google Authentication URL Sent', result));
     });
     public googleAuthUser = catchAsync(async (req: Request, res: Response): Promise<void | User | undefined> => {
-        const result = await authService.googleAuthUserSignUp(req);
-        res.status(201).json(response('User Logged in Successfully', result));
+        const { id, email } = await authService.googleAuthUserSignUp(req);
+
+        const login = await this.loginFunction(email, id);
+
+        res.status(200).json(response('User Logged in Successfully', login));
     });
     public register = async (req: Request, res: Response) => {
         try {
             const data: User = req.body;
 
-            const { firstname, lastname, password, email, username, password_confirmation } = data;
+            const { firstname, lastname, password, email, username } = data;
             // Check if user by email already exist
             const isUserExist = await authService.getUserByEmail(email);
 
@@ -47,14 +50,16 @@ class AutheticationController {
 
             const user = await authService.register(userData);
 
-            if (isEmpty(user) === true) {
+            if (!user) {
                 return res.status(500).json(response('User not created, please reachout to admin'));
             }
             const message = new EmailTemplates();
             const mailOption = { content: message.welcomeEmail(firstname, verification_token), sentTo: email, subject: `Welcome ${firstname}` };
             await sendMailv2(mailOption);
 
-            return res.status(201).json(response('User Created, Please verify your email your account', data));
+            //Login the registered user
+            const login = await this.loginFunction(email, String(password));
+            return res.status(201).json(response('User Created, Please verify your email your account', login));
         }
         catch (e) {
             if (e instanceof Prisma.PrismaClientKnownRequestError) {
@@ -68,35 +73,39 @@ class AutheticationController {
     };
     public login = async (req: Request, res: Response) => {
         try {
-            //validate is email exist
-            const user = await authService.getUserByEmail(req.body.email);
-            if (!user) {
-                throw new Error('NOT_FOUND');
-            }console.log(user);
-            
-            //validate if password is corrrect
-            const encrypt = await PasswordManager.compare((user as any)?.password, req.body.password);
-            if (!encrypt) {
-                throw new Error('NOT_FOUND');
-            }
-            const token = sign({
-                _id: user.id,
-                role: user.role
-            }, String(TOKEN_SECRET), {
-                expiresIn: '7d'
-            });
+            const { email, password } = req.body;
 
-            //generate auth token and send to the user
-            (user as any).token = token;
-            const login = _.omit(user, 'password', 'verification_token');
+            const login = await this.loginFunction(email, password);
 
             res.status(200).json(response('User Logged in Successfully', login));
 
         } catch (error) {
-            console.log(error);
 
             return res.status(500).json(response('Internal server error', error, false));
         }
+    };
+    public loginFunction = async (email: string, password: string) => {
+        //validate is email exist
+        const user = await authService.getUserByEmail(email);
+        if (!user) {
+            throw new Error('NOT_FOUND');
+        }
+        //validate if password is corrrect
+        const encrypt = await PasswordManager.compare(String(user.password), password);
+        if (!encrypt) {
+            throw new Error('ENCRPYTION_FAILED');
+        }
+        const token = sign({
+            _id: user.id,
+            role: user.role
+        }, String(TOKEN_SECRET), {
+            expiresIn: '7d'
+        });
+
+        //generate auth token and send to the user
+        (user as any).token = token;
+        const login = _.omit(user, 'password', 'verification_token');
+        return login;
     };
     public verifyEmail = async (req: Request, res: Response) => {
         try {
@@ -110,8 +119,8 @@ class AutheticationController {
             const result = await authService.verifyEmail(email as string);
 
             return res.status(200).json(response('User email has been successfully verified', result));
-        } catch (error) {
-            if ((error as any).message === 'NOT_FOUND') {
+        } catch (error:any) {
+            if (error.message === 'NOT_FOUND') {
                 return res.status(404).json(response('User not found'));
             }
             return res.status(500).json(response('Internal server error', error));
@@ -131,10 +140,11 @@ class AutheticationController {
             await sendMailv2(mailOption);
 
 
+            await authService.requestPasswordReset(email, token);
 
             return res.status(200).json(response('Password Reset Email Sent Successfully'));
-        } catch (error) {
-            if ((error as any).message === 'NOT_FOUND') {
+        } catch (error:any) {
+            if (error.message === 'NOT_FOUND') {
                 return res.status(404).json(response('User not found'));
             }
             return res.status(500).json(response('Internal server error', error));
@@ -151,7 +161,7 @@ class AutheticationController {
             if (token != user.verification_token) throw new Error('INVALID_TOKEN');
 
             const hashpassword = await PasswordManager.hash(password);
-            
+
             const userUpdate = await authService.ResetPassword({
                 email, password: hashpassword
             });
@@ -161,7 +171,7 @@ class AutheticationController {
             await sendMailv2(mailOption);
 
 
-            res.status(200).json(response('Password Successfully Updated', userUpdate));
+            res.status(200).json(response('Password Successfully Updated'));
         } catch (error) {
             if ((error as any).message === 'INVALID_TOKEN') {
                 return res.status(400).json(response('User provided an invalid token'));

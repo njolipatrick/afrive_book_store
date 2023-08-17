@@ -9,8 +9,7 @@ const book = Router();
 book.post('/', createBookValidationRules(), validate, verifyToken, bookController.create);
 book.get('/', bookController.index);
 book.get('/:book_id/show', validateIds('book_id'), validate, bookController.show);
-book.get('/search', bookController.search);
-book.put('/:book_id', updateBookValidationRules(), validate, bookController.update);
+book.put('/:book_id',validateIds('book_id'),  updateBookValidationRules(), validate, bookController.update);
 book.delete('/:book_id', validateIds('book_id'), validate, verifyToken, bookController.destroy);
 
 export default book;
