@@ -12,8 +12,8 @@ export type Cart = {
 }
 export type CartDetails = {
     id?: number;
-    user_name: string;
-    book_name: string;
+    user_name?: string;
+    book_name?: string;
     created_at?: string;
 }
 export type Delivery = {

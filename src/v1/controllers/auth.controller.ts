@@ -12,17 +12,17 @@ import EmailTemplates from '../../../common/email.templates';
 import { sign } from 'jsonwebtoken';
 const { TOKEN_SECRET } = process.env;
 class AutheticationController {
-    public googleAuthURL = catchAsync(async (req: Request, res: Response): Promise<void | User | undefined> => {
+    public googleAuthURL = async (req: Request, res: Response) => {
         const result = await authService.googleAuthURL();
         res.status(201).json(response('Google Authentication URL Sent', result));
-    });
-    public googleAuthUser = catchAsync(async (req: Request, res: Response): Promise<void | User | undefined> => {
+    };
+    public googleAuthUser = async (req: Request, res: Response) => {
         const { id, email } = await authService.googleAuthUserSignUp(req);
 
         const login = await this.loginFunction(email, id);
 
         res.status(200).json(response('User Logged in Successfully', login));
-    });
+    };
     public register = async (req: Request, res: Response) => {
         try {
             const data: User = req.body;
@@ -79,9 +79,11 @@ class AutheticationController {
 
             res.status(200).json(response('User Logged in Successfully', login));
 
-        } catch (error) {
-
-            return res.status(500).json(response('Internal server error', error, false));
+        } catch (error: any) {
+            if (['ENCRPYTION_FAILED', 'NOT_FOUND'].includes(error.message)) {
+                return res.status(500).json(response('Internal server error', 'Wrong email or password', false));
+            }
+            return res.status(500).json(response('Internal server error', error.message, false));
         }
     };
     public loginFunction = async (email: string, password: string) => {
@@ -119,7 +121,7 @@ class AutheticationController {
             const result = await authService.verifyEmail(email as string);
 
             return res.status(200).json(response('User email has been successfully verified', result));
-        } catch (error:any) {
+        } catch (error: any) {
             if (error.message === 'NOT_FOUND') {
                 return res.status(404).json(response('User not found'));
             }
@@ -143,7 +145,7 @@ class AutheticationController {
             await authService.requestPasswordReset(email, token);
 
             return res.status(200).json(response('Password Reset Email Sent Successfully'));
-        } catch (error:any) {
+        } catch (error: any) {
             if (error.message === 'NOT_FOUND') {
                 return res.status(404).json(response('User not found'));
             }
