@@ -1,12 +1,3 @@
-/**
- * user_id: 'required|integer',
-            txn_ref: 'required|string',
-            book: 'required',
-            total_order_amount: 'required|integer',
-            status: 'required|string',
-            estimated_delivery_date: 'required|string',
-            currency: 'required|string'
- */
 import { body, check, validationResult, query, param } from 'express-validator';
 import { PrismaClient } from '@prisma/client';
 

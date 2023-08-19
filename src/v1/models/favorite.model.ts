@@ -4,11 +4,11 @@ import { User } from './auth.model';
 import { Book } from './book.model';
 import globalModel from './global.model';
 
-export type Favorite = {
-    id?: number;
-    book_id: string;
-    user_id: string;
+export type Favorite = { 
+    book_id: number;
+    user_id: number;
     created_at?: string;
+    updated_at?: string;
 }
 export type FavoriteDetails = {
     id?: number;
@@ -16,7 +16,7 @@ export type FavoriteDetails = {
     book_name: string;
     created_at?: string;
 }
-
+/*
 class FavoriteModel {
     public create = async (data: Favorite) => {
         try {
@@ -76,3 +76,4 @@ class FavoriteModel {
     };
 }
 export default new FavoriteModel;
+*/

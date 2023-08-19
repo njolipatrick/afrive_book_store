@@ -1,5 +1,5 @@
 
-import { body, check, validationResult, query, param } from 'express-validator';
+import { check } from 'express-validator';
 
 export const cartValidationRules = (type:string) => {
     return [

@@ -8,8 +8,8 @@ export type Review = {
     id?: number
     review_id?: number;
     comment: string;
-    user_id: string | number;
-    book_id: string | number;
+    user_id:  number;
+    book_id:number;
     rate: number;
     date?: string;
     updated_at?: string;
@@ -21,7 +21,12 @@ export type Rate = {
     startRating: number;
     date?: string;
 }
-
+export type DataReview = {
+    book_id: number;
+    user_id: number;
+    comment: string;
+    rate: number;
+}
 class ReviewModel {
     public create = async (data: Review): Promise<Rate> => {
         try {

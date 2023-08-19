@@ -8,6 +8,7 @@ export const validateIds = (id: string) => {
         check(id)
             .trim()
             .notEmpty()
+            .isNumeric()
             .withMessage('Please provide a valid ' + id)
     ];
 };

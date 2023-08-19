@@ -38,13 +38,13 @@ class AuthService {
             return {id, email};
         }
     }
-    async getUserByEmail(email: string): Promise<users | null> {
+    async getUserByEmail(email: string) {
         return await prisma.users.findFirst({ where: { email } });
     }
-    async getUserById(id: number): Promise<users | null> {
+    async getUserById(id: number) {
         return await prisma.users.findFirst({ where: { id } });
     }
-    async getUserByEmailAndToken(email: string, verification_token: string): Promise<users | null> {
+    async getUserByEmailAndToken(email: string, verification_token: string)  {
         return await prisma.users.findFirst({ where: { email, verification_token } });
     }
     async register(userData: User) {

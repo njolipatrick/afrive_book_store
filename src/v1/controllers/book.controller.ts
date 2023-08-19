@@ -76,7 +76,7 @@ class BookController {
     };
     public update = async (req: Request, res: Response) => {
         try {
-            const { title, author, image, description, price, status } = req.body;
+            const { title, author, description, price, status } = req.body;
             const book = await bookService.show(Number(req.params.book_id));
             if (!book) {
                 throw new Error('NOT_FOUND');

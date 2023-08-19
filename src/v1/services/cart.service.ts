@@ -5,6 +5,7 @@ import { CustomError } from '../utiles/error.utile';
 import Validator from 'validatorjs';
 import { Request } from 'express';
 import { PrismaClient } from '@prisma/client';
+import userService from '../services/auth.service';
 const prisma = new PrismaClient();
 
 class CartService {
@@ -16,7 +17,7 @@ class CartService {
         const carts = await prisma.carts.findMany({ where: { user_id } });
         const all_cart = await Promise.all(carts.map(async (item) => {
             const book = await prisma.books.findUnique({ where: { id: Number(item.book_id) } });
-            const user = await prisma.users.findUnique({ where: { id: Number(item.user_id) } });
+            const user = await  userService.getUserById(Number(item.user_id));
             return {
                 id: item.id,
                 book_name: book?.title as unknown as string,

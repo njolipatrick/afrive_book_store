@@ -1,6 +1,7 @@
 
 import { Prisma, PrismaClient, books } from '@prisma/client';
 import { newBook } from '../models/book.model';
+import { Rate } from '../models/review.model.ts';
 const prisma = new PrismaClient();
 class BookService {
     public create = async (data: newBook) => {
@@ -8,7 +9,7 @@ class BookService {
         return await prisma.books.create({
             data
         });
-         
+
     };
     public index = async () => {
         return await prisma.books.findMany({ include: { ebooks: true, categories: true, reviews: true } });
@@ -25,9 +26,9 @@ class BookService {
         const authors = prisma.books.findMany({ where: { author: search } });
         return { books, categories, authors };
     };
-    public update = async (book_id: number, data: newBook) => { 
+    public update = async (id: number, data: newBook) => {
         return prisma.books.update({
-            where: { id: book_id },
+            where: { id  },
             data
         });
     };
@@ -37,6 +38,41 @@ class BookService {
             throw new Error('NOT_DELETED');
         }
         return true;
+    };
+    public categories = async (book_id: number): Promise<string[]> => {
+        //Get all Category
+        const all_category = await prisma.categories.findMany({ where: { book_id } });
+
+        const categories: string[] = [];
+
+        all_category.forEach((category) => {
+            categories.push(String(category.name));
+        });
+        return categories;
+    };
+    public rating = async (book_id: number): Promise<Rate[]> => {
+        const reviews = await prisma.reviews.findMany({ where: { book_id } });
+
+        return await Promise.all(reviews.map(async (review) => {
+            const user = await prisma.users.findUnique({ where: { id: Number(review.user_id) } });
+            return {
+                review_id: review.id,
+                name: `${user?.firstname} ${user?.lastname}`,
+                comment: String(review.comment),
+                startRating: Number(review?.rate) > 0 ? Number(review?.rate) : 1,
+                date: String(review?.updated_at)
+            };
+        }));
+
+    }; 
+    public averageRating = async (reviewsRate: Rate[]) => {
+        let count = 0;
+        reviewsRate.forEach(element => {
+            count += element.startRating;
+        });
+        const length = reviewsRate.length;
+        const rate = count / length;
+        return rate > 0 ? rate : 1;
     };
 }
 export default new BookService;

@@ -22,17 +22,16 @@ class OrderService {
         return await prisma.orders.findMany({ where: { id, user_id } });
     };
     public show = async (id: number) => {
-        return await prisma.orders.findFirst({ where: { id } });
+        return await prisma.orders.findUnique({ where: { id } });
     };
     public getOrderByTrxRef = async (txn_ref: string, user_id: number) => {
         return await prisma.orders.findFirst({ where: { txn_ref, user_id } });
     };
-    public updatePaymentStatus = async (id: number, reference: string) => {
-        return await prisma.orders.update({ where: { id }, data: { txn_ref: reference } });
+    public updatePaymentStatus = async (id: number, txn_ref: string) => {
+        return await prisma.orders.update({ where: { id }, data: { txn_ref } });
     };
-    public destroy = async ( order_id: number) => {
-
-        return await prisma.orders.delete({ where: { id: order_id } });
+    public destroy = async ( id: number) => {
+        return await prisma.orders.delete({ where: { id } });
     };
 }
 export default new OrderService;

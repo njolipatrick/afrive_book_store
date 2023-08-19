@@ -41,12 +41,21 @@ class CartController {
         }
     };
     public index = async (req: Request, res: Response) => {
-        const result = await cartService.index(decoder(req)._id);
-        return res.status(200).json(response('Carts Found', result));
+        try {
+            const result = await cartService.index(decoder(req)._id);
+            return res.status(200).json(response('Carts Found', result));
+        }
+        catch (error) {
+            return res.status(500).json(response('Internal server error', (error as any).message));
+        }
     };
-    public destroy = async (req: Request, res: Response) => {
+    public destroy = async (req: Request, res: Response) => {try{
+        
         const result = await cartService.destroy(Number(req.params.cart_id));
         res.status(200).json(response('Cart deleted Successfully', result));
+    } catch (error) {
+        return res.status(500).json(response('Internal server error', (error as any).message));
+    }
     };
 }
 export default new CartController;
