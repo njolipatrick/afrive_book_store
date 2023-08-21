@@ -10,7 +10,7 @@ const order = Router();
 order.post('/', orderValidationRules(), validate, verifyToken, orderController.create);
 order.get('/', verifyToken, orderController.getOrdersByUserID);
 order.get('/:order_id', verifyToken, orderController.getOrdersById);
-order.get('/:reference/verify', validateIds('reference'), validate, verifyToken, orderController.verifyPayment);
+order.get('/:reference/verify', validateIds('reference', true), validate, verifyToken, orderController.verifyPayment);
 order.delete('/:order_id', validateIds('order_id'), validate, verifyToken, orderController.destroy);
 
 export default order;

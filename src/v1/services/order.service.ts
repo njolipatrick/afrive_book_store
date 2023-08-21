@@ -1,15 +1,6 @@
-import globalModel from '../models/global.model';
-import orderModel, { PlaceOrder, Order, Pay } from '../models/order.model';
-import { CustomError } from '../utiles/error.utile';
-import Validator from 'validatorjs';
-import { Request } from 'express';
-import { decoder } from '../utiles/auth.utile';
-import { Prisma, PrismaClient, books } from '@prisma/client';
-const prisma = new PrismaClient();
-import { paystack } from '../utiles/paystack';
-import { User } from '../models/auth.model';
-import { Book } from '../models/book.model';
-const { initializePayment, verifyPayment } = paystack();
+import { PlaceOrder } from '../models/order.model'; 
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient(); 
 
 class OrderService {
     public create = async (order: PlaceOrder) => {

@@ -1,7 +1,7 @@
 
 import { Favorite } from '../models/favorite.model';
 import { CustomError } from '../utiles/error.utile';
-import { PrismaClient, favorites } from '@prisma/client';
+import { PrismaClient} from '@prisma/client';
 const prisma = new PrismaClient();
 
 class FavoriteService {

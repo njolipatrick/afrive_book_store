@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { response } from '../utiles/response.util';
-import { catchAsync } from '../utiles/error.utile';
 import categoryService from '../services/category.service';
 import { Category } from '../models/category.model';
 

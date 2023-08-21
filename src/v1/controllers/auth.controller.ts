@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import authService from '../services/auth.service';
-import { catchAsync } from '../utiles/error.utile';
 import { User } from '../models/auth.model';
 import { response } from '../utiles/response.util';
 import { codeGenerator } from '../utiles/generator.util';

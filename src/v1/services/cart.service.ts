@@ -1,23 +1,18 @@
-import globalModel from '../models/global.model';
-import cartModel, { Cart, CartDetails } from '../models/cart.model';
-import { decoder } from '../utiles/auth.utile';
-import { CustomError } from '../utiles/error.utile';
-import Validator from 'validatorjs';
-import { Request } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { Cart, CartDetails } from '../models/cart.model';
+import { PrismaClient, carts } from '@prisma/client';
 import userService from '../services/auth.service';
 const prisma = new PrismaClient();
 
 class CartService {
-    public create = async (data: Cart): Promise<CartDetails> => {
-        return await cartModel.create(data);
+    public create = async (data: { book_id: number, user_id: number }) => {
+        return await prisma.carts.create({ data });
     };
 
-    public index = async (user_id: number): Promise<CartDetails[]> => {
+    public index = async (user_id: number)=> {
         const carts = await prisma.carts.findMany({ where: { user_id } });
         const all_cart = await Promise.all(carts.map(async (item) => {
             const book = await prisma.books.findUnique({ where: { id: Number(item.book_id) } });
-            const user = await  userService.getUserById(Number(item.user_id));
+            const user = await userService.getUserById(Number(item.user_id));
             return {
                 id: item.id,
                 book_name: book?.title as unknown as string,

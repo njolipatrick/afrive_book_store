@@ -3,7 +3,16 @@ import { PrismaClient } from '@prisma/client';
 import { isEmpty } from 'lodash';
 const prisma = new PrismaClient();
 
-export const validateIds = (id: string) => {
+export const validateIds = (id: string, str?: boolean) => {
+    if (str) {
+        return [
+            check(id)
+                .trim()
+                .notEmpty()
+                .isString()
+                .withMessage('Please provide a valid ' + id)
+        ];
+    }
     return [
         check(id)
             .trim()

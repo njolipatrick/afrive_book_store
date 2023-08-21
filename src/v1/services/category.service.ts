@@ -1,7 +1,4 @@
-import globalModel from '../models/global.model';
-import { CustomError } from '../utiles/error.utile';
-import Validator from 'validatorjs';
-import { Request } from 'express';
+
 import  { Category } from '../models/category.model';
 import { PrismaClient } from '@prisma/client';
 import ebookService from './ebook.service';

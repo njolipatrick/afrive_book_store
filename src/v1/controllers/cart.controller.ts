@@ -8,10 +8,10 @@ import bookService from '../services/book.service';
 class CartController {
     public create = async (req: Request, res: Response) => {
         try {
-            const { book_id } = req.params;
+            const book_id = Number(req.params.book_id);
             const data: Cart = {
                 book_id,
-                user_id: decoder(req)._id as unknown as string
+                user_id: decoder(req)._id
             };
             const book = await bookService.getBookById(Number(book_id));
             if (!book) throw new Error('BOOK_NOT_FOUND');

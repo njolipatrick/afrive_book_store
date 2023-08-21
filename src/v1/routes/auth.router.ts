@@ -18,8 +18,7 @@ auth.post('/send-reset-password-link',sendResetPasswordEmailValidationRules(), v
 auth.post('/reset-password/', resetPasswordValidationRules(), validate, authController.ResetPassword);
 auth.get('/test', verifyToken, (req, res) => {
     res.status(200).json({ message: 'Ok' });
-});
-// Not in Use
+}); 
 auth.get('/google-login-url', authController.googleAuthURL);
 auth.post('/google-login', authController.googleAuthUser);
 

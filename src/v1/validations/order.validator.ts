@@ -1,7 +1,4 @@
-import { body, check, validationResult, query, param } from 'express-validator';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { body} from 'express-validator'; 
 export const orderValidationRules = () => {
     return [
         body('total_order_amount')
@@ -11,9 +8,14 @@ export const orderValidationRules = () => {
             .withMessage('Please provide a valid total_order_amount'),
         body('status')
             .trim()
-            .isString()
+            .isBoolean()
             .notEmpty()
-            .withMessage('Please provide a valid last name'),
+            .withMessage('Please provide a valid status'),
+        body('book_id')
+            .trim()
+            .isNumeric()
+            .notEmpty()
+            .withMessage('Please provide a valid book_id'),
         body('currency')
             .trim()
             .notEmpty()

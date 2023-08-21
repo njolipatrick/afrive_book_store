@@ -1,21 +1,18 @@
 import { Request, Response } from 'express';
 import { response } from '../utiles/response.util';
-import { catchAsync } from '../utiles/error.utile';
 import orderService from '../services/order.service';
 import { decoder } from '../utiles/auth.utile';
 import bookService from '../services/book.service';
 import authService from '../services/auth.service';
 import { Pay, PlaceOrder } from '../models/order.model';
-import { users } from '@prisma/client';
 import { paystack } from '../utiles/paystack';
-import { param } from 'express-validator';
 const { initializePayment, verifyPayment } = paystack();
 
 class OrderController {
     public create = async (req: Request, res: Response) => {
         try {
             const { total_order_amount, estimated_delivery_date, book_id, currency } = req.body;
-            const book = await bookService.getBookById(book_id);
+            const book = await bookService.getBookById(Number(book_id));
             if (!book) {
                 throw new Error('NOT_FOUND_BOOK');
             }
@@ -27,7 +24,7 @@ class OrderController {
             }
 
             const pay: Pay = {
-                amount: total_order_amount * 100,
+                amount: Number(total_order_amount) * 100,
                 email: String(user.email)
             };
 
@@ -36,7 +33,7 @@ class OrderController {
             if (!payment.data.status) {
                 throw new Error('PAYMENT_FAILED');
             }
-
+            
             const data: PlaceOrder = {
                 status: '1',
                 total_order_amount,
@@ -97,15 +94,17 @@ class OrderController {
     };
     public verifyPayment = async (req: Request, res: Response) => {
         try {
-
             const reference = req.params.reference;
             const user_id = decoder(req)._id;
+            console.log(reference, user_id);
+
             const get_order_by_txn_ref = await orderService.getOrderByTrxRef(reference, user_id);
             if (!get_order_by_txn_ref) {
                 throw new Error('NOT_FOUND');
             }
-            const result = await verifyPayment(get_order_by_txn_ref.txn_ref);
-            if (result.data.data.status === 'success') {
+            
+            const { data } = await verifyPayment(get_order_by_txn_ref.txn_ref);
+            if (data.data.status === 'success') {
                 const orderStatus = await orderService.updatePaymentStatus(get_order_by_txn_ref.id, reference);
 
                 if (!orderStatus) {
@@ -116,10 +115,10 @@ class OrderController {
                     throw new Error('NOT_FOUND');
                 }
                 return res.status(200).json(response('Payment verified successfully', order));
-            } else if (result.data.data.status === 'abandoned') {
+            } else if (data.data.status === 'abandoned') {
                 throw new Error('ABANDONED');
             }
-            else if (result.data.data.status === 'failed') {
+            else if (data.data.status === 'failed') {
                 throw new Error('FAILED');
             }
             else {
@@ -156,7 +155,7 @@ class OrderController {
             if (find_order.user_id !== user_id) {
                 throw new Error('ACCESS_DENIED');
             }
-            const result = await orderService.destroy( find_order.id);
+            const result = await orderService.destroy(find_order.id);
             if (!result) {
                 throw new Error('NOT_DELETED');
             }

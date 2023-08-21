@@ -1,7 +1,4 @@
-import globalModel from '../models/global.model';
-import { CustomError } from '../utiles/error.utile';
-import Validator from 'validatorjs';
-import { Request } from 'express';
+import { CustomError } from '../utiles/error.utile'; 
 import  { Ebook } from '../models/ebook.model';
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();

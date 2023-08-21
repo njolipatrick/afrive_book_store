@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { response } from '../utiles/response.util';
-import { CustomError, catchAsync } from '../utiles/error.utile';
+import { CustomError } from '../utiles/error.utile';
 import favoriteService from '../services/favorite.service';
 import { Favorite } from '../models/favorite.model';
 import { decoder } from '../utiles/auth.utile';

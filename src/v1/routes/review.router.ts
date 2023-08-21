@@ -6,12 +6,12 @@ import { validateIds } from '../validations/book.validation';
 
 const review = Router();
 
-review.post('/:book_id',validateIds('book_id'),validate, verifyToken, reviewController.create);//done
-review.get('/', reviewController.index);//done
-review.get('/user', verifyToken, reviewController.getReviewsByUserID);//done
+review.post('/:book_id',validateIds('book_id'),validate, verifyToken, reviewController.create);
+review.get('/', reviewController.index);
+review.get('/user', verifyToken, reviewController.getReviewsByUserID);
 review.get('/:user_id/review', reviewController.getReviewsByReviewID);
-review.get('/b/:book_id',validateIds('book_id'),validate, reviewController.getReviewsByBookID);//done
+review.get('/b/:book_id',validateIds('book_id'),validate, reviewController.getReviewsByBookID);
 review.put('/:book_id',validateIds('book_id'),validate, reviewController.update);
-review.delete('/:review_id',validateIds('review_id'),validate, reviewController.destroy);//done
+review.delete('/:review_id',validateIds('review_id'),validate, reviewController.destroy);
 
 export default review;
