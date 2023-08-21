@@ -2,14 +2,12 @@
 import { CustomError } from '../utiles/error.utile'; 
 import {  PrismaClient, reviews } from '@prisma/client';
 import userService from '../services/auth.service';
-import { DataReview } from '../models/review.model.ts';
+import { Review } from '../models/review.model.ts';
 const prisma = new PrismaClient();
 class ReviewService {
-    public create = async (data: DataReview) => {
+    public create = async (data: Review) => {
         return await prisma.reviews.create({ data });
     };
-
-
     public index = async () => {
         const reviews = await prisma.reviews.findMany({ take: 20 });
         return await this.indexer(reviews);

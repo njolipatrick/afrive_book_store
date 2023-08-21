@@ -3,10 +3,11 @@ import { Router } from 'express';
 import { verifyToken } from '../utiles/auth.utile';
 import { validate } from '../validations/validator';
 import { validateIds } from '../validations/book.validation';
+import { reviewValidationRules } from '../validations/review.validator';
 
 const review = Router();
 
-review.post('/:book_id',validateIds('book_id'),validate, verifyToken, reviewController.create);
+review.post('/:book_id',validateIds('book_id'), reviewValidationRules(),validate, verifyToken, reviewController.create);
 review.get('/', reviewController.index);
 review.get('/user', verifyToken, reviewController.getReviewsByUserID);
 review.get('/:user_id/review', reviewController.getReviewsByReviewID);

@@ -14,10 +14,4 @@ export type Rate = {
     comment: string;
     startRating: number;
     date?: string;
-}
-export type DataReview = {
-    book_id: number;
-    user_id: number;
-    comment: string;
-    rate: number;
-    }
+} 

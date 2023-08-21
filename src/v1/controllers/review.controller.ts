@@ -2,14 +2,20 @@ import { Request, Response } from 'express';
 import { response } from '../utiles/response.util';
 import { CustomError } from '../utiles/error.utile';
 import reviewService from '../services/review.service';
-import { DataReview, Review } from '../models/review.model.ts';
+import { Review } from '../models/review.model.ts';
 import { decoder } from '../utiles/auth.utile';
 import bookService from '../services/book.service';
 
 class ReviewController {
     public create = async (req: Request, res: Response) => {
         try {
-            const data: DataReview = req.body;
+            const user_id = decoder(req)._id;
+            const { book_id } = req.params;
+            const data: Review = req.body;
+            
+            data.user_id = user_id;
+            data.book_id = Number(book_id);
+
             const result = await reviewService.create(data);
             res.status(201).json(response('Review Created Succesfully', result));
         }
